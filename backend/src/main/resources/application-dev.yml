@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/frutodamalha}
+    username: ${DB_USERNAME:frutodamalha}
+    password: ${DB_PASSWORD:frutodamalha}
+    hikari:
+      maximum-pool-size: 5
+
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com.frutodamalha.catalogo: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.springframework.security: INFO
+
+# Dados do administrador criado automaticamente em desenvolvimento (ver DataInitializer),
+# apenas se ainda não existir nenhum usuário ADMIN no banco.
+app:
+  dev-admin:
+    enabled: true
+    nome: Administradora
+    email: admin@frutodamalha.com.br
+    senha: admin123
