@@ -1,8 +1,14 @@
 # Fruto da Malha — Catálogo Online
 
-Sistema web completo para substituir o catálogo em PDF da Fruto da Malha (roupas infantis) por
-um catálogo online moderno, com painel administrativo e carrinho de pedidos integrado ao
-WhatsApp — **sem nenhum processamento de pagamento dentro do sistema**.
+Catálogo digital administrável que substitui o catálogo em PDF da Fruto da Malha (roupas
+infantis), hoje feito no Canva. A administradora edita os produtos num painel e o catálogo público
+se atualiza sozinho — **sem exportar PDF, sem editar artes, sem reenviar arquivos**. O link
+compartilhado com as clientes é sempre o mesmo; só o conteúdo muda.
+
+A cliente monta uma **seleção** de peças (com tamanhos e quantidades), vê o valor total e envia
+tudo pela WhatsApp em uma mensagem organizada. **Não é um e-commerce**: não há checkout,
+pagamento, pedido gravado nem controle de estoque — a negociação acontece inteiramente na conversa
+com a vendedora.
 
 > **Este é um projeto de longo prazo, construído em várias sessões de desenvolvimento.**
 > Se você é a próxima pessoa (ou IA) a continuar o desenvolvimento, leia
@@ -31,7 +37,7 @@ comandos podem ser copiados e colados exatamente como estão.
 12. [Como cadastrar categorias](#12-como-cadastrar-categorias)
 13. [Como cadastrar produtos](#13-como-cadastrar-produtos)
 14. [Como enviar imagens](#14-como-enviar-imagens)
-15. [Como testar o carrinho](#15-como-testar-o-carrinho)
+15. [Como testar a seleção de produtos](#15-como-testar-a-seleção-de-produtos)
 16. [Como testar a integração com WhatsApp](#16-como-testar-a-integração-com-whatsapp)
 17. [Como gerar um build para produção](#17-como-gerar-um-build-para-produção)
 18. [Como resolver os erros mais comuns](#18-como-resolver-os-erros-mais-comuns)
@@ -306,12 +312,17 @@ Abra `frontend\.env.local` e preencha:
 
 ```dotenv
 NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_WHATSAPP_NUMBER=5581999999999
 NEXT_PUBLIC_INSTAGRAM_HANDLE=frutodamalha
 ```
 
 - `NEXT_PUBLIC_API_URL`: endereço do backend — em desenvolvimento local, deixe exatamente como
   está acima.
+- `NEXT_PUBLIC_SITE_URL`: endereço do próprio site, sem barra no final. Localmente é
+  `http://localhost:3000`; em produção precisa ser o domínio real da loja — é ele que faz o link
+  do produto aparecer **com a foto** quando alguém cola no WhatsApp, e é ele que alimenta o
+  `sitemap.xml`.
 - `NEXT_PUBLIC_WHATSAPP_NUMBER`: número de WhatsApp da vendedora, **com código do país e DDD,
   só números** (sem `+`, espaço ou traço). Exemplo: um número (81) 99999-9999 vira `5581999999999`.
 - `NEXT_PUBLIC_INSTAGRAM_HANDLE`: o `@usuario` do Instagram da loja, sem o `@`.
@@ -421,8 +432,9 @@ que o backend sobe (ver `backend/src/main/resources/application-dev.yml`):
 - **E-mail:** `admin@frutodamalha.com.br`
 - **Senha:** `admin123`
 
-Digite essas credenciais na tela de login. Depois de entrar, você cai no **Dashboard** do painel,
-com sidebar de navegação à esquerda (Dashboard, Produtos, Categorias, Coleções, Tamanhos).
+Digite essas credenciais na tela de login. Depois de entrar, você cai direto na lista de
+**Produtos** — que é o que a administradora vem fazer no painel — com a sidebar de navegação à
+esquerda (Produtos, Categorias, Coleções, Tamanhos).
 
 > ⚠️ Essas credenciais são só para desenvolvimento local — o backend nunca cria esse usuário
 > automaticamente em produção. Ver `docs/PROGRESS.md` para o processo de criar o primeiro admin
@@ -461,7 +473,9 @@ mudar a ordem em que as categorias aparecem na home do site.
      **Sexo**, **Status** (Ativo = aparece no site; Oculto = fica escondido, mas continua
      existindo no painel).
    - **Tamanhos disponíveis**: clique nos tamanhos que esse produto tem (ex. P, M, G).
-   - **Observações**, **Destaque** (aparece na home) e **Lançamento** (aparece na home).
+   - **Observações**: texto curto que aparece na página do produto, abaixo da descrição (ex.:
+     "veste um número menor").
+   - **Destaque**: liga a peça na seção "Produtos em destaque" da home.
 3. Clique em **"Criar produto e continuar"**.
 
 Depois de criar, você é levada automaticamente para a tela de edição do mesmo produto — é ali
@@ -499,34 +513,36 @@ normalmente há só um ou dois vídeos por produto).
 
 ---
 
-## 15. Como testar o carrinho
+## 15. Como testar a seleção de produtos
 
-Esta é a parte mais importante do site para o cliente final — teste como se você fosse uma
-cliente comprando:
+Esta é a parte mais importante do site para a cliente final — teste como se você fosse uma
+cliente escolhendo peças:
 
 1. Acesse `http://localhost:3000` e clique em um produto (ou use a busca no topo).
-2. Na página do produto, escolha a quantidade desejada para um ou mais tamanhos (ex.: P → 2,
-   M → 3) usando os botões de `+`/`−`.
-3. Clique em **"Adicionar ao carrinho"**.
-4. Clique no ícone de sacola no topo da página (ele mostra a quantidade total de peças no
-   carrinho) para ir até `/carrinho`.
-5. No carrinho, confira que aparecem: a imagem do produto, o nome, a referência, os tamanhos
-   escolhidos com suas quantidades, o subtotal daquele produto, e — no resumo à direita — a
-   quantidade total de peças e o valor total do pedido.
-6. Teste alterar uma quantidade (o subtotal e o total devem recalcular na hora), remover um
-   produto do carrinho e o botão "Limpar carrinho".
+2. Na página do produto, deslize a foto principal para o lado (ou use as setas) para ver as
+   outras imagens e os vídeos.
+3. Escolha a quantidade desejada para um ou mais tamanhos (ex.: P → 2, M → 3) usando os botões
+   de `+`/`−`.
+4. Clique em **"Adicionar à seleção"**.
+5. Clique no ícone de sacola no topo da página (ele mostra a quantidade total de peças) para ir
+   até `/selecao`.
+6. Na seleção, confira que aparecem: a imagem do produto, o nome, a referência, os tamanhos
+   escolhidos com suas quantidades, o subtotal daquele produto, e — no resumo ao lado — a
+   quantidade total de peças e o valor total.
+7. Teste alterar uma quantidade (o subtotal e o total devem recalcular na hora), remover um
+   produto e o botão "Limpar seleção".
 
 ---
 
 ## 16. Como testar a integração com WhatsApp
 
-Com pelo menos um produto no carrinho:
+Com pelo menos um produto na seleção:
 
-1. Na tela do carrinho, clique no botão verde **"Finalizar Pedido pelo WhatsApp"**.
+1. Na tela da seleção, clique no botão **"Enviar seleção pelo WhatsApp"**.
 2. Isso abre o WhatsApp Web (ou o aplicativo, se estiver no celular) já com uma conversa aberta
    para o número configurado em `NEXT_PUBLIC_WHATSAPP_NUMBER`, e uma mensagem **pré-preenchida**
    contendo: cada produto com referência, nome, tamanhos e quantidades, valor unitário e
-   subtotal — e no final, a quantidade total de peças e o valor total do pedido.
+   subtotal — e no final, a quantidade total de peças e o valor total da seleção.
 3. Nada é enviado automaticamente — a cliente ainda precisa apertar "Enviar" dentro do próprio
    WhatsApp. O sistema só monta a mensagem; a partir daí a conversa (incluindo o pagamento)
    acontece inteiramente fora do site, diretamente com a vendedora.

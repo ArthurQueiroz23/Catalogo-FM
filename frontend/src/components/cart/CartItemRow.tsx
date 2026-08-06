@@ -37,7 +37,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
           <button
             type="button"
             onClick={() => removerProduto(item.produtoId)}
-            aria-label={`Remover ${item.nome} do carrinho`}
+            aria-label={`Remover ${item.nome} da seleção`}
             className="shrink-0 rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
           >
             <Trash2 className="h-4 w-4" />

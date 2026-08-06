@@ -11,6 +11,13 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // A tela de "carrinho" passou a se chamar "seleção" (ela nunca representou uma compra —
+      // ver docs/ARCHITECTURE.md §5). Mantido para não quebrar links já compartilhados.
+      { source: '/carrinho', destination: '/selecao', permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

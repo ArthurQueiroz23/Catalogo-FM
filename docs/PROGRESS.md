@@ -4,17 +4,25 @@
 > projeto parou. Depois de ler, confira também `docs/ARCHITECTURE.md` (decisões técnicas),
 > `docs/DATABASE_SCHEMA.md` (modelo de dados) e `docs/API_CONTRACT.md` (contrato de endpoints).
 
-Última atualização: **2026-08-05** — Sessão 2 (painel administrativo completo + correções).
+Última atualização: **2026-08-06** — Sessão 3 (revisão de produto: tirar a mentalidade de
+e-commerce, corrigir falhas contra a visão, SEO).
 
 ---
 
 ## Etapa atual
 
 O sistema está **funcionalmente completo de ponta a ponta**: site público (Sessão 1) + painel
-administrativo completo (Sessão 2). Backend e frontend compilam e buildam sem erros, sem
-warnings e sem vulnerabilidades conhecidas — verificado nesta sessão com as ferramentas reais
-instaladas (ver abaixo). O que falta agora é sobretudo **testes automatizados, deploy e polimento
-de design** — não há mais nenhuma funcionalidade central do produto pendente de implementação.
+administrativo completo (Sessão 2) + alinhamento de produto e correções (Sessão 3). Backend e
+frontend compilam e buildam sem erros, sem warnings e sem vulnerabilidades conhecidas. O que falta
+agora é **testes automatizados, deploy, verificação manual real e identidade visual** — não há
+nenhuma funcionalidade central do produto pendente de implementação.
+
+### O que a sessão 3 mudou, em uma frase
+
+O sistema funcionava, mas em vários pontos ainda se comportava como uma loja virtual: chamava a
+seleção de "carrinho" e precisava avisar três vezes que não havia pagamento, tinha um dashboard
+de métricas na porta de entrada do painel, e **escondia silenciosamente qualquer produto além do
+48º de uma categoria**. Isso foi corrigido. Ver o changelog abaixo e `docs/ARCHITECTURE.md` §7.
 
 ### ✅ Diferente da sessão 1: desta vez tudo foi de fato compilado, buildado e verificado
 
@@ -51,7 +59,65 @@ oposto.
 
 ---
 
-## Changelog desta sessão (bugs corrigidos e refatorações)
+## Changelog da sessão 3 (2026-08-06) — alinhamento de produto e correções
+
+Verificado com as ferramentas reais: `mvn clean compile` (backend) e `npm run type-check` /
+`npm run lint` / `npm run build` (frontend) — todos limpos, 17 rotas no build. Docker continua
+indisponível neste ambiente, então **ainda não houve validação com banco e navegador reais**.
+
+### Decisões de produto (confirmadas explicitamente — ver `docs/ARCHITECTURE.md` §7)
+
+1. **"Carrinho" → "seleção"**: rota `/selecao`, `/carrinho` redireciona (301). Copies da home,
+   rodapé, página do produto e da própria tela atualizadas. Os três avisos de "sem pagamento pelo
+   site" saíram — deixaram de ser necessários. Nomes internos (`cart-store`, `components/cart/`,
+   chave do localStorage) mantidos de propósito.
+2. **"Lançamentos" saiu da interface**: seção da home, badge do card e switch do formulário. A
+   coluna, o DTO e `GET /produtos/lancamentos` continuam intactos — nenhuma migration, nenhum dado
+   perdido, decisão reversível.
+3. **`observacoes` agora aparece** na página do produto (antes era preenchido e nunca renderizado
+   — a dica do formulário chegava a prometer que apareceria). Dica corrigida.
+4. **Painel sem dashboard**: `/admin` redireciona para `/admin/produtos`, "Dashboard" saiu da
+   sidebar. Endpoint, hook e `StatCard` preservados sem uso.
+
+### Falhas reais contra a visão do produto (corrigidas)
+
+5. **Catálogo truncava em 48 produtos.** `/categoria/[slug]` e `/busca` pediam `size=48` e não
+   paginavam — do 49º produto em diante a peça ficava invisível e ninguém era avisado. Era o
+   defeito mais sério do projeto. Agora paginam em 24 por página via URL (`?page=`), com
+   `<Link>` server-rendered para o catálogo inteiro ser rastreável. Novos:
+   `lib/paginacao.ts`, `components/ui/PaginationLinks.tsx`.
+6. **Não dava para "deslizar entre as imagens"**, apesar de ser requisito explícito. A galeria
+   ganhou swipe horizontal (com detecção de gesto vertical, para não trocar a foto durante um
+   scroll), setas de anterior/próxima e contador "3 / 7".
+7. **Vídeo abria em tela cheia forçada no iPhone**: faltava `playsInline` no `<video>`
+   (adicionado junto com `preload="metadata"`).
+8. **Zoom da galeria prendia o teclado**: sem `Esc` e sem foco inicial. Agora fecha com `Esc`,
+   navega com as setas e foca o botão de fechar ao abrir.
+9. **SEO essencialmente ausente**, apesar de ser requisito. Adicionados: `metadataBase`
+   (sem ele o preview do link no WhatsApp saía sem imagem), Open Graph no layout raiz e na página
+   do produto (com a foto da peça), `app/robots.ts`, `app/sitemap.ts` gerado do catálogo real,
+   `canonical` em produto e categoria, `noindex` na busca. Nova variável:
+   `NEXT_PUBLIC_SITE_URL`.
+10. **Sem link para "Categorias" no celular** fora da home (só no rodapé) — adicionado ao header
+    mobile.
+
+### Copy e polimento
+
+11. O diálogo de exclusão dizia à dona da loja que o produto *"pode ser recuperado pelo suporte
+    técnico"* — não existe suporte técnico. Agora explica a alternativa que ela realmente tem:
+    usar "ocultar".
+12. Mensagem do WhatsApp reformatada: mesma informação (referência, nome, quantidade por tamanho,
+    valor unitário, subtotal, total de peças, valor total), mas agrupada por produto em vez de uma
+    linha em branco entre **todas** as linhas — com muitas peças, a mensagem antiga virava uma
+    parede de texto. `montarMensagemPedido` → `montarMensagemSelecao`.
+13. `gap-x` faltando nos grids de categoria (home e índice) — os rótulos podiam encostar.
+14. **`docs/ARCHITECTURE.md` §3.3 reescrito**: a "evolução planejada para ISR" foi removida. Ela
+    contradizia a promessa central do produto ("salvou, apareceu") — cachear as páginas públicas
+    reintroduziria exatamente a janela de dados velhos que o sistema existe para eliminar.
+
+---
+
+## Changelog da sessão 2 (2026-08-05) — bugs corrigidos e refatorações
 
 Além de implementar o painel administrativo, esta sessão revisou o código da sessão 1 em busca
 de bugs, seguindo a instrução explícita do usuário. Encontrados e corrigidos:
@@ -102,13 +168,13 @@ de bugs, seguindo a instrução explícita do usuário. Encontrados e corrigidos
 11. **Ecossistema atualizado com critério**: TypeScript, TailwindCSS, Zustand e ESLint foram
     atualizados para o último patch da mesma major que já estava em uso (não para as majors mais
     novas — TS 7, Tailwind 4, Zustand 5 — que exigiriam migrações não relacionadas à correção de
-    segurança que motivou o upgrade; ver `docs/ARCHITECTURE.md` §3.6 para a tabela de versões e o
+    segurança que motivou o upgrade; ver `docs/ARCHITECTURE.md` §3.7 para a tabela de versões e o
     racional completo dessa decisão).
 12. **Migração de ESLint para flat config**: `.eslintrc.json` → `eslint.config.mjs` (exigência do
     `eslint-config-next@16`, que só suporta ESLint ≥ 9). Descoberta no processo: a forma
     documentada com `FlatCompat` quebra nesta versão do `eslint-config-next` com "Converting
     circular structure to JSON" — a forma que funciona é importar `eslint-config-next` diretamente
-    (ele já exporta o array flat). Documentado em `docs/ARCHITECTURE.md` §3.6 para não perder essa
+    (ele já exporta o array flat). Documentado em `docs/ARCHITECTURE.md` §3.7 para não perder essa
     descoberta de novo.
 13. **Bug de hidratação SSR real**: `useCartStore.persist` fica `undefined` durante a
     pré-renderização estática no servidor (não há `localStorage` em Node.js) — o hook
@@ -152,15 +218,16 @@ duplicar, ocultar, exclusão reversível), integração de assinatura Cloudinary
 
 ### Frontend (`frontend/`) — Next.js 16 (App Router) / React 19 / TypeScript / Tailwind
 
-**Site público** (sessão 1, sem mudanças funcionais nesta sessão além do upgrade de Next.js):
-Home, `/categoria`, `/categoria/[slug]`, `/produto/[referencia]`, `/busca`, `/carrinho` — ver
-changelog para os dois bugs corrigidos (hidratação do carrinho, params assíncronos do Next 16).
+**Site público**: Home, `/categoria`, `/categoria/[slug]`, `/produto/[referencia]`, `/busca`,
+`/selecao` (+ `robots.txt` e `sitemap.xml` gerados). Construído na sessão 1; revisado na sessão 3
+(paginação real, galeria com swipe, SEO, vocabulário de seleção — ver changelog).
 
 **Painel administrativo — construído inteiro nesta sessão:**
 - [x] `/admin/login` — formulário com react-hook-form + Zod, redireciona se já autenticado.
 - [x] `/admin/(protegido)/layout.tsx` — guard de autenticação client-side, sidebar responsiva
       (colapsa em mobile), `<Toaster />` (sonner) para feedback de mutações.
-- [x] `/admin` — Dashboard (totais de produtos/categorias, produtos recentes).
+- [x] `/admin` — redireciona para `/admin/produtos` (o dashboard foi retirado na sessão 3; o
+      endpoint e os componentes continuam no código, sem uso — ver `ARCHITECTURE.md` §7.4).
 - [x] `/admin/categorias` — lista com drag-and-drop de ordem (`@dnd-kit`), modal de criar/editar
       com upload de imagem de capa, exclusão com confirmação.
 - [x] `/admin/colecoes` — CRUD simples via modal (sem imagem/ordem, como no site público).
@@ -196,21 +263,27 @@ changelog para os dois bugs corrigidos (hidratação do carrinho, params assínc
 ### 1. Testes automatizados (nenhum existe ainda)
 - [ ] Backend: testes de unidade dos services (JUnit 5 + Mockito) e de integração dos
       controllers (`@SpringBootTest` + `MockMvc`, idealmente com Testcontainers/Postgres real).
-- [ ] Frontend: testes unitários de `lib/cart.ts`/`lib/whatsapp.ts` (funções puras, fáceis de
-      testar) com Vitest; considerar Playwright para o fluxo
-      "adicionar ao carrinho → finalizar pelo WhatsApp" e para o CRUD do painel mais adiante.
+- [ ] Frontend: testes unitários de `lib/cart.ts`/`lib/whatsapp.ts`/`lib/paginacao.ts` (funções
+      puras, fáceis de testar) com Vitest; considerar Playwright para o fluxo
+      "adicionar à seleção → enviar pelo WhatsApp" e para o CRUD do painel mais adiante.
 
-### 2. Verificação manual real (não foi possível nesta sessão)
+### 2. Verificação manual real (ainda não foi possível — Docker indisponível nas sessões 2 e 3)
 - [ ] Rodar o projeto do zero seguindo o `README.md`, com Docker disponível, e confirmar no
       navegador: login, CRUD de categoria/coleção/tamanho, CRUD de produto, upload de foto/vídeo
       real no Cloudinary (precisa de uma conta Cloudinary de verdade), reordenação por
-      drag-and-drop, carrinho, e o link do WhatsApp abrindo com a mensagem correta.
+      drag-and-drop, seleção, e o link do WhatsApp abrindo com a mensagem correta.
 - [ ] Testar responsividade do painel administrativo em mobile de verdade (foi construído
-      mobile-first com Tailwind, mas nunca visualizado num navegador real nesta sessão).
+      mobile-first com Tailwind, mas nunca visualizado num navegador real).
+- [ ] **Específico da sessão 3, precisa de dispositivo real:** swipe da galeria num celular
+      (inclusive confirmando que o scroll vertical da página não troca a foto), vídeo tocando
+      *inline* num iPhone, e o preview do link do produto colado numa conversa do WhatsApp
+      aparecendo com a foto (depende de `NEXT_PUBLIC_SITE_URL` correto e do site publicado).
 
 ### 3. Deploy (nada foi configurado ainda)
 - [ ] Criar banco na Neon, configurar variáveis de produção na Railway (backend) e na Vercel
-      (frontend) — ver `docs/ARCHITECTURE.md` §4.
+      (frontend) — ver `docs/ARCHITECTURE.md` §4. **Não esquecer `NEXT_PUBLIC_SITE_URL`** com o
+      domínio real: sem ele, o preview do link compartilhado no WhatsApp sai sem imagem e o
+      sitemap aponta para `localhost`.
 - [ ] Criar conta/credenciais reais do Cloudinary de produção.
 - [ ] Definir e criar o primeiro usuário admin de produção (o `DevAdminInitializer` só roda em
       dev, de propósito — ver `docs/ARCHITECTURE.md` §2.7).
@@ -220,25 +293,26 @@ changelog para os dois bugs corrigidos (hidratação do carrinho, params assínc
 - [ ] Paleta de cores e logo reais (hoje `tailwind.config.ts` usa uma paleta `brand`/`accent`
       provisória e o header mostra só texto).
 - [ ] Imagem do banner da home (hoje é um gradiente com texto).
-- [ ] Favicon e imagens de Open Graph.
+- [ ] Favicon e imagem de Open Graph padrão do site (a da **página do produto** já é resolvida
+      automaticamente pela foto principal da peça — feito na sessão 3).
 
 ### 5. Pequenos gaps conhecidos (não são bugs, são decisões de escopo)
-- [ ] **Reordenação de produtos**: o backend tem o endpoint (`PATCH /admin/produtos/reordenar`)
-      e o `ordem` já é respeitado na listagem pública, mas a tela `/admin/produtos` não tem
-      drag-and-drop — combinar reorder + paginação + filtros de forma coerente foi
-      deliberadamente adiado (ver decisão em `docs/ARCHITECTURE.md`, se for detalhar lá também).
-      Categorias e Tamanhos já têm reorder completo, então o padrão (`SortableList`) já existe
-      pronto para reaproveitar quando isso for priorizado.
 - [ ] **Imagem de categoria órfã no Cloudinary**: `Categoria` só guarda `imagemUrl` (sem
       `publicId`), então trocar a imagem de capa não apaga o asset antigo no Cloudinary (fica
       órfão, consumindo cota, sem impacto funcional). Produtos não têm esse problema (imagens de
       produto guardam `publicId` e são apagadas corretamente). Resolver exigiria adicionar coluna
       + migration; adiado por ser um custo pequeno (storage) sem urgência.
 - [ ] Filtros de busca pública (`/busca`, `/categoria/[slug]`) não expõem sexo/coleção na UI
-      (o backend já suporta), só busca por texto.
-- [ ] Sem paginação visível nas páginas públicas de listagem (`/categoria/[slug]`, `/busca`) —
-      hoje busca até 48 produtos de uma vez; o componente `Pagination` já existe (usado no painel)
-      e pode ser reaproveitado ali quando o catálogo crescer o suficiente para precisar.
+      (o backend já suporta), só busca por texto. **Antes de implementar, perguntar**: a cliente
+      procura por "sexo" num catálogo de 200 peças, ou navega por categoria? Se a resposta não for
+      clara, isto é filtro de e-commerce, não de vitrine.
+- [ ] **Reordenação de produtos** (`PATCH /admin/produtos/reordenar` existe, a tela não usa).
+      Revisado na sessão 3 e **rebaixado de propósito**: combinar drag-and-drop com paginação e
+      filtros é caro, e a visão do produto nunca pediu controle manual da ordem das peças. Se um
+      dia a ordem incomodar, a pergunta certa é *qual ordem automática serve melhor a cliente*
+      (mais recentes primeiro?) — não *como deixo a administradora arrastar 200 produtos*.
+- [x] ~~Sem paginação nas listagens públicas~~ — **resolvido na sessão 3** (era truncamento
+      silencioso em 48 produtos, não um gap de escopo; ver changelog e `ARCHITECTURE.md` §7.5).
 
 ### 6. Melhorias arquiteturais consideradas mas conscientemente adiadas
 Ver `docs/ARCHITECTURE.md` §6 (multi-empresa/SaaS, favoritos, produtos relacionados, relatórios/
@@ -246,13 +320,22 @@ importação/exportação) — nenhuma implementada de propósito. **Não confun
 mesmo documento** (estoque e persistência de pedidos), que não é "adiada" — é excluída por
 decisão de produto, não deve ser implementada sem confirmação explícita nova.
 
+### 7. Antes de aceitar qualquer ideia nova, faça esta pergunta
+
+> *"Isso ajuda a dona da loja a abandonar o Canva e a vender mais facilmente pelo WhatsApp?"*
+
+Se a resposta for não, provavelmente não pertence a este produto — por mais que a funcionalidade
+exista em toda loja virtual. `docs/ARCHITECTURE.md` §7 registra as decisões já tomadas sob esse
+critério (e §5, o escopo permanentemente excluído).
+
 ---
 
 ## Próximo passo recomendado
 
-1. **Verificação manual real** (item 2 acima) — é o maior risco residual do projeto: o código
-   compila e builda limpo, mas ainda não foi visto rodando num navegador de verdade com dados
-   reais. Precisa de Docker (Postgres) e uma conta Cloudinary de teste.
+1. **Verificação manual real** (item 2 acima) — continua sendo o maior risco residual do projeto:
+   o código compila e builda limpo em três sessões seguidas, mas **nunca foi visto rodando num
+   navegador de verdade com dados reais**. Precisa de Docker (Postgres) e uma conta Cloudinary de
+   teste. Tudo o mais nesta lista é menos urgente que isto.
 2. Com o fluxo manual confirmado, corrigir qualquer problema de UX/comportamento encontrado
    (esperado que apareçam pequenos ajustes visuais — nenhuma tela deste painel foi vista
    renderizada de verdade ainda).

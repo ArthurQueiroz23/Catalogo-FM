@@ -20,7 +20,7 @@ export default async function CategoriasPage() {
       {categorias.length === 0 ? (
         <p className="mt-8 text-sm text-gray-500">Nenhuma categoria cadastrada ainda.</p>
       ) : (
-        <div className="mt-8 grid grid-cols-3 gap-y-8 sm:grid-cols-4 md:grid-cols-6">
+        <div className="mt-8 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-6">
           {categorias.map((categoria) => (
             <CategoryCard key={categoria.id} categoria={categoria} />
           ))}

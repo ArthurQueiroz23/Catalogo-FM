@@ -1,8 +1,8 @@
 'use client';
 
-import { ImageOff, PlayCircle, X, ZoomIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImageOff, PlayCircle, X, ZoomIn } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ImagemProdutoResponse, VideoProdutoResponse } from '@/types/api';
 
 interface ProductGalleryProps {
@@ -13,6 +13,9 @@ interface ProductGalleryProps {
 
 type ItemGaleria = { tipo: 'imagem'; dados: ImagemProdutoResponse } | { tipo: 'video'; dados: VideoProdutoResponse };
 
+/** Distância mínima, em pixels, para um arraste horizontal contar como "deslizar" e trocar a mídia. */
+const DISTANCIA_MINIMA_SWIPE = 40;
+
 export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
   const itens: ItemGaleria[] = [
     ...imagens.map((imagem) => ({ tipo: 'imagem' as const, dados: imagem })),
@@ -21,10 +24,57 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
 
   const [indiceAtivo, setIndiceAtivo] = useState(0);
   const [zoomAberto, setZoomAberto] = useState(false);
+  const toqueInicial = useRef<{ x: number; y: number } | null>(null);
+  const botaoFecharZoom = useRef<HTMLButtonElement>(null);
+
+  const total = itens.length;
+
+  const irPara = useCallback(
+    (passo: number) => {
+      setIndiceAtivo((atual) => (atual + passo + total) % total);
+    },
+    [total]
+  );
+
+  // Teclado dentro do zoom: Esc fecha e as setas navegam. Sem isso, quem usa teclado fica preso
+  // no modal (só havia o clique no fundo para fechar).
+  useEffect(() => {
+    if (!zoomAberto) return;
+
+    function aoPressionarTecla(evento: KeyboardEvent) {
+      if (evento.key === 'Escape') setZoomAberto(false);
+      if (evento.key === 'ArrowRight') irPara(1);
+      if (evento.key === 'ArrowLeft') irPara(-1);
+    }
+
+    document.addEventListener('keydown', aoPressionarTecla);
+    botaoFecharZoom.current?.focus();
+    return () => document.removeEventListener('keydown', aoPressionarTecla);
+  }, [zoomAberto, irPara]);
+
+  function aoIniciarToque(evento: React.TouchEvent) {
+    const toque = evento.touches[0];
+    toqueInicial.current = toque ? { x: toque.clientX, y: toque.clientY } : null;
+  }
+
+  function aoTerminarToque(evento: React.TouchEvent) {
+    const inicio = toqueInicial.current;
+    const fim = evento.changedTouches[0];
+    toqueInicial.current = null;
+    if (!inicio || !fim || total <= 1) return;
+
+    const deltaX = fim.clientX - inicio.x;
+    const deltaY = fim.clientY - inicio.y;
+    // Só conta como swipe se o movimento for claramente horizontal — do contrário um scroll
+    // vertical da página trocaria a foto sem querer.
+    if (Math.abs(deltaX) < DISTANCIA_MINIMA_SWIPE || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+    irPara(deltaX < 0 ? 1 : -1);
+  }
 
   const itemAtivo = itens[indiceAtivo];
 
-  if (itens.length === 0) {
+  if (total === 0) {
     return (
       <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-gray-50 text-gray-300">
         <ImageOff className="h-16 w-16" />
@@ -34,7 +84,11 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
 
   return (
     <div>
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gray-50">
+      <div
+        className="group relative aspect-square w-full touch-pan-y overflow-hidden rounded-2xl bg-gray-50"
+        onTouchStart={aoIniciarToque}
+        onTouchEnd={aoTerminarToque}
+      >
         {itemAtivo?.tipo === 'imagem' ? (
           <>
             <Image
@@ -56,18 +110,52 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
           </>
         ) : (
           itemAtivo && (
-            <video src={itemAtivo.dados.url} controls className="h-full w-full object-cover" />
+            <video
+              src={itemAtivo.dados.url}
+              controls
+              // playsInline evita que o iOS force a reprodução em tela cheia, tirando a cliente
+              // da página do produto. preload="metadata" não baixa o vídeo inteiro sem necessidade.
+              playsInline
+              preload="metadata"
+              className="h-full w-full object-cover"
+            />
           )
+        )}
+
+        {total > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => irPara(-1)}
+              aria-label="Mídia anterior"
+              className="absolute left-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow transition-opacity hover:bg-white md:opacity-0 md:group-hover:opacity-100"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => irPara(1)}
+              aria-label="Próxima mídia"
+              className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-gray-700 shadow transition-opacity hover:bg-white md:opacity-0 md:group-hover:opacity-100"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+            <span className="absolute bottom-3 left-3 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-medium text-white">
+              {indiceAtivo + 1} / {total}
+            </span>
+          </>
         )}
       </div>
 
-      {itens.length > 1 && (
+      {total > 1 && (
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
           {itens.map((item, index) => (
             <button
               key={`${item.tipo}-${item.dados.id}`}
               type="button"
               onClick={() => setIndiceAtivo(index)}
+              aria-label={`Ver ${item.tipo === 'imagem' ? 'foto' : 'vídeo'} ${index + 1} de ${total}`}
+              aria-current={index === indiceAtivo}
               className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
                 index === indiceAtivo ? 'border-brand-500' : 'border-transparent'
               }`}
@@ -91,8 +179,11 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
           aria-label={`${nome} — imagem ampliada`}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setZoomAberto(false)}
+          onTouchStart={aoIniciarToque}
+          onTouchEnd={aoTerminarToque}
         >
           <button
+            ref={botaoFecharZoom}
             type="button"
             onClick={() => setZoomAberto(false)}
             aria-label="Fechar"

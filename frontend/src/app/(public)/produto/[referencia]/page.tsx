@@ -31,9 +31,23 @@ export async function generateMetadata({ params }: ProdutoPageProps): Promise<Me
   if (!produto) {
     return { title: 'Produto não encontrado' };
   }
+
+  const descricao = produto.descricao ?? `${produto.nome} — Ref. ${produto.referencia} — Fruto da Malha`;
+  const capa = produto.imagens.find((imagem) => imagem.principal)?.url ?? produto.imagens[0]?.url;
+
   return {
     title: produto.nome,
-    description: produto.descricao ?? `${produto.nome} — Ref. ${produto.referencia} — Fruto da Malha`,
+    description: descricao,
+    alternates: { canonical: `/produto/${produto.referencia}` },
+    // A foto do produto no Open Graph é o que faz o link aparecer com imagem quando a cliente
+    // compartilha a peça no WhatsApp — o canal onde a loja de fato vende.
+    openGraph: {
+      type: 'website',
+      title: produto.nome,
+      description: descricao,
+      url: `/produto/${produto.referencia}`,
+      images: capa ? [{ url: capa, alt: produto.nome }] : undefined,
+    },
   };
 }
 
@@ -98,6 +112,12 @@ export default async function ProdutoPage({ params }: ProdutoPageProps) {
 
           {produto.descricao && (
             <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-gray-600">{produto.descricao}</p>
+          )}
+
+          {produto.observacoes && (
+            <p className="mt-4 whitespace-pre-line rounded-xl bg-gray-50 p-4 text-sm leading-relaxed text-gray-600">
+              {produto.observacoes}
+            </p>
           )}
 
           <div className="mt-6">

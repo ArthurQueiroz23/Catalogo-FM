@@ -3,29 +3,34 @@ import { formatarPreco } from './format';
 import { quantidadeTotalPecas, subtotalDoItem, valorTotalCarrinho } from './cart';
 
 /**
- * Monta a mensagem de pedido enviada à vendedora pelo WhatsApp — o único "checkout" do sistema
- * (não há pagamento nem processamento financeiro embutido, ver docs/ARCHITECTURE.md). O formato
- * abaixo replica exatamente o modelo de mensagem definido para o produto: um bloco por produto,
- * com cada tamanho escolhido em sua própria linha, seguido do total de peças e valor do pedido.
+ * Monta a mensagem que a cliente envia à vendedora pelo WhatsApp — a única "saída" do sistema
+ * (não há checkout, pagamento nem gravação de pedido; ver docs/ARCHITECTURE.md §5). Carrega todos
+ * os dados que a vendedora precisa para responder: referência e nome de cada peça, quantidade por
+ * tamanho, valor unitário, subtotal, e o total geral da seleção.
+ *
+ * Formatação: linhas simples dentro de um mesmo produto e linha em branco entre produtos. O
+ * WhatsApp não tem tabela nem negrito confiável em texto colado, então o agrupamento por espaço
+ * em branco é o que mantém a mensagem legível quando a seleção tem muitas peças.
  */
-export function montarMensagemPedido(itens: CartItem[]): string {
-  const blocos: string[] = ['Olá!', 'Gostaria de solicitar um orçamento.', 'Segue meu pedido:'];
+export function montarMensagemSelecao(itens: CartItem[]): string {
+  const blocos: string[] = ['Olá! Vi o catálogo e separei estas peças:'];
 
-  itens.forEach((item, index) => {
-    blocos.push(`📦 Produto ${index + 1}`);
-    blocos.push(`Referência: ${item.referencia}`);
-    blocos.push(`Nome: ${item.nome}`);
-    item.tamanhos.forEach((tamanho) => {
-      blocos.push(`${tamanho.tamanhoNome} → ${tamanho.quantidade} unidades`);
-    });
-    blocos.push(`Valor unitário: ${formatarPreco(item.preco)}`);
-    blocos.push(`Subtotal: ${formatarPreco(subtotalDoItem(item))}`);
-  });
+  for (const item of itens) {
+    const linhas = [
+      `📦 Ref. ${item.referencia} — ${item.nome}`,
+      ...item.tamanhos.map((tamanho) => `${tamanho.tamanhoNome}: ${tamanho.quantidade} un.`),
+      `Valor unitário: ${formatarPreco(item.preco)}`,
+      `Subtotal: ${formatarPreco(subtotalDoItem(item))}`,
+    ];
+    blocos.push(linhas.join('\n'));
+  }
 
-  blocos.push('Quantidade total de peças:');
-  blocos.push(String(quantidadeTotalPecas(itens)));
-  blocos.push('Valor total do pedido:');
-  blocos.push(formatarPreco(valorTotalCarrinho(itens)));
+  blocos.push(
+    [
+      `Total de peças: ${quantidadeTotalPecas(itens)}`,
+      `Valor total da seleção: ${formatarPreco(valorTotalCarrinho(itens))}`,
+    ].join('\n')
+  );
 
   return blocos.join('\n\n');
 }

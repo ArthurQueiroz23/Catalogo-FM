@@ -74,7 +74,11 @@ nesta fase).
 | GET | `/produtos` | Lista paginada com filtros (ver query params abaixo) |
 | GET | `/produtos/{referencia}` | Detalhe completo por referência |
 | GET | `/produtos/destaques` | Produtos com `destaque=true` |
-| GET | `/produtos/lancamentos` | Produtos com `lancamento=true` |
+| GET | `/produtos/lancamentos` | Produtos com `lancamento=true` — **sem consumidor hoje** (ver `docs/ARCHITECTURE.md` §7.2) |
+
+> `lancamento` continua no schema, no DTO e nesta API, mas deixou de ter controle no painel e
+> seção na home. O endpoint segue funcionando; simplesmente nada o chama. Não removê-lo — a
+> decisão é reversível de propósito.
 
 Query params de `GET /produtos`:
 
@@ -171,6 +175,8 @@ arquivo). Ver `docs/ARCHITECTURE.md` §2.8.
   "totalCategorias": 14, "totalColecoes": 5,
   "produtosRecentes": [ /* ProdutoSummaryResponse[] */ ] }
 ```
+**Sem consumidor hoje**: o painel não tem mais tela de dashboard — `/admin` vai direto para
+`/admin/produtos` (ver `docs/ARCHITECTURE.md` §7.4). O endpoint segue implementado e funcional.
 
 ---
 

@@ -79,16 +79,16 @@ export function ProductAddToCart({ produto }: { produto: ProdutoResponse }) {
         className="btn-primary mt-4 w-full"
       >
         <ShoppingBag className="h-4 w-4" />
-        Adicionar ao carrinho{totalSelecionado > 0 ? ` (${totalSelecionado})` : ''}
+        Adicionar à seleção{totalSelecionado > 0 ? ` (${totalSelecionado})` : ''}
       </button>
 
       {confirmacaoVisivel && (
         <div className="mt-3 flex items-center justify-between rounded-lg bg-accent-50 px-4 py-3 text-sm text-accent-700">
           <span className="inline-flex items-center gap-2">
-            <Check className="h-4 w-4" /> Adicionado ao carrinho!
+            <Check className="h-4 w-4" /> Adicionado à seleção!
           </span>
-          <Link href="/carrinho" className="font-semibold underline">
-            Ver carrinho
+          <Link href="/selecao" className="font-semibold underline">
+            Ver seleção
           </Link>
         </div>
       )}

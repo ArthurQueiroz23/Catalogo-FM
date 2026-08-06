@@ -12,8 +12,8 @@ export function Footer() {
         <div>
           <p className="text-lg font-bold text-brand-600">Fruto da Malha</p>
           <p className="mt-2 max-w-xs text-sm text-gray-600">
-            Roupas infantis com carinho, do RN aos 12 anos. Monte seu pedido e finalize direto pelo
-            WhatsApp — sem pagamento pelo site.
+            Roupas infantis com carinho, do RN aos 12 anos. Escolha suas peças e converse com a
+            gente pelo WhatsApp.
           </p>
         </div>
 
@@ -31,8 +31,8 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/carrinho" className="hover:text-brand-600">
-                Meu carrinho
+              <Link href="/selecao" className="hover:text-brand-600">
+                Minha seleção
               </Link>
             </li>
           </ul>

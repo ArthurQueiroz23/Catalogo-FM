@@ -1,29 +1,38 @@
 import type { Metadata } from 'next';
 import { ProductGrid } from '@/components/product/ProductGrid';
+import { PaginationLinks } from '@/components/ui/PaginationLinks';
 import { api } from '@/lib/api';
+import { PRODUTOS_POR_PAGINA, lerNumeroDaPagina } from '@/lib/paginacao';
 import type { PageResponse, ProdutoSummaryResponse } from '@/types/api';
 
 export const dynamic = 'force-dynamic';
 
 interface BuscaPageProps {
   // Next.js 16: searchParams é uma Promise (Async Request APIs) — precisa de await antes de usar.
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 }
 
 export async function generateMetadata({ searchParams }: BuscaPageProps): Promise<Metadata> {
   const { q } = await searchParams;
   const termo = q?.trim();
-  return { title: termo ? `Busca por "${termo}"` : 'Busca' };
+  return {
+    title: termo ? `Busca por "${termo}"` : 'Busca',
+    // Páginas de resultado de busca não devem ser indexadas: geram infinitas URLs equivalentes
+    // e competem com as páginas de categoria, que são o caminho real do catálogo.
+    robots: { index: false, follow: true },
+  };
 }
 
 export default async function BuscaPage({ searchParams }: BuscaPageProps) {
-  const { q } = await searchParams;
+  const { q, page: pageParam } = await searchParams;
   const termo = q?.trim() ?? '';
+  const page = lerNumeroDaPagina(pageParam);
 
   const produtos = termo
-    ? await api.get<PageResponse<ProdutoSummaryResponse>>(`/produtos?q=${encodeURIComponent(termo)}&size=48`, {
-        cache: 'no-store',
-      })
+    ? await api.get<PageResponse<ProdutoSummaryResponse>>(
+        `/produtos?q=${encodeURIComponent(termo)}&page=${page}&size=${PRODUTOS_POR_PAGINA}`,
+        { cache: 'no-store' }
+      )
     : null;
 
   return (
@@ -51,6 +60,18 @@ export default async function BuscaPage({ searchParams }: BuscaPageProps) {
           <p className="py-12 text-center text-sm text-gray-500">Digite um termo na busca para encontrar produtos.</p>
         )}
       </div>
+
+      {produtos && (
+        <PaginationLinks
+          page={produtos.page}
+          totalPages={produtos.totalPages}
+          construirHref={(destino) => {
+            const parametros = new URLSearchParams({ q: termo });
+            if (destino > 0) parametros.set('page', String(destino));
+            return `/busca?${parametros.toString()}`;
+          }}
+        />
+      )}
     </div>
   );
 }

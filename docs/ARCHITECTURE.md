@@ -16,12 +16,18 @@ Cliente (navegador) ──▶ Next.js (Vercel) ──▶ Spring Boot API (Railwa
                                                         └──▶ Cloudinary (mídia)
 ```
 
-- **Área pública** (`/`, `/produto/[slug]`, `/categoria/[slug]`, `/busca`, ...): sem autenticação,
-  consumida por qualquer cliente. Prioriza performance, SEO e responsividade.
+- **Área pública** (`/`, `/produto/[referencia]`, `/categoria/[slug]`, `/busca`, `/selecao`): sem
+  autenticação, consumida por qualquer cliente. Prioriza performance, SEO e responsividade.
 - **Painel administrativo** (`/admin/**`): protegido por login (JWT), usado exclusivamente pela
   administradora da loja.
-- **Sem checkout/pagamento.** O carrinho apenas monta uma mensagem estruturada enviada via
+- **Sem checkout/pagamento.** A "seleção" apenas monta uma mensagem estruturada enviada via
   `wa.me` (WhatsApp) — toda a negociação segue fora do sistema.
+
+> **Este sistema não é um e-commerce.** É um catálogo digital administrável que substitui o
+> catálogo em PDF feito no Canva. O critério para aceitar qualquer funcionalidade nova é:
+> *"isso ajuda a dona da loja a abandonar o Canva e a vender mais facilmente pelo WhatsApp?"*
+> Se a resposta for não, a funcionalidade não pertence a este produto — por mais natural que ela
+> pareça vinda de uma loja virtual. Ver §7 para as decisões já tomadas sob esse critério.
 
 ## 2. Backend — Spring Boot
 
@@ -181,22 +187,24 @@ frontend/src/app/
 │   ├── categoria/page.tsx          # índice de categorias
 │   ├── categoria/[slug]/page.tsx
 │   ├── produto/[referencia]/page.tsx
-│   ├── carrinho/page.tsx
+│   ├── selecao/page.tsx            # ex-"carrinho" (ver §7.1); /carrinho redireciona para cá
 │   ├── not-found.tsx
 │   └── error.tsx
 ├── admin/
 │   ├── login/page.tsx              # FORA do grupo (protegido) — não herda o guard de auth
 │   └── (protegido)/
 │       ├── layout.tsx              # guard de auth (client-side) + sidebar + <Toaster />
-│       ├── page.tsx                # dashboard
+│       ├── page.tsx                # só redireciona para /admin/produtos (ver §7.4)
 │       ├── produtos/page.tsx       # listagem (busca, filtros, paginação, ações rápidas)
 │       ├── produtos/novo/page.tsx
 │       ├── produtos/[id]/page.tsx  # edição + galeria
 │       ├── categorias/page.tsx
 │       ├── colecoes/page.tsx
 │       └── tamanhos/page.tsx
-├── layout.tsx                      # layout raiz (fonte Inter, <Providers> do React Query)
+├── layout.tsx                      # layout raiz (fonte Inter, metadata/OG base, <Providers>)
 ├── providers.tsx
+├── robots.ts                       # robots.txt gerado (bloqueia /admin, /busca, /selecao)
+├── sitemap.ts                      # sitemap.xml gerado do catálogo real (revalidate 1h)
 └── globals.css
 
 frontend/src/
@@ -211,7 +219,7 @@ frontend/src/
 ├── hooks/                 # um arquivo por recurso (useCategorias, useProdutos, useAuth...)
 │                           # + query-keys.ts centralizando chaves do React Query
 ├── lib/                    # api.ts, admin-api.ts, auth.ts, cart.ts, whatsapp.ts, format.ts,
-│                            # config.ts, schemas.ts (Zod), cloudinary-upload.ts
+│                            # config.ts, schemas.ts (Zod), cloudinary-upload.ts, paginacao.ts
 ├── store/                   # cart-store.ts (Zustand)
 └── types/                    # api.ts (espelha DTOs do backend), cart.ts
 ```
@@ -247,11 +255,19 @@ se estivesse dentro, herdaria o guard de autenticação e criaria um loop de red
 
 ### 3.3 Consistência "alteração aparece imediatamente"
 
-Estratégia adotada nesta fase: chamadas de leitura usam `fetch` com `cache: "no-store"` nas
-páginas públicas críticas (produto, listagem) — sem cache de borda — garantindo que qualquer
-edição da administradora apareça no próximo carregamento de página, sem depender de invalidação
-manual. Evolução planejada (ver `docs/PROGRESS.md`): mover para ISR com `revalidateTag` disparado
-por um webhook do backend após cada mutação, quando o tráfego justificar a otimização de cache.
+Toda página pública é `export const dynamic = 'force-dynamic'` e faz `fetch` com
+`cache: "no-store"`. Qualquer edição da administradora aparece no próximo carregamento, sem
+invalidação manual, sem webhook, sem passo extra.
+
+**Isto é requisito de produto, não uma etapa provisória.** A promessa central do sistema é
+"salvou no painel, apareceu no site" — o que substitui o ciclo *editar no Canva → exportar PDF →
+reenviar aos clientes*. Cachear as páginas públicas (ISR, `revalidate`, cache de borda) reintroduz
+uma janela em que o catálogo público mostra dados velhos, que é exatamente o problema que o
+sistema existe para eliminar. **Não migrar para ISR** sem uma decisão de produto explícita e nova.
+
+Se um dia o volume de tráfego justificar cache, o caminho correto é invalidação sob demanda
+(`revalidateTag` disparado pelo backend a cada mutação) — nunca revalidação por tempo. A única
+rota cacheada hoje é `sitemap.xml` (`revalidate = 3600`), que não é vista por nenhum cliente.
 
 ### 3.4 Tipagem compartilhada
 
@@ -267,9 +283,27 @@ TailwindCSS com paleta e tokens centralizados em `tailwind.config.ts` (ver `docs
 para a paleta de marca quando definida com o cliente). Mobile-first: todas as classes utilitárias
 partem do layout mobile e usam prefixos (`sm:`, `md:`, `lg:`) para telas maiores.
 
+### 3.6 SEO e compartilhamento
+
+O catálogo é divulgado por um link único, compartilhado principalmente no WhatsApp e no Instagram.
+Por isso:
+
+- `metadataBase` no layout raiz vem de `NEXT_PUBLIC_SITE_URL` — sem ele, as URLs de Open Graph
+  saem relativas e o preview do link compartilhado aparece **sem imagem**.
+- A página do produto declara `openGraph.images` com a imagem principal da peça: quem compartilha
+  um produto no WhatsApp vê a foto no preview.
+- `app/sitemap.ts` monta o sitemap a partir do catálogo real (categorias ativas + todos os
+  produtos ativos, paginando a API de 60 em 60). É a única rota com cache (`revalidate = 3600`),
+  porque nenhum cliente a vê. Se a API estiver fora do ar durante o build, o sitemap cai para as
+  rotas fixas em vez de quebrar o deploy.
+- `app/robots.ts` bloqueia `/admin`, `/busca` e `/selecao` — o painel é privado, e busca/seleção
+  geram URLs infinitas e equivalentes que competiriam com as páginas de categoria.
+- As listagens públicas paginam por URL (`?page=`), com `<Link>` real e `rel="prev"/"next"`, para
+  que o buscador consiga rastrear o catálogo inteiro (ver §7.5).
+
 ---
 
-## 3.6 Versões principais (checadas em 2026-08-05)
+## 3.7 Versões principais (checadas em 2026-08-05)
 
 | Pacote | Versão | Observação |
 |---|---|---|
@@ -355,3 +389,69 @@ O schema e as camadas foram desenhados para que estas features sejam extensões,
 
 Sempre que uma dessas features for implementada, mova o item desta lista para o changelog do
 `docs/PROGRESS.md` com a data e o resumo do que foi feito.
+
+## 7. Decisões de produto: o que foi simplificado por não ser um e-commerce (2026-08-06)
+
+Uma revisão da sessão 3 procurou funcionalidades que existiam por inércia de e-commerce
+tradicional, e não porque servem ao objetivo do produto. As decisões abaixo foram confirmadas
+explicitamente com o dono do produto — **não desfazer sem uma nova decisão explícita.**
+
+### 7.1 O "carrinho" virou "seleção"
+
+A rota é `/selecao` (`/carrinho` redireciona permanentemente, via `next.config.mjs`) e a interface
+fala em "Adicionar à seleção", "Minha seleção", "Enviar seleção pelo WhatsApp".
+
+Motivo: o objeto nunca representou uma compra — não há checkout, pagamento nem pedido gravado
+(§5). Com o nome "carrinho", a interface criava a expectativa de checkout e precisava desmentir-se
+com um aviso de "sem pagamento pelo site" em três telas diferentes. Renomeado, os três avisos
+deixaram de ser necessários e saíram.
+
+**Escopo deliberado da mudança:** só o que a cliente vê. Os nomes internos (`cart-store.ts`,
+`components/cart/`, `CartItem`, a chave `frutodamalha-carrinho` no localStorage) foram mantidos —
+renomeá-los seria churn sem valor para ninguém.
+
+**A persistência em `localStorage` fica.** A restrição do produto ("o carrinho não tem
+persistência") se refere ao servidor: nada de pedido gravado, histórico ou cadastro de cliente.
+No navegador, persistir é o que impede a cliente de perder a seleção ao alternar para o WhatsApp
+e voltar — comportamento normal em celular, que é o dispositivo da maioria.
+
+### 7.2 `lancamento` saiu da interface
+
+A home tem uma única vitrine curada ("Produtos em destaque"). O switch "Lançamento" saiu do
+formulário e a seção "Lançamentos" saiu da home.
+
+Motivo: nada expirava o flag. Em poucos meses a home mostraria "Acabou de chegar" para peças
+antigas, e a administradora teria de desmarcar produto por produto — trabalho recorrente que o
+Canva não exigia. Dois eixos de curadoria manual é vocabulário de merchandising de e-commerce.
+
+**A coluna `produto.lancamento`, o campo no DTO e o endpoint `GET /produtos/lancamentos`
+continuam existindo e funcionando** — nenhuma migration foi feita, nenhum dado foi perdido, e o
+valor atual de cada produto é preservado a cada edição. A decisão é reversível reintroduzindo o
+`<Switch>` e a seção da home.
+
+### 7.3 `observacoes` passou a aparecer no site
+
+O campo era preenchido pela administradora e não era renderizado em lugar nenhum — a dica do
+formulário inclusive prometia que ele apareceria na página do produto. Agora aparece de verdade,
+abaixo da descrição, e a dica descreve o comportamento real.
+
+### 7.4 O painel não tem dashboard
+
+`/admin` redireciona para `/admin/produtos`, e "Dashboard" saiu da sidebar. A administradora entra
+no painel para mexer em produtos, não para ver contagens; um dashboard de métricas é reflexo de
+template de admin, não uma necessidade dela.
+
+`GET /admin/dashboard`, o hook `useDashboard` e o componente `StatCard` continuam no código, sem
+uso, para a decisão ser reversível a baixo custo.
+
+### 7.5 As listagens públicas paginam de verdade
+
+`/categoria/[slug]` e `/busca` pediam `size=48` sem paginar: a partir do 49º produto de uma
+categoria, as peças ficavam **invisíveis no catálogo** e nada avisava a administradora. Num
+sistema cujo propósito é nunca deixar um produto de fora, isso era o defeito mais sério do
+projeto.
+
+Agora paginam em 24 por página (`lib/paginacao.ts`), navegando por URL (`?page=`) com `<Link>`
+renderizado no servidor — e não por "carregar mais" em JavaScript — justamente para que cada
+página tenha URL própria e o catálogo inteiro seja rastreável (§3.6). O componente é
+`ui/PaginationLinks.tsx`; `ui/Pagination.tsx` (por callback) continua sendo o do painel.

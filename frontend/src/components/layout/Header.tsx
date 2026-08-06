@@ -11,7 +11,12 @@ export function Header() {
           <Link href="/" className="shrink-0 text-xl font-bold tracking-tight text-brand-600">
             Fruto da Malha
           </Link>
-          <div className="md:hidden">
+          {/* No celular a navegação principal fica aqui: sem isso, fora da home a cliente não
+              tinha nenhum caminho para as categorias a não ser o rodapé. */}
+          <div className="flex items-center gap-3 md:hidden">
+            <Link href="/categoria" className="text-sm font-medium text-gray-700 transition-colors hover:text-brand-600">
+              Categorias
+            </Link>
             <CartButton />
           </div>
         </div>

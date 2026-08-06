@@ -13,8 +13,8 @@ export function CartButton() {
 
   return (
     <Link
-      href="/carrinho"
-      aria-label={`Carrinho, ${totalPecas} ${totalPecas === 1 ? 'peça' : 'peças'}`}
+      href="/selecao"
+      aria-label={`Minha seleção, ${totalPecas} ${totalPecas === 1 ? 'peça' : 'peças'}`}
       className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100"
     >
       <ShoppingBag className="h-5 w-5" />

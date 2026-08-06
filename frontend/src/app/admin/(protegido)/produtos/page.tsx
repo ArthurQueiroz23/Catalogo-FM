@@ -237,7 +237,7 @@ export default function AdminProdutosPage() {
       <ConfirmDialog
         open={produtoExcluindo !== null}
         title="Excluir produto"
-        description={`Tem certeza que deseja excluir "${produtoExcluindo?.nome}"? O produto some do site e do painel, mas pode ser recuperado pelo suporte técnico se necessário.`}
+        description={`"${produtoExcluindo?.nome}" vai sumir do site e do painel. Se você só quer tirar a peça do ar por um tempo, use "ocultar" (o ícone de olho) — assim ela continua aqui e você pode trazê-la de volta quando quiser.`}
         confirmLabel="Excluir"
         loading={excluir.isPending}
         onConfirm={confirmarExclusao}

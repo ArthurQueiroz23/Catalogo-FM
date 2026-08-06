@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutDashboard, LogOut, Package, Ruler, Tags, Shirt, X } from 'lucide-react';
+import { LogOut, Package, Ruler, Tags, Shirt, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
@@ -8,7 +8,6 @@ import { useLogout } from '@/hooks/useAuth';
 import { obterUsuario } from '@/lib/auth';
 
 const LINKS = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/produtos', label: 'Produtos', icon: Package },
   { href: '/admin/categorias', label: 'Categorias', icon: Tags },
   { href: '/admin/colecoes', label: 'Coleções', icon: Shirt },
@@ -49,7 +48,7 @@ export function AdminSidebar({ aberta, onFechar }: { aberta: boolean; onFechar: 
 
         <nav className="flex-1 space-y-1 px-3">
           {LINKS.map((link) => {
-            const ativo = link.exact ? pathname === link.href : pathname.startsWith(link.href);
+            const ativo = pathname.startsWith(link.href);
             const Icon = link.icon;
             return (
               <Link

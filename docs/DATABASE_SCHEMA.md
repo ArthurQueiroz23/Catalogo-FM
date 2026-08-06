@@ -125,8 +125,13 @@ que a loja já usa no catálogo em PDF e que a cliente cita ao negociar pelo Wha
 é também o identificador usado na URL (`/produto/000180`), sem um `slug` textual separado
 (diferente de Categoria/Coleção, que não têm um código equivalente e por isso usam slug derivado
 do nome). `status` controla visibilidade pública (`ATIVO`/`INATIVO` = "ocultar"); `deleted_at` implementa
-exclusão reversível (ver Arquitetura §2.5). `destaque` e `lancamento` alimentam as seções
-"Produtos em destaque" e "Lançamentos" da home.
+exclusão reversível (ver Arquitetura §2.5). `observacoes` é texto curto exibido na página pública
+do produto, abaixo da descrição. `destaque` alimenta a seção "Produtos em destaque" da home.
+
+`lancamento` **existe no schema mas não tem mais controle na interface** — a home passou a ter uma
+única vitrine curada (ver Arquitetura §7.2). A coluna foi mantida de propósito, sem migration, para
+a decisão ser reversível; o valor de cada produto é preservado em toda edição. Não remover a coluna
+nem assumir que ela está sempre `false`.
 
 ### ProdutoTamanho
 Tabela de junção explícita (não M:N implícito) entre `Produto` e `Tamanho`, representando quais

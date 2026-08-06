@@ -10,21 +10,19 @@ import type { CategoriaResponse, ProdutoSummaryResponse } from '@/types/api';
 export const dynamic = 'force-dynamic';
 
 async function buscarDadosIniciais() {
-  const [categorias, destaques, lancamentos] = await Promise.allSettled([
+  const [categorias, destaques] = await Promise.allSettled([
     api.get<CategoriaResponse[]>('/categorias', { cache: 'no-store' }),
     api.get<ProdutoSummaryResponse[]>('/produtos/destaques', { cache: 'no-store' }),
-    api.get<ProdutoSummaryResponse[]>('/produtos/lancamentos', { cache: 'no-store' }),
   ]);
 
   return {
     categorias: categorias.status === 'fulfilled' ? categorias.value : [],
     destaques: destaques.status === 'fulfilled' ? destaques.value : [],
-    lancamentos: lancamentos.status === 'fulfilled' ? lancamentos.value : [],
   };
 }
 
 export default async function HomePage() {
-  const { categorias, destaques, lancamentos } = await buscarDadosIniciais();
+  const { categorias, destaques } = await buscarDadosIniciais();
 
   return (
     <div className="pb-16">
@@ -37,8 +35,8 @@ export default async function HomePage() {
             Roupinhas com carinho, do RN aos 12 anos
           </h1>
           <p className="max-w-lg text-base text-gray-600 sm:text-lg">
-            Navegue pelo catálogo, monte seu pedido com os tamanhos e quantidades que precisar, e
-            finalize direto pelo WhatsApp — sem pagamento pelo site.
+            Escolha as peças, os tamanhos e as quantidades que quiser. No final, é só enviar sua
+            seleção pelo WhatsApp e conversar direto com a gente.
           </p>
           <Link href="/categoria" className="btn-primary mt-2">
             Ver catálogo completo
@@ -49,7 +47,7 @@ export default async function HomePage() {
       {categorias.length > 0 && (
         <section className="container py-12">
           <SectionHeading title="Categorias" href="/categoria" />
-          <div className="grid grid-cols-3 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
+          <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
             {categorias.map((categoria) => (
               <CategoryCard key={categoria.id} categoria={categoria} />
             ))}
@@ -64,14 +62,7 @@ export default async function HomePage() {
         </section>
       )}
 
-      {lancamentos.length > 0 && (
-        <section className="container py-12">
-          <SectionHeading title="Lançamentos" subtitle="Acabou de chegar" />
-          <ProductGrid produtos={lancamentos} />
-        </section>
-      )}
-
-      {categorias.length === 0 && destaques.length === 0 && lancamentos.length === 0 && (
+      {categorias.length === 0 && destaques.length === 0 && (
         <div className="container py-20 text-center text-gray-500">
           <p>O catálogo ainda não tem produtos cadastrados.</p>
           <p className="mt-1 text-sm">Assim que a administradora cadastrar produtos, eles aparecem aqui automaticamente.</p>

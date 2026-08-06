@@ -168,14 +168,23 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
 
       <Textarea
         label="Observações"
-        hint="Anotações internas ou detalhes extras exibidos na página do produto"
+        hint="Aparece na página do produto, abaixo da descrição (ex.: “veste um número menor”)"
         error={errors.observacoes?.message}
         {...register('observacoes')}
       />
 
-      <div className="flex flex-wrap gap-6 rounded-xl border border-gray-100 bg-gray-50 p-4">
-        <Switch label="Produto em destaque" description="Aparece na seção 'Produtos em destaque' da home" {...register('destaque')} />
-        <Switch label="Lançamento" description="Aparece na seção 'Lançamentos' da home" {...register('lancamento')} />
+      <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+        {/*
+          `lancamento` continua existindo no banco e no contrato da API, mas deixou de ter
+          controle na tela: manter dois destaques obrigava a administradora a lembrar de
+          desmarcar "Lançamento" manualmente, e a home envelhecia sozinha. O valor atual do
+          produto é preservado no submit (ver `valoresIniciais`).
+        */}
+        <Switch
+          label="Produto em destaque"
+          description="Aparece na seção 'Produtos em destaque' da home"
+          {...register('destaque')}
+        />
       </div>
 
       <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">

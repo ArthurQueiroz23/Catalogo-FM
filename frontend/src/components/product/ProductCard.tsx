@@ -24,11 +24,6 @@ export function ProductCard({ produto }: { produto: ProdutoSummaryResponse }) {
             <ImageOff className="h-10 w-10" />
           </div>
         )}
-        {produto.lancamento && (
-          <span className="absolute left-2 top-2 rounded-full bg-accent-500 px-2.5 py-1 text-[11px] font-semibold text-white">
-            Lançamento
-          </span>
-        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-1 p-3">
