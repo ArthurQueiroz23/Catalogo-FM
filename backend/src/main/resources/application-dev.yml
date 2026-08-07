@@ -15,10 +15,12 @@ logging:
     org.hibernate.SQL: DEBUG
     org.springframework.security: INFO
 
-# Dados do administrador criado automaticamente em desenvolvimento (ver DataInitializer),
-# apenas se ainda não existir nenhum usuário ADMIN no banco.
+# Administrador criado automaticamente em desenvolvimento (ver AdminBootstrapInitializer),
+# apenas se ainda não existir nenhum usuário no banco. Estas credenciais são fracas de propósito
+# (é uma máquina local, e estão publicadas no README) — a exigência de senha forte do
+# AdminBootstrapInitializer só vale fora deste perfil.
 app:
-  dev-admin:
+  admin-bootstrap:
     enabled: true
     nome: Administradora
     email: admin@frutodamalha.com.br

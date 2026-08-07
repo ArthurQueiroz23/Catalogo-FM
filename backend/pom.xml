@@ -32,6 +32,14 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Health check. A plataforma de hospedagem (Railway) consulta /actuator/health para
+             saber se o contêiner subiu de verdade antes de mandar tráfego para ele: sem isso, um
+             deploy quebrado seria promovido a produção do mesmo jeito. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Persistência -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

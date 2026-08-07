@@ -70,8 +70,25 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        List<String> origens = corsProperties.allowedOrigins();
+
+        if (origens == null || origens.isEmpty()) {
+            throw new IllegalStateException(
+                    "APP_CORS_ALLOWED_ORIGINS não foi configurado. Informe a origem do frontend "
+                            + "(ex.: https://catalogo-fm.vercel.app), separando por vírgula se houver mais de uma.");
+        }
+        if (origens.contains("*")) {
+            throw new IllegalStateException(
+                    "APP_CORS_ALLOWED_ORIGINS não pode ser \"*\": a API usa credenciais (JWT) e liberar "
+                            + "qualquer origem permitiria que qualquer site chamasse os endpoints do painel. "
+                            + "Liste as origens explicitamente.");
+        }
+
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(corsProperties.allowedOrigins());
+        // setAllowedOriginPatterns (e não setAllowedOrigins) porque os deploys de preview da Vercel
+        // recebem um subdomínio novo a cada push — sem curinga, cada preview quebraria no CORS.
+        // Continua sendo uma lista explícita: o "*" puro é rejeitado acima.
+        configuration.setAllowedOriginPatterns(origens.stream().map(String::trim).toList());
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);

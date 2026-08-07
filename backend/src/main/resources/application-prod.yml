@@ -4,11 +4,27 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
+      maximum-pool-size: ${DB_POOL_MAX:5}
+      minimum-idle: 0
+      # O plano gratuito da Neon suspende o banco após ~5 minutos ocioso e encerra conexões
+      # paradas do lado do servidor. Um pool que segura conexões "vivas" acaba entregando
+      # sockets já mortos para a aplicação, e o primeiro acesso do dia falha em vez de apenas
+      # demorar. Por isso: nenhuma conexão ociosa mínima, reciclagem rápida, e um timeout de
+      # conexão folgado o bastante para cobrir o tempo de o banco acordar.
+      idle-timeout: 30000
+      max-lifetime: 300000
+      keepalive-time: 0
+      connection-timeout: 30000
+      validation-timeout: 5000
 
   jpa:
     show-sql: false
+
+  flyway:
+    # Em produção o schema é sempre aplicado pelo Flyway na subida. `baseline-on-migrate` está
+    # herdado de application.yml e cobre o caso de um banco pré-existente sem tabela de histórico.
+    connect-retries: 5
+    connect-retries-interval: 5
 
 logging:
   level:
@@ -16,6 +32,25 @@ logging:
     org.hibernate.SQL: WARN
     org.springframework.security: WARN
 
+management:
+  endpoint:
+    health:
+      # A plataforma só precisa saber "subiu ou não". Detalhe de cada componente (banco, disco)
+      # é informação interna e não deve ficar exposta numa URL pública sem autenticação.
+      show-details: never
+  health:
+    # O health check da hospedagem não pode depender do banco: com a Neon suspensa por
+    # inatividade, o primeiro probe falharia e a plataforma reiniciaria um contêiner saudável
+    # em loop. A conectividade com o banco é validada pelo Flyway na subida.
+    db:
+      enabled: false
+
 app:
-  dev-admin:
-    enabled: false
+  admin-bootstrap:
+    # Desligado por padrão. Para criar o primeiro administrador, ligue temporariamente pelas
+    # variáveis de ambiente da hospedagem e remova-as depois do primeiro login.
+    # Ver docs/DEPLOY.md, seção "Primeiro acesso ao painel".
+    enabled: ${APP_ADMIN_BOOTSTRAP_ENABLED:false}
+    nome: ${APP_ADMIN_BOOTSTRAP_NOME:Administradora}
+    email: ${APP_ADMIN_BOOTSTRAP_EMAIL:}
+    senha: ${APP_ADMIN_BOOTSTRAP_SENHA:}
