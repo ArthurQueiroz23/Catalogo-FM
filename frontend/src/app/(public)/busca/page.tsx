@@ -37,27 +37,32 @@ export default async function BuscaPage({ searchParams }: BuscaPageProps) {
 
   return (
     <div className="container py-8">
-      <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+      <h1 className="titulo-secao">
         {termo ? (
           <>
-            Resultados para <span className="text-brand-600">&ldquo;{termo}&rdquo;</span>
+            Resultados para <span className="text-ink-800">&ldquo;{termo}&rdquo;</span>
           </>
         ) : (
-          'Buscar produtos'
+          'Buscar peças'
         )}
       </h1>
 
       {produtos && (
-        <p className="mt-1 text-sm text-gray-400">
-          {produtos.totalElements} {produtos.totalElements === 1 ? 'produto encontrado' : 'produtos encontrados'}
+        <p className="mt-1.5 text-sm text-ink-400">
+          {produtos.totalElements} {produtos.totalElements === 1 ? 'peça encontrada' : 'peças encontradas'}
         </p>
       )}
 
       <div className="mt-6">
         {termo ? (
-          <ProductGrid produtos={produtos?.content ?? []} />
+          <ProductGrid
+            produtos={produtos?.content ?? []}
+            mensagemVazia={`Nenhuma peça encontrada para "${termo}".`}
+          />
         ) : (
-          <p className="py-12 text-center text-sm text-gray-500">Digite um termo na busca para encontrar produtos.</p>
+          <p className="py-16 text-center text-[0.9375rem] text-ink-500">
+            Digite o nome ou a referência de uma peça para encontrá-la.
+          </p>
         )}
       </div>
 

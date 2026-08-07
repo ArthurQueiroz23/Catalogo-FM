@@ -29,11 +29,11 @@ export function ConfirmDialog({
     <Modal open={open} onClose={onCancel} title={title} maxWidthClassName="max-w-sm">
       <div className="flex gap-3">
         {destructive && (
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-pilula bg-coral-100 text-coral-800">
             <AlertTriangle className="h-5 w-5" />
           </span>
         )}
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-[0.9375rem] leading-relaxed text-ink-600">{description}</p>
       </div>
 
       <div className="mt-6 flex justify-end gap-3">

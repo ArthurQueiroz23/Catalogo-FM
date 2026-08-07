@@ -11,16 +11,22 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   loading?: boolean;
 }
 
+/**
+ * Botão único do projeto — site público e painel. As variantes `primary`/`secondary` são as
+ * mesmas classes `.btn-primary`/`.btn-secondary` do `globals.css`, para não existirem dois
+ * sistemas de botão renderizando em tamanhos diferentes na mesma função (era o caso antes).
+ */
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: 'bg-brand-500 text-white hover:bg-brand-600 focus-visible:outline-brand-500',
-  secondary: 'border border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50 focus-visible:outline-brand-500',
-  danger: 'bg-red-500 text-white hover:bg-red-600 focus-visible:outline-red-500',
-  ghost: 'text-gray-600 hover:bg-gray-100 focus-visible:outline-brand-500',
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  danger: 'btn-base bg-coral-800 text-creme hover:bg-coral-900 active:translate-y-px',
+  ghost: 'btn-fantasma',
 };
 
+/** `sm` continua com 44px de altura mínima (herdada de .btn-base) — só o texto encolhe. */
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'px-3 py-1.5 text-xs',
-  md: 'px-4 py-2 text-sm',
+  sm: 'px-4 text-sm',
+  md: '',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -31,14 +37,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={clsx(
-        'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors',
-        'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2',
-        'disabled:cursor-not-allowed disabled:opacity-50',
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className
-      )}
+      className={clsx(VARIANT_CLASSES[variant], SIZE_CLASSES[size], className)}
       {...props}
     >
       {loading && <Loader2 className="h-4 w-4 animate-spin" />}

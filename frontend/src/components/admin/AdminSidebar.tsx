@@ -1,14 +1,15 @@
 'use client';
 
-import { LogOut, Package, Ruler, Tags, Shirt, X } from 'lucide-react';
+import { LogOut, Package, Ruler, Tags, Shirt, Store, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import { Logo } from '@/components/layout/Logo';
 import { useLogout } from '@/hooks/useAuth';
 import { obterUsuario } from '@/lib/auth';
 
 const LINKS = [
-  { href: '/admin/produtos', label: 'Produtos', icon: Package },
+  { href: '/admin/produtos', label: 'Peças', icon: Package },
   { href: '/admin/categorias', label: 'Categorias', icon: Tags },
   { href: '/admin/colecoes', label: 'Coleções', icon: Shirt },
   { href: '/admin/tamanhos', label: 'Tamanhos', icon: Ruler },
@@ -22,25 +23,23 @@ export function AdminSidebar({ aberta, onFechar }: { aberta: boolean; onFechar: 
   return (
     <>
       {aberta && (
-        <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={onFechar} aria-hidden="true" />
+        <div className="fixed inset-0 z-30 bg-ink-900/25 lg:hidden" onClick={onFechar} aria-hidden="true" />
       )}
 
       <aside
         className={clsx(
-          'fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-gray-100 bg-white transition-transform lg:static lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-coral-100 bg-creme',
+          'transition-transform lg:static lg:w-64 lg:translate-x-0',
           aberta ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="flex items-center justify-between px-5 py-5">
-          <div>
-            <p className="text-lg font-bold text-brand-600">Fruto da Malha</p>
-            <p className="text-xs text-gray-400">Painel administrativo</p>
-          </div>
+        <div className="flex items-start justify-between gap-2 px-5 py-5">
+          <Logo tamanho="sm" href="/admin/produtos" />
           <button
             type="button"
             onClick={onFechar}
             aria-label="Fechar menu"
-            className="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 lg:hidden"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-pilula text-ink-400 hover:bg-coral-50 lg:hidden foco-marca"
           >
             <X className="h-5 w-5" />
           </button>
@@ -55,26 +54,36 @@ export function AdminSidebar({ aberta, onFechar }: { aberta: boolean; onFechar: 
                 key={link.href}
                 href={link.href}
                 onClick={onFechar}
+                aria-current={ativo ? 'page' : undefined}
                 className={clsx(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                  ativo ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:bg-gray-50'
+                  'flex min-h-11 items-center gap-3 rounded-pilula px-4 text-[0.9375rem] font-semibold transition-colors foco-marca',
+                  ativo ? 'bg-coral-400 text-ink-900' : 'text-ink-600 hover:bg-coral-50 hover:text-coral-800'
                 )}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4 shrink-0" />
                 {link.label}
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-gray-100 p-4">
-          {usuario && <p className="mb-2 truncate text-xs text-gray-400">{usuario.nome}</p>}
+        <div className="space-y-1 border-t border-coral-100 p-3">
+          <Link
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-11 items-center gap-3 rounded-pilula px-4 text-[0.9375rem] font-semibold text-ink-600 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+          >
+            <Store className="h-4 w-4 shrink-0" />
+            Ver o catálogo
+          </Link>
+          {usuario && <p className="truncate px-4 pt-2 text-sm text-ink-400">{usuario.nome}</p>}
           <button
             type="button"
             onClick={logout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="flex min-h-11 w-full items-center gap-3 rounded-pilula px-4 text-[0.9375rem] font-semibold text-ink-600 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-4 w-4 shrink-0" />
             Sair
           </button>
         </div>

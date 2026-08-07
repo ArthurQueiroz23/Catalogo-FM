@@ -4,6 +4,7 @@ import { Check, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
+import { formatarPreco } from '@/lib/format';
 import { useCartStore } from '@/store/cart-store';
 import type { ProdutoResponse } from '@/types/api';
 
@@ -50,19 +51,20 @@ export function ProductAddToCart({ produto }: { produto: ProdutoResponse }) {
 
   if (produto.tamanhosDisponiveis.length === 0) {
     return (
-      <p className="rounded-lg bg-gray-50 p-3 text-sm text-gray-500">
-        Nenhum tamanho disponível cadastrado para este produto no momento.
+      <p className="rounded-peca bg-creme-50 p-4 text-[0.9375rem] text-ink-500">
+        Ainda não há tamanhos cadastrados para esta peça.
       </p>
     );
   }
 
   return (
     <div>
-      <p className="mb-2 text-sm font-semibold text-gray-900">Escolha os tamanhos e quantidades</p>
-      <div className="flex flex-col divide-y divide-gray-100 rounded-xl border border-gray-100">
+      <p className="mb-3 text-lg font-bold text-ink-900">Escolha os tamanhos e as quantidades</p>
+
+      <div className="flex flex-col divide-y divide-coral-100 overflow-hidden rounded-peca bg-creme-50/80">
         {produto.tamanhosDisponiveis.map((tamanho) => (
-          <div key={tamanho.id} className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm font-medium text-gray-700">{tamanho.nome}</span>
+          <div key={tamanho.id} className="flex items-center justify-between gap-4 px-4 py-2.5">
+            <span className="text-base font-bold text-ink-800">{tamanho.nome}</span>
             <QuantityStepper
               value={quantidades[tamanho.id] ?? 0}
               onChange={(valor) => alterarQuantidade(tamanho.id, valor)}
@@ -72,22 +74,34 @@ export function ProductAddToCart({ produto }: { produto: ProdutoResponse }) {
         ))}
       </div>
 
+      {totalSelecionado > 0 && (
+        <p className="mt-3 text-center text-[0.9375rem] text-ink-600">
+          {totalSelecionado} {totalSelecionado === 1 ? 'peça' : 'peças'} ·{' '}
+          <strong className="font-bold text-ink-900">
+            {formatarPreco(produto.preco * totalSelecionado)}
+          </strong>
+        </p>
+      )}
+
       <button
         type="button"
         onClick={handleAdicionar}
         disabled={totalSelecionado === 0}
         className="btn-primary mt-4 w-full"
       >
-        <ShoppingBag className="h-4 w-4" />
-        Adicionar à seleção{totalSelecionado > 0 ? ` (${totalSelecionado})` : ''}
+        <ShoppingBag className="h-5 w-5" />
+        Adicionar à seleção
       </button>
 
       {confirmacaoVisivel && (
-        <div className="mt-3 flex items-center justify-between rounded-lg bg-accent-50 px-4 py-3 text-sm text-accent-700">
-          <span className="inline-flex items-center gap-2">
-            <Check className="h-4 w-4" /> Adicionado à seleção!
+        <div
+          role="status"
+          className="animate-surgir mt-3 flex flex-wrap items-center justify-between gap-2 rounded-peca bg-verde-50 px-4 py-3 text-[0.9375rem] text-verde-700"
+        >
+          <span className="inline-flex items-center gap-2 font-semibold">
+            <Check className="h-5 w-5" /> Adicionado à sua seleção!
           </span>
-          <Link href="/selecao" className="font-semibold underline">
+          <Link href="/selecao" className="rounded-pilula font-bold underline underline-offset-2 foco-marca">
             Ver seleção
           </Link>
         </div>

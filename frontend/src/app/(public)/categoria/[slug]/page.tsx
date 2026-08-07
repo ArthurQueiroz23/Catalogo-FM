@@ -54,10 +54,12 @@ export default async function CategoriaPage({ params, searchParams }: CategoriaP
 
   return (
     <div className="container py-8">
-      <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{categoria.nome}</h1>
-      {categoria.descricao && <p className="mt-2 max-w-2xl text-gray-600">{categoria.descricao}</p>}
-      <p className="mt-1 text-sm text-gray-400">
-        {produtos.totalElements} {produtos.totalElements === 1 ? 'produto' : 'produtos'}
+      <h1 className="titulo-secao">{categoria.nome}</h1>
+      {categoria.descricao && (
+        <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-600">{categoria.descricao}</p>
+      )}
+      <p className="mt-1.5 text-sm text-ink-400">
+        {produtos.totalElements} {produtos.totalElements === 1 ? 'peça' : 'peças'}
       </p>
 
       <div className="mt-6">

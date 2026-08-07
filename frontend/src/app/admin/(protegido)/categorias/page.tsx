@@ -42,8 +42,8 @@ export default function AdminCategoriasPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categorias</h1>
-          <p className="mt-1 text-sm text-gray-500">Arraste para reordenar como aparecem no site.</p>
+          <h1 className="titulo-pagina">Categorias</h1>
+          <p className="mt-1 text-[0.9375rem] text-ink-500">Arraste para reordenar como aparecem no site.</p>
         </div>
         <Button onClick={abrirCriacao}>
           <Plus className="h-4 w-4" />
@@ -77,20 +77,20 @@ export default function AdminCategoriasPage() {
             handleClassName="left-3 top-1/2 -translate-y-1/2"
             onReorder={(novaOrdem) => reordenar.mutate(novaOrdem.map((item, index) => ({ id: item.id, ordem: index })))}
             renderItem={(categoria) => (
-              <div className="flex items-center gap-4 rounded-xl border border-gray-100 bg-white py-3 pl-10 pr-4">
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gray-50">
+              <div className="flex items-center gap-4 rounded-2xl border border-coral-100 bg-creme-50 py-3 pl-10 pr-4">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-creme-50">
                   {categoria.imagemUrl ? (
                     <Image src={categoria.imagemUrl} alt="" fill sizes="48px" className="object-cover" />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center text-gray-300">
+                    <span className="flex h-full w-full items-center justify-center text-ink-300">
                       <ImageOff className="h-5 w-5" />
                     </span>
                   )}
                 </div>
 
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-gray-900">{categoria.nome}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="truncate font-bold text-ink-900">{categoria.nome}</p>
+                  <p className="text-sm text-ink-400">
                     {categoria.totalProdutos} {categoria.totalProdutos === 1 ? 'produto' : 'produtos'}
                   </p>
                 </div>
@@ -102,7 +102,7 @@ export default function AdminCategoriasPage() {
                     type="button"
                     onClick={() => abrirEdicao(categoria)}
                     aria-label={`Editar ${categoria.nome}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                    className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
@@ -110,7 +110,7 @@ export default function AdminCategoriasPage() {
                     type="button"
                     onClick={() => setCategoriaExcluindo(categoria)}
                     aria-label={`Excluir ${categoria.nome}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500"
+                    className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

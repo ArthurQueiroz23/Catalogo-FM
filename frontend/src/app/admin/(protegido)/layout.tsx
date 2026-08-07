@@ -36,23 +36,23 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen">
       <AdminSidebar aberta={sidebarAberta} onFechar={() => setSidebarAberta(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-gray-100 bg-white px-4 py-3 lg:hidden">
+        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-coral-100 bg-creme/90 px-3 py-2 backdrop-blur-md lg:hidden">
           <button
             type="button"
             onClick={() => setSidebarAberta(true)}
             aria-label="Abrir menu"
-            className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100"
+            className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-600 hover:bg-coral-50 foco-marca"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <p className="font-bold text-brand-600">Fruto da Malha</p>
+          <p className="text-lg font-bold text-coral-700">Fruto da Malha</p>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-10">{children}</main>
       </div>
 
       <Toaster position="top-right" richColors />

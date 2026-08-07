@@ -18,19 +18,20 @@ export function SearchBar({ className }: { className?: string }) {
   return (
     <form onSubmit={handleSubmit} role="search" className={className}>
       <label htmlFor="busca-produtos" className="sr-only">
-        Buscar produtos por nome, referência ou categoria
+        Buscar peças por nome, referência ou categoria
       </label>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-coral-500" />
         <input
           id="busca-produtos"
           type="search"
           value={termo}
           onChange={(event) => setTermo(event.target.value)}
-          placeholder="Buscar por nome, referência ou categoria..."
-          className="w-full rounded-full border border-gray-300 bg-white py-2 pl-9 pr-4 text-sm
-            text-gray-900 placeholder:text-gray-400 focus:border-brand-400 focus:outline-none
-            focus:ring-2 focus:ring-brand-100"
+          placeholder="Buscar uma peça..."
+          className="min-h-11 w-full rounded-pilula border-2 border-coral-100 bg-creme-50 py-2 pl-11 pr-4
+            text-[0.9375rem] text-ink-800 transition-colors placeholder:text-ink-400
+            hover:border-coral-200 focus:border-coral-300 focus:outline-none
+            focus:ring-4 focus:ring-coral-100"
         />
       </div>
     </form>

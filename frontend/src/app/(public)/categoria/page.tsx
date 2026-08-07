@@ -15,12 +15,12 @@ export default async function CategoriasPage() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Categorias</h1>
+      <h1 className="titulo-secao">Categorias</h1>
 
       {categorias.length === 0 ? (
-        <p className="mt-8 text-sm text-gray-500">Nenhuma categoria cadastrada ainda.</p>
+        <p className="mt-8 text-[0.9375rem] text-ink-500">Nenhuma categoria cadastrada ainda.</p>
       ) : (
-        <div className="mt-8 grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 md:grid-cols-6">
+        <div className="mt-8 grid grid-cols-3 gap-x-3 gap-y-8 sm:grid-cols-4 md:grid-cols-6">
           {categorias.map((categoria) => (
             <CategoryCard key={categoria.id} categoria={categoria} />
           ))}

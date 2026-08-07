@@ -33,18 +33,18 @@ export function SingleImageUpload({ value, onChange, pasta, label = 'Imagem' }: 
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="text-[0.9375rem] font-semibold text-ink-700">{label}</span>
       <div className="flex items-center gap-4">
-        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-50 ring-1 ring-inset ring-gray-100">
+        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-creme-50 ring-2 ring-inset ring-coral-100">
           {enviando ? (
-            <div className="flex flex-col items-center gap-1 text-gray-400">
+            <div className="flex flex-col items-center gap-1 text-coral-500">
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="text-[10px] font-semibold">{progresso}%</span>
+              <span className="text-[10px] font-bold">{progresso}%</span>
             </div>
           ) : value ? (
             <Image src={value} alt="" fill sizes="80px" className="object-cover" />
           ) : (
-            <ImageOff className="h-6 w-6 text-gray-300" />
+            <ImageOff className="h-6 w-6 text-coral-200" />
           )}
         </div>
 
@@ -64,7 +64,7 @@ export function SingleImageUpload({ value, onChange, pasta, label = 'Imagem' }: 
               onClick={() => onChange(null)}
               disabled={enviando}
               aria-label="Remover imagem"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500"
+              className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
             >
               <X className="h-4 w-4" />
             </button>

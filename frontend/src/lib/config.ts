@@ -8,6 +8,10 @@ export const siteConfig = {
   siteUrl: (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, ''),
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? '',
   instagramHandle: process.env.NEXT_PUBLIC_INSTAGRAM_HANDLE ?? '',
+  /** Contatos exibidos no rodapé — os mesmos da página de contato do catálogo impresso. */
+  email: process.env.NEXT_PUBLIC_EMAIL ?? '',
+  telefone: process.env.NEXT_PUBLIC_TELEFONE ?? '',
+  endereco: process.env.NEXT_PUBLIC_ENDERECO ?? '',
 };
 
 export function montarLinkInstagram(handle: string): string {

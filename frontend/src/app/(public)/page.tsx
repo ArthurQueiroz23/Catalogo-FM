@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { CategoryCard } from '@/components/category/CategoryCard';
 import { ProductGrid } from '@/components/product/ProductGrid';
@@ -25,29 +26,34 @@ export default async function HomePage() {
   const { categorias, destaques } = await buscarDadosIniciais();
 
   return (
-    <div className="pb-16">
-      <section className="bg-gradient-to-br from-brand-50 via-white to-accent-50">
-        <div className="container flex flex-col items-start gap-4 py-14 sm:py-20">
-          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-600 shadow-sm">
-            Novo catálogo online
-          </span>
-          <h1 className="max-w-xl text-3xl font-extrabold leading-tight text-gray-900 sm:text-4xl md:text-5xl">
-            Roupinhas com carinho, do RN aos 12 anos
-          </h1>
-          <p className="max-w-lg text-base text-gray-600 sm:text-lg">
+    <div className="pb-4">
+      {/* Capa: a mesma composição da primeira página do catálogo — o logo em destaque sobre o
+          creme rabiscado, com a assinatura "Vestindo carinho" logo abaixo. */}
+      <section className="container flex flex-col items-center gap-5 py-12 text-center sm:py-16">
+        <Image
+          src="/marca/logo.png"
+          alt="Fruto da Malha"
+          width={150}
+          height={186}
+          priority
+          className="h-auto w-28 animate-surgir sm:w-36"
+        />
+        <div className="animate-surgir">
+          <h1 className="titulo-vitrine">Vestindo carinho</h1>
+          <p className="mx-auto mt-3 max-w-lg text-base leading-relaxed text-ink-600 sm:text-lg">
             Escolha as peças, os tamanhos e as quantidades que quiser. No final, é só enviar sua
             seleção pelo WhatsApp e conversar direto com a gente.
           </p>
-          <Link href="/categoria" className="btn-primary mt-2">
-            Ver catálogo completo
-          </Link>
         </div>
+        <Link href="/categoria" className="btn-primary animate-surgir mt-1">
+          Ver o catálogo completo
+        </Link>
       </section>
 
       {categorias.length > 0 && (
-        <section className="container py-12">
+        <section className="container py-8 sm:py-10">
           <SectionHeading title="Categorias" href="/categoria" />
-          <div className="grid grid-cols-3 gap-x-4 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
+          <div className="grid grid-cols-3 gap-x-3 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
             {categorias.map((categoria) => (
               <CategoryCard key={categoria.id} categoria={categoria} />
             ))}
@@ -56,16 +62,18 @@ export default async function HomePage() {
       )}
 
       {destaques.length > 0 && (
-        <section className="container py-12">
-          <SectionHeading title="Produtos em destaque" subtitle="Uma seleção especial escolhida para você" />
+        <section className="container py-8 sm:py-10">
+          <SectionHeading title="Peças em destaque" subtitle="Uma seleção especial da nossa vitrine" />
           <ProductGrid produtos={destaques} />
         </section>
       )}
 
       {categorias.length === 0 && destaques.length === 0 && (
-        <div className="container py-20 text-center text-gray-500">
-          <p>O catálogo ainda não tem produtos cadastrados.</p>
-          <p className="mt-1 text-sm">Assim que a administradora cadastrar produtos, eles aparecem aqui automaticamente.</p>
+        <div className="container py-16 text-center">
+          <p className="text-lg font-semibold text-ink-700">O catálogo ainda está sendo montado.</p>
+          <p className="mt-2 text-[0.9375rem] text-ink-500">
+            Assim que as peças forem cadastradas, elas aparecem aqui automaticamente.
+          </p>
         </div>
       )}
     </div>

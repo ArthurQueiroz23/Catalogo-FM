@@ -87,13 +87,13 @@ export default function AdminProdutosPage() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Produtos</h1>
-          <p className="mt-1 text-sm text-gray-500">{data ? `${data.totalElements} produtos cadastrados` : ' '}</p>
+          <h1 className="titulo-pagina">Peças</h1>
+          <p className="mt-1 text-[0.9375rem] text-ink-500">{data ? `${data.totalElements} peças cadastradas` : ' '}</p>
         </div>
         <Link href="/admin/produtos/novo">
           <Button>
             <Plus className="h-4 w-4" />
-            Novo produto
+            Nova peça
           </Button>
         </Link>
       </div>
@@ -134,13 +134,13 @@ export default function AdminProdutosPage() {
         ) : !data || data.content.length === 0 ? (
           <EmptyState
             icon={Package}
-            title="Nenhum produto encontrado"
-            description="Ajuste os filtros ou cadastre um novo produto."
+            title="Nenhuma peça encontrada"
+            description="Ajuste os filtros ou cadastre uma peça nova."
             action={
               <Link href="/admin/produtos/novo">
                 <Button variant="secondary">
                   <Plus className="h-4 w-4" />
-                  Novo produto
+                  Nova peça
                 </Button>
               </Link>
             }
@@ -151,28 +151,28 @@ export default function AdminProdutosPage() {
               {data.content.map((produto) => (
                 <div
                   key={produto.id}
-                  className="flex flex-wrap items-center gap-4 rounded-xl border border-gray-100 bg-white px-4 py-3"
+                  className="flex flex-wrap items-center gap-4 rounded-2xl bg-creme-50/80 px-4 py-3"
                 >
-                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-gray-50">
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-creme-50">
                     {produto.imagemPrincipalUrl ? (
                       <Image src={produto.imagemPrincipalUrl} alt="" fill sizes="48px" className="object-cover" />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center text-gray-300">
+                      <span className="flex h-full w-full items-center justify-center text-ink-300">
                         <ImageOff className="h-5 w-5" />
                       </span>
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-gray-900">{produto.nome}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="truncate font-bold text-ink-900">{produto.nome}</p>
+                    <p className="text-sm text-ink-400">
                       Ref. {produto.referencia} · {produto.categoriaNome}
                     </p>
                   </div>
 
                   <div className="flex shrink-0 items-center gap-1.5">
                     {produto.destaque && (
-                      <span title="Destaque" className="text-amber-400">
+                      <span title="Destaque" className="text-coral-500">
                         <Star className="h-4 w-4 fill-current" />
                       </span>
                     )}
@@ -181,7 +181,7 @@ export default function AdminProdutosPage() {
                     </Badge>
                   </div>
 
-                  <p className="w-24 shrink-0 text-right text-sm font-semibold text-gray-700">
+                  <p className="w-24 shrink-0 text-right text-sm font-semibold text-ink-700">
                     {formatarPreco(produto.preco)}
                   </p>
 
@@ -189,7 +189,7 @@ export default function AdminProdutosPage() {
                     <Link
                       href={`/admin/produtos/${produto.id}`}
                       aria-label={`Editar ${produto.nome}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
                     >
                       <Pencil className="h-4 w-4" />
                     </Link>
@@ -202,7 +202,7 @@ export default function AdminProdutosPage() {
                         })
                       }
                       aria-label={produto.status === 'ATIVO' ? 'Ocultar produto' : 'Ativar produto'}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
                     >
                       {produto.status === 'ATIVO' ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -210,7 +210,7 @@ export default function AdminProdutosPage() {
                       type="button"
                       onClick={() => duplicar.mutate(produto.id)}
                       aria-label={`Duplicar ${produto.nome}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
                     >
                       <Copy className="h-4 w-4" />
                     </button>
@@ -218,7 +218,7 @@ export default function AdminProdutosPage() {
                       type="button"
                       onClick={() => setProdutoExcluindo(produto)}
                       aria-label={`Excluir ${produto.nome}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-red-500"
+                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

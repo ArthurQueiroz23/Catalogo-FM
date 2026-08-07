@@ -17,7 +17,7 @@ export function TamanhoCheckboxGroup({ tamanhos, value, onChange, error }: Taman
   }
 
   if (tamanhos.length === 0) {
-    return <p className="text-sm text-gray-400">Nenhum tamanho cadastrado ainda.</p>;
+    return <p className="text-[0.9375rem] text-ink-400">Nenhum tamanho cadastrado ainda.</p>;
   }
 
   return (
@@ -32,10 +32,11 @@ export function TamanhoCheckboxGroup({ tamanhos, value, onChange, error }: Taman
               onClick={() => alternar(tamanho.id)}
               aria-pressed={selecionado}
               className={clsx(
-                'rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
+                'min-h-11 rounded-pilula border-2 px-5 text-[0.9375rem] font-bold transition-colors',
+                'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral-700',
                 selecionado
-                  ? 'border-brand-500 bg-brand-500 text-white'
-                  : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                  ? 'border-coral-400 bg-coral-400 text-ink-900'
+                  : 'border-coral-100 bg-creme-50 text-ink-600 hover:border-coral-200 hover:bg-coral-50'
               )}
             >
               {tamanho.nome}
@@ -43,7 +44,7 @@ export function TamanhoCheckboxGroup({ tamanhos, value, onChange, error }: Taman
           );
         })}
       </div>
-      {error && <p className="mt-1.5 text-xs font-medium text-red-500">{error}</p>}
+      {error && <p className="mt-2 text-sm font-semibold text-coral-800">{error}</p>}
     </div>
   );
 }

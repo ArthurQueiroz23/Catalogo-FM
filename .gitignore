@@ -35,3 +35,9 @@ Thumbs.db
 ### Logs ###
 logs/
 *.log
+
+### Material de referência da marca ###
+# O catálogo em PDF (~119 MB) é a fonte da identidade visual, mas é grande demais para o
+# versionamento. Os assets que importam já foram extraídos dele para frontend/public/marca/
+# e estão versionados — ver docs/DESIGN_SYSTEM.md. Guarde o PDF original fora do repositório.
+referencias/

@@ -46,7 +46,9 @@ function SortableItem({ id, children, handleClassName }: SortableItemProps) {
         type="button"
         aria-label="Arrastar para reordenar"
         className={clsx(
-          'absolute z-10 flex cursor-grab touch-none items-center justify-center text-gray-300 hover:text-gray-500 active:cursor-grabbing',
+          'absolute z-10 flex cursor-grab touch-none items-center justify-center rounded-pilula p-1',
+          'text-coral-300 transition-colors hover:text-coral-600 active:cursor-grabbing',
+          'focus-visible:outline focus-visible:outline-2 focus-visible:outline-coral-700',
           handleClassName
         )}
         {...attributes}

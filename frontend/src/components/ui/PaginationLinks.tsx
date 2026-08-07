@@ -22,12 +22,12 @@ export function PaginationLinks({ page, totalPages, construirHref }: PaginationL
   const temProxima = page + 1 < totalPages;
 
   const estiloBase =
-    'inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-semibold transition-colors';
-  const estiloAtivo = 'border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-50';
-  const estiloDesativado = 'cursor-not-allowed border-gray-100 text-gray-300';
+    'inline-flex min-h-11 items-center gap-1.5 rounded-pilula border-2 px-5 text-[0.9375rem] font-semibold transition-colors';
+  const estiloAtivo = 'border-coral-200 bg-creme-50 text-ink-700 hover:border-coral-300 hover:bg-coral-50 foco-marca';
+  const estiloDesativado = 'cursor-not-allowed border-coral-100/60 text-ink-300';
 
   return (
-    <nav aria-label="Paginação" className="mt-10 flex items-center justify-between gap-4 border-t border-gray-100 pt-6">
+    <nav aria-label="Paginação" className="mt-10 flex items-center justify-between gap-4 border-t border-coral-100 pt-6">
       {temAnterior ? (
         <Link href={construirHref(page - 1)} rel="prev" className={`${estiloBase} ${estiloAtivo}`}>
           <ChevronLeft className="h-4 w-4" />
@@ -40,7 +40,7 @@ export function PaginationLinks({ page, totalPages, construirHref }: PaginationL
         </span>
       )}
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm font-semibold text-ink-500">
         Página {page + 1} de {totalPages}
       </p>
 

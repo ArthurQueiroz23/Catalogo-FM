@@ -313,9 +313,15 @@ Abra `frontend\.env.local` e preencha:
 ```dotenv
 NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_WHATSAPP_NUMBER=5581999999999
-NEXT_PUBLIC_INSTAGRAM_HANDLE=frutodamalha
+NEXT_PUBLIC_WHATSAPP_NUMBER=5581988072670
+NEXT_PUBLIC_INSTAGRAM_HANDLE=frutodamalhabebe
+NEXT_PUBLIC_EMAIL=frutodamalhavendas@gmail.com
+NEXT_PUBLIC_TELEFONE=81 9 8807-2670
+NEXT_PUBLIC_ENDERECO=Rua Severino Ramos Ferreira, 88 — B. São Cristóvão
 ```
+
+> Os quatro últimos alimentam o rodapé (é a mesma página de contato do catálogo impresso).
+> Deixe qualquer um em branco para ocultar a linha correspondente.
 
 - `NEXT_PUBLIC_API_URL`: endereço do backend — em desenvolvimento local, deixe exatamente como
   está acima.
@@ -676,6 +682,7 @@ quando se confirma que Git, Java, Maven, Node e Docker estão instalados e no PA
 | Documento | Conteúdo |
 |---|---|
 | [docs/PROGRESS.md](docs/PROGRESS.md) | Checklist vivo de progresso do projeto |
+| [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Identidade visual extraída do catálogo impresso — **leia antes de mexer em estilo** |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Decisões de arquitetura, stack, estrutura de pastas |
 | [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | Modelo de dados (ER), entidades e relacionamentos |
 | [docs/API_CONTRACT.md](docs/API_CONTRACT.md) | Contrato de endpoints REST (backend ↔ frontend) |

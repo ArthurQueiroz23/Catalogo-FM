@@ -36,7 +36,7 @@ export function Modal({ open, onClose, title, children, maxWidthClassName = 'max
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/40 p-4 backdrop-blur-sm"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -47,17 +47,17 @@ export function Modal({ open, onClose, title, children, maxWidthClassName = 'max
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className={`max-h-[90vh] w-full ${maxWidthClassName} overflow-y-auto rounded-2xl bg-white p-6 shadow-xl outline-none`}
+        className={`max-h-[90vh] w-full ${maxWidthClassName} animate-surgir overflow-y-auto rounded-peca bg-creme p-6 shadow-flutuante outline-none`}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id="modal-title" className="text-lg font-bold text-gray-900">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <h2 id="modal-title" className="text-xl font-bold text-ink-900">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="rounded-full p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
           >
             <X className="h-5 w-5" />
           </button>

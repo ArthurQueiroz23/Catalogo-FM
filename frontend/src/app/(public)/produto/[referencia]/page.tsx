@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: ProdutoPageProps): Promise<Me
   const { referencia } = await params;
   const produto = await buscarProduto(referencia);
   if (!produto) {
-    return { title: 'Produto não encontrado' };
+    return { title: 'Peça não encontrada' };
   }
 
   const descricao = produto.descricao ?? `${produto.nome} — Ref. ${produto.referencia} — Fruto da Malha`;
@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: ProdutoPageProps): Promise<Me
     title: produto.nome,
     description: descricao,
     alternates: { canonical: `/produto/${produto.referencia}` },
-    // A foto do produto no Open Graph é o que faz o link aparecer com imagem quando a cliente
-    // compartilha a peça no WhatsApp — o canal onde a loja de fato vende.
+    // A foto da peça no Open Graph é o que faz o link aparecer com imagem quando a cliente
+    // compartilha no WhatsApp — o canal onde a loja de fato vende.
     openGraph: {
       type: 'website',
       title: produto.nome,
@@ -65,62 +65,64 @@ export default async function ProdutoPage({ params }: ProdutoPageProps) {
     notFound();
   }
 
+  // Mesma ordem de dados das páginas do catálogo impresso:
+  // referência → descrição → tecido → tamanho → sexo.
+  const ficha = [
+    { rotulo: 'Categoria', valor: produto.categoria.nome },
+    produto.colecao && { rotulo: 'Coleção', valor: produto.colecao.nome },
+    produto.tecido && { rotulo: 'Tecido', valor: produto.tecido },
+    { rotulo: 'Sexo', valor: SEXO_LABEL[produto.sexo] },
+  ].filter(Boolean) as { rotulo: string; valor: string }[];
+
   return (
-    <div className="container py-8">
-      <nav className="mb-6 text-sm text-gray-500">
-        <Link href="/" className="hover:text-brand-600">
+    <div className="container py-6 sm:py-8">
+      <nav aria-label="Você está aqui" className="mb-5 text-sm text-ink-500">
+        <Link href="/" className="rounded-pilula transition-colors hover:text-coral-700 foco-marca">
           Início
         </Link>
-        <span className="mx-2">/</span>
-        <Link href={`/categoria/${produto.categoria.slug}`} className="hover:text-brand-600">
+        <span className="mx-2 text-coral-300">/</span>
+        <Link
+          href={`/categoria/${produto.categoria.slug}`}
+          className="rounded-pilula transition-colors hover:text-coral-700 foco-marca"
+        >
           {produto.categoria.nome}
         </Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-700">{produto.nome}</span>
+        <span className="mx-2 text-coral-300">/</span>
+        <span className="text-ink-700">{produto.nome}</span>
       </nav>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        <ProductGallery nome={produto.nome} imagens={produto.imagens} videos={produto.videos} />
+      <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <ProductGallery nome={produto.nome} imagens={produto.imagens} videos={produto.videos} />
+        </div>
 
         <div>
-          <p className="text-sm text-gray-400">Ref. {produto.referencia}</p>
-          <h1 className="mt-1 text-2xl font-bold text-gray-900 sm:text-3xl">{produto.nome}</h1>
-          <p className="mt-3 text-2xl font-extrabold text-brand-600">{formatarPreco(produto.preco)}</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-coral-600">
+            Referência {produto.referencia}
+          </p>
+          <h1 className="mt-1.5 text-[1.75rem] font-bold leading-tight text-ink-900 sm:text-4xl">
+            {produto.nome}
+          </h1>
+          <p className="mt-3 text-3xl font-bold text-coral-700">{formatarPreco(produto.preco)}</p>
 
-          <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <div>
-              <dt className="text-gray-400">Categoria</dt>
-              <dd className="font-medium text-gray-800">{produto.categoria.nome}</dd>
-            </div>
-            {produto.colecao && (
-              <div>
-                <dt className="text-gray-400">Coleção</dt>
-                <dd className="font-medium text-gray-800">{produto.colecao.nome}</dd>
+          <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+            {ficha.map((item) => (
+              <div key={item.rotulo}>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">{item.rotulo}</dt>
+                <dd className="mt-0.5 font-semibold text-ink-800">{item.valor}</dd>
               </div>
-            )}
-            {produto.tecido && (
-              <div>
-                <dt className="text-gray-400">Tecido</dt>
-                <dd className="font-medium text-gray-800">{produto.tecido}</dd>
-              </div>
-            )}
-            <div>
-              <dt className="text-gray-400">Sexo</dt>
-              <dd className="font-medium text-gray-800">{SEXO_LABEL[produto.sexo]}</dd>
-            </div>
+            ))}
           </dl>
 
-          {produto.descricao && (
-            <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-gray-600">{produto.descricao}</p>
-          )}
+          {produto.descricao && <p className="ficha-peca mt-6 whitespace-pre-line">{produto.descricao}</p>}
 
           {produto.observacoes && (
-            <p className="mt-4 whitespace-pre-line rounded-xl bg-gray-50 p-4 text-sm leading-relaxed text-gray-600">
+            <p className="ficha-peca mt-4 whitespace-pre-line rounded-peca bg-coral-50 p-4">
               {produto.observacoes}
             </p>
           )}
 
-          <div className="mt-6">
+          <div className="mt-8">
             <ProductAddToCart produto={produto} />
           </div>
         </div>

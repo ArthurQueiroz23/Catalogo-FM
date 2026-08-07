@@ -10,36 +10,44 @@ interface QuantityStepperProps {
   label?: string;
 }
 
-/** Seletor de quantidade reutilizado na página do produto (por tamanho) e no carrinho. */
+/**
+ * Seletor de quantidade, reaproveitado na página da peça (por tamanho) e na seleção.
+ * Botões de 44px: é a interação principal do catálogo e o público é majoritariamente mobile,
+ * então o alvo de toque segue o mínimo da WCAG 2.2 / Apple HIG.
+ */
 export function QuantityStepper({ value, onChange, min = 0, max = 999, label }: QuantityStepperProps) {
-  function decrementar() {
-    onChange(Math.max(min, value - 1));
-  }
-
-  function incrementar() {
-    onChange(Math.min(max, value + 1));
-  }
+  const estiloBotao =
+    'flex h-11 w-11 items-center justify-center rounded-pilula text-ink-700 transition-colors ' +
+    'hover:bg-coral-100 hover:text-coral-800 disabled:cursor-not-allowed disabled:opacity-30 ' +
+    'disabled:hover:bg-transparent foco-marca';
 
   return (
-    <div className="inline-flex items-center rounded-full border border-gray-300">
+    <div className="inline-flex items-center rounded-pilula border-2 border-coral-200 bg-creme-50">
       <button
         type="button"
-        onClick={decrementar}
+        onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
         aria-label={label ? `Diminuir quantidade de ${label}` : 'Diminuir quantidade'}
-        className="flex h-8 w-8 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+        className={estiloBotao}
       >
-        <Minus className="h-3.5 w-3.5" />
+        <Minus className="h-4 w-4" />
       </button>
-      <span className="w-8 text-center text-sm font-semibold tabular-nums text-gray-900">{value}</span>
+      <span
+        aria-live="polite"
+        className={`w-9 text-center text-base font-bold tabular-nums ${
+          value > 0 ? 'text-coral-800' : 'text-ink-300'
+        }`}
+      >
+        {value}
+      </span>
       <button
         type="button"
-        onClick={incrementar}
+        onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
         aria-label={label ? `Aumentar quantidade de ${label}` : 'Aumentar quantidade'}
-        className="flex h-8 w-8 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30"
+        className={estiloBotao}
       >
-        <Plus className="h-3.5 w-3.5" />
+        <Plus className="h-4 w-4" />
       </button>
     </div>
   );

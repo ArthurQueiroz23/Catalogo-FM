@@ -4,8 +4,78 @@
 > projeto parou. Depois de ler, confira também `docs/ARCHITECTURE.md` (decisões técnicas),
 > `docs/DATABASE_SCHEMA.md` (modelo de dados) e `docs/API_CONTRACT.md` (contrato de endpoints).
 
-Última atualização: **2026-08-06** — Sessão 3 (revisão de produto: tirar a mentalidade de
-e-commerce, corrigir falhas contra a visão, SEO).
+Última atualização: **2026-08-07** — Sessão 4 (redesign visual completo a partir do catálogo
+impresso da loja).
+
+---
+
+## Changelog da sessão 4 (2026-08-07) — redesign visual
+
+O frontend estava tecnicamente bem construído e **visualmente anônimo**: podia ser o site de
+qualquer loja. Esta sessão trocou isso pela identidade real da Fruto da Malha, extraída do
+catálogo oficial em PDF (`referencias/TABELA 0 2025 .pdf` — 96 páginas feitas no Canva, o
+material que este sistema existe para substituir).
+
+📖 **`docs/DESIGN_SYSTEM.md` é o documento novo e principal desta sessão.** Ele registra os
+valores medidos do PDF, os assets extraídos e — o mais importante — os pontos em que a web
+precisou divergir do impresso, com o motivo de cada um.
+
+### Análise (todas as 96 páginas, não uma amostra)
+
+- PDF renderizado página a página e revisado em folhas de contato; fontes e cores extraídas das
+  entranhas do arquivo (PyMuPDF), não estimadas a olho.
+- Fontes do impresso: `Ballpoint-Regular` (8.020 chars), `BryndanWrite`, `Montserrat` (só os
+  contatos da p.2). Cores: `#FFA85A` coral (97% do texto), `#FFFBEF` creme, `#755A49` marrom,
+  `#297F02` verde.
+
+### A divergência mais importante
+
+**O coral da marca `#FFA85A` tem contraste 1,85:1 sobre o creme** — ilegível como texto na web e
+reprovação grave de acessibilidade. No PDF ele carrega 97% do texto, mas lá é impressão a 24pt.
+Solução: o coral virou **cor de preenchimento** (botão coral + tinta escura = 6,81:1) e o texto
+usa o **marrom `#755A49` que já existe no PDF**, na assinatura "Vestindo carinho" (6,12:1).
+A marca continua dominante — só mudou de papel.
+
+### Assets extraídos do próprio PDF
+
+- **Logo oficial** (`public/marca/logo.png`) — precisou aplicar o SMask para recuperar a
+  transparência e **descartar a marca d'água "BAZAART"** que o app de recorte da loja deixou.
+- **Padrão de rabiscos** (`rabiscos.webp`, **12 KB**) — a página 6 tinha o padrão como imagem
+  única; espelhado nos dois eixos para repetir sem costura.
+- **Favicon/ícone de app** — antes a aba do navegador mostrava o globo padrão.
+
+### O que mudou no código
+
+- `tailwind.config.ts` e `globals.css` reescritos: tokens de cor, três degraus de raio com
+  significado (`pilula` para controles, `peca` para superfícies grandes, `2xl` para pequenas),
+  sombras em marrom translúcido, fundo com o ladrilho de rabiscos.
+- **Tipografia manuscrita em todo o site** (Shantell Sans, variável) — decisão de produto pela
+  fidelidade ao catálogo; escolhida a única manuscrita do Google Fonts desenhada para interface.
+- Todas as telas públicas e do painel migradas. **Zero resquício da paleta antiga** (verificado
+  por varredura: nenhum `gray-*`, `brand-*`, `accent-*`, `bg-white`).
+- **Um único sistema de botão**: `.btn-primary`/`.btn-secondary` e as variantes do `<Button>`
+  passaram a ser as mesmas classes — antes eram duas implementações com tamanhos diferentes para
+  a mesma função. `Input`/`Select`/`Textarea` passaram a compartilhar `classesCampo()`.
+- **Alvos de toque de 44px** em todo controle (WCAG 2.2 / Apple HIG). O `QuantityStepper`, que é
+  *a* interação do catálogo num público majoritariamente mobile, tinha 32px.
+- **Foco visível único** (`.foco-marca`) — antes havia dois modelos concorrentes.
+- `prefers-reduced-motion` desliga as animações de entrada.
+- Rodapé passou a reproduzir a página de contato do catálogo (p.2), com os contatos reais vindos
+  de variáveis de ambiente novas: `NEXT_PUBLIC_EMAIL`, `NEXT_PUBLIC_TELEFONE`,
+  `NEXT_PUBLIC_ENDERECO`.
+
+### Galeria do painel
+
+A maior parte do que foi pedido **já existia** (fotos e vídeos ilimitados, reordenar arrastando,
+definir capa, remover a qualquer momento, barra de progresso, carrossel público com swipe).
+Foi adicionado o que faltava:
+
+- **arrastar arquivos do computador direto para a área** (antes só clicando);
+- **um botão único "Adicionar mídia"** que aceita fotos e vídeos juntos — o tipo de cada arquivo
+  decide sozinho o destino, sem a administradora escolher antes;
+- vídeos com `playsInline`/`preload="metadata"` também no painel.
+
+---
 
 ---
 
@@ -289,12 +359,19 @@ duplicar, ocultar, exclusão reversível), integração de assinatura Cloudinary
       dev, de propósito — ver `docs/ARCHITECTURE.md` §2.7).
 - [ ] Configurar domínio próprio apontando para a Vercel.
 
-### 4. Pendências de design/produto (decisões que dependem do cliente)
-- [ ] Paleta de cores e logo reais (hoje `tailwind.config.ts` usa uma paleta `brand`/`accent`
-      provisória e o header mostra só texto).
-- [ ] Imagem do banner da home (hoje é um gradiente com texto).
-- [ ] Favicon e imagem de Open Graph padrão do site (a da **página do produto** já é resolvida
-      automaticamente pela foto principal da peça — feito na sessão 3).
+### 4. Pendências de design/produto
+- [x] ~~Paleta e logo reais~~ — **resolvido na sessão 4**: extraídos do catálogo impresso, não
+      inventados. Ver `docs/DESIGN_SYSTEM.md`.
+- [x] ~~Favicon e imagem de Open Graph~~ — **resolvido na sessão 4** (a da página do produto já
+      vinha da sessão 3, pela foto principal da peça).
+- [x] ~~Banner da home~~ — **resolvido na sessão 4**: a home abre com o logo sobre o creme
+      rabiscado, reproduzindo a capa do catálogo.
+- [ ] **Logo em vetor.** O arquivo usado hoje foi extraído do PDF em bitmap (236×293). Funciona
+      bem nos tamanhos atuais, mas se a loja tiver o SVG/AI original, trocar melhora a nitidez em
+      telas grandes e permite versão monocromática.
+- [ ] **Fotos com fundo removido.** O catálogo impresso usa PNG recortado, e o site foi
+      construído para isso (`object-contain`, sem moldura). Fotos com fundo próprio funcionam,
+      mas ficam visivelmente menos elegantes sobre o creme. Vale orientar a administradora.
 
 ### 5. Pequenos gaps conhecidos (não são bugs, são decisões de escopo)
 - [ ] **Imagem de categoria órfã no Cloudinary**: `Categoria` só guarda `imagemUrl` (sem

@@ -8,23 +8,112 @@
   }
 
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply bg-creme text-ink-700 antialiased;
+  }
+
+  /* Fundo da marca: o creme do catálogo com os rabiscos infantis recortados dele.
+     A opacidade baixa mantém a assinatura reconhecível sem competir com as fotos das peças.
+     `fixed` faz o padrão ficar parado enquanto a página rola, como uma folha de papel. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: theme('backgroundImage.rabiscos');
+    background-size: 620px auto;
+    background-repeat: repeat;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    body::before {
+      background-size: 420px auto;
+    }
+  }
+
+  /* Quem pede menos movimento não recebe nenhuma das animações de entrada. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  ::selection {
+    @apply bg-coral-200 text-ink-900;
   }
 }
 
 @layer components {
-  /* Botão de ação primária, usado no CTA de WhatsApp e nos formulários do painel. */
+  /* ---- Controles -------------------------------------------------------------------
+     Um único vocabulário de botão para o site e o painel. Antes existiam dois
+     (.btn-primary aqui e a variante do <Button>), que renderizavam em tamanhos
+     diferentes na mesma função. */
+
+  .foco-marca {
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+      focus-visible:outline-coral-700;
+  }
+
+  /* min-h-11 = 44px: mínimo de área de toque (WCAG 2.2 / Apple HIG). */
+  .btn-base {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-pilula px-5
+      text-[0.9375rem] font-semibold transition-all disabled:cursor-not-allowed
+      disabled:opacity-50 foco-marca;
+  }
+
+  /* Coral da marca preenchendo, tinta escura por cima: 6.81:1, passa AA com folga. */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-5 py-2.5
-      text-sm font-semibold text-white transition-colors hover:bg-brand-600
-      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
-      focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply btn-base bg-coral-400 text-ink-900 shadow-peca hover:bg-coral-300
+      active:translate-y-px disabled:hover:bg-coral-400;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border border-gray-300
-      bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 transition-colors
-      hover:border-gray-400 hover:bg-gray-50 focus-visible:outline focus-visible:outline-2
-      focus-visible:outline-offset-2 focus-visible:outline-brand-500;
+    @apply btn-base border-2 border-coral-200 bg-creme-50 text-ink-700
+      hover:border-coral-300 hover:bg-coral-50 active:translate-y-px;
+  }
+
+  .btn-fantasma {
+    @apply btn-base px-3 text-ink-600 hover:bg-coral-50 hover:text-ink-900;
+  }
+
+  /* ---- Superfícies ------------------------------------------------------------------
+     O catálogo não tem card nem borda dura: as peças flutuam sobre o creme. Aqui o card
+     é apenas um véu creme mais claro, suficiente para organizar a grade sem virar caixa. */
+
+  .superficie {
+    @apply rounded-peca bg-creme-50/80 backdrop-blur-[2px];
+  }
+
+  .superficie-solida {
+    @apply rounded-peca bg-creme-50 shadow-peca;
+  }
+
+  /* ---- Tipografia -------------------------------------------------------------------
+     Escala única. Os títulos de seção imitam os divisores de categoria do catálogo
+     ("Macacão curto", "Bodys"), em coral grande — decorativo, sempre acima de 24px,
+     onde o mínimo de contraste é 3:1. */
+
+  .titulo-vitrine {
+    @apply text-[2rem] font-bold leading-[1.15] text-coral-600 sm:text-[2.75rem];
+  }
+
+  .titulo-secao {
+    @apply text-2xl font-bold leading-tight text-coral-700 sm:text-3xl;
+  }
+
+  .titulo-pagina {
+    @apply text-2xl font-bold leading-tight text-ink-900 sm:text-3xl;
+  }
+
+  /* Bloco de dados da peça, na ordem exata do catálogo:
+     referência → descrição → tecido → tamanho → sexo. */
+  .ficha-peca {
+    @apply text-[0.9375rem] leading-relaxed text-ink-600;
   }
 }

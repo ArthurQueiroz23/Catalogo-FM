@@ -222,6 +222,11 @@ frontend/src/
 │                            # config.ts, schemas.ts (Zod), cloudinary-upload.ts, paginacao.ts
 ├── store/                   # cart-store.ts (Zustand)
 └── types/                    # api.ts (espelha DTOs do backend), cart.ts
+
+frontend/public/marca/       # assets extraídos do catálogo impresso (ver DESIGN_SYSTEM.md)
+├── logo.png / logo.webp     # logo oficial, com a marca d'água do app de recorte removida
+├── icone-512.png            # favicon / ícone de app
+└── rabiscos.webp            # ladrilho do padrão de fundo, espelhado para repetir sem costura
 ```
 
 Rotas públicas ficam no route group `(public)` para ter um layout visualmente distinto do
@@ -279,9 +284,18 @@ etc.) — os hooks em `src/hooks/` nunca montam URLs diretamente, só chamam ess
 
 ### 3.5 Estilo visual
 
-TailwindCSS com paleta e tokens centralizados em `tailwind.config.ts` (ver `docs/PROGRESS.md`
-para a paleta de marca quando definida com o cliente). Mobile-first: todas as classes utilitárias
-partem do layout mobile e usam prefixos (`sm:`, `md:`, `lg:`) para telas maiores.
+TailwindCSS com tokens centralizados em `tailwind.config.ts`. Mobile-first: todas as classes
+utilitárias partem do layout mobile e usam prefixos (`sm:`, `md:`, `lg:`) para telas maiores.
+
+**A identidade visual não é arbitrária — ela foi extraída do catálogo impresso da loja**
+(`referencias/TABELA 0 2025 .pdf`, 96 páginas feitas no Canva). Fundo creme `#FFFBEF`, coral
+`#FFA85A`, marrom `#755A49`, verde `#297F02`, tipografia manuscrita, fotos sem moldura, logo e
+padrão de rabiscos extraídos do próprio arquivo.
+
+📖 **Ler `docs/DESIGN_SYSTEM.md` antes de mexer em qualquer estilo.** Ele registra os valores
+medidos do PDF, os três pontos em que a web precisou divergir do impresso (o principal: o coral
+da marca tem contraste 1,85:1 e **não pode ser usado como cor de texto**) e o vocabulário único
+de raio, sombra e foco.
 
 ### 3.6 SEO e compartilhamento
 

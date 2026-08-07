@@ -151,7 +151,7 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
       </div>
 
       <div>
-        <p className="mb-2 text-sm font-medium text-gray-700">Tamanhos disponíveis</p>
+        <p className="mb-2 text-sm font-medium text-ink-700">Tamanhos disponíveis</p>
         <Controller
           name="tamanhoIds"
           control={control}
@@ -173,7 +173,7 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
         {...register('observacoes')}
       />
 
-      <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+      <div className="rounded-2xl border border-coral-100 bg-creme-50 p-4">
         {/*
           `lancamento` continua existindo no banco e no contrato da API, mas deixou de ter
           controle na tela: manter dois destaques obrigava a administradora a lembrar de
@@ -187,7 +187,7 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
         />
       </div>
 
-      <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+      <div className="flex justify-end gap-3 border-t border-coral-100 pt-4">
         <Button type="button" variant="secondary" onClick={() => router.push('/admin/produtos')} disabled={salvando}>
           Cancelar
         </Button>
