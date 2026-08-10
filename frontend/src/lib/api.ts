@@ -1,6 +1,35 @@
 import type { ApiErrorResponse } from '@/types/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1';
+/**
+ * Endereço da API, resolvido uma única vez na carga do módulo.
+ *
+ * O fallback para localhost existe só para desenvolvimento. Em build de produção a variável
+ * ausente **derruba o build de propósito**: sem isso, um deploy mal configurado sobe "com
+ * sucesso" e aponta para `localhost` — o site parece no ar, mas todo carregamento de produto
+ * falha no navegador da cliente, e o erro só aparece bem longe da causa.
+ *
+ * Lembre que `NEXT_PUBLIC_*` é embutida no bundle durante o build: trocar o valor no painel da
+ * hospedagem exige um novo deploy, não basta salvar a variável.
+ */
+function resolverApiUrl(): string {
+  const configurada = process.env.NEXT_PUBLIC_API_URL?.trim();
+
+  if (configurada) {
+    return configurada.replace(/\/$/, '');
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'NEXT_PUBLIC_API_URL não foi configurada. Defina a URL pública do backend incluindo o ' +
+        'sufixo /api/v1 (ex.: https://catalogo-fm.up.railway.app/api/v1) nas variáveis de ' +
+        'ambiente do projeto e refaça o deploy. Localmente, preencha frontend/.env.local.',
+    );
+  }
+
+  return 'http://localhost:8080/api/v1';
+}
+
+const API_URL = resolverApiUrl();
 
 /** Chave usada para persistir o JWT do admin no localStorage — ver src/lib/auth.ts. */
 export const TOKEN_STORAGE_KEY = 'frutodamalha_admin_token';

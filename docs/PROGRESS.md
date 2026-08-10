@@ -4,8 +4,68 @@
 > projeto parou. Depois de ler, confira também `docs/ARCHITECTURE.md` (decisões técnicas),
 > `docs/DATABASE_SCHEMA.md` (modelo de dados) e `docs/API_CONTRACT.md` (contrato de endpoints).
 
-Última atualização: **2026-08-07** — Sessão 4 (redesign visual completo a partir do catálogo
-impresso da loja).
+Última atualização: **2026-08-10** — Sessão 5 (preparação do ambiente de produção).
+
+---
+
+## Changelog da sessão 5 (2026-08-10) — preparação para o deploy
+
+Objetivo: sair do "abrir três terminais no PowerShell" para URLs permanentes na internet.
+A arquitetura já documentada (Vercel + Railway + Neon + Cloudinary) foi auditada e **mantida** —
+não houve redesenho.
+
+📖 **[`docs/DEPLOY.md`](DEPLOY.md) é o documento novo desta sessão**: o passo a passo operacional
+para publicar e manter o sistema no ar.
+
+### Três bloqueadores encontrados na auditoria
+
+1. **Não havia como criar o primeiro administrador em produção.** O perfil `prod` desligava o
+   inicializador de admin e não oferecia alternativa: o deploy subiria com o banco vazio e
+   **login impossível** (não há tela de cadastro, por design).
+2. **`spring-boot-starter-actuator` não estava no `pom.xml`**, embora `application.yml` e
+   `SecurityConfig` já referenciassem `/actuator/health`. O health check da hospedagem apontaria
+   para um 404 e o serviço seria marcado como morto em laço.
+3. **Nenhum arquivo de build para a Railway.**
+
+### O que mudou
+
+- **`AdminBootstrapInitializer`** substitui o antigo `DevAdminInitializer`, servindo dev e
+  produção. Duas classes capazes de criar administradores seriam uma armadilha de segurança.
+  Regras: só age com o banco sem nenhum usuário; **nunca sobrescreve um admin existente**; e fora
+  do perfil `dev` exige senha de 12+ caracteres, **derrubando a aplicação** se for menor — é
+  preferível o deploy falhar visivelmente a publicar um painel com senha adivinhável.
+- **`Dockerfile`** multi-stage + `.dockerignore` + `railway.json` com o health check no caminho
+  correto (`/api/v1/actuator/health` — o context-path é fácil de esquecer aqui).
+- **CORS** passou a aceitar múltiplas origens e o curinga dos previews da Vercel, e a aplicação
+  **recusa subir** se a variável estiver vazia ou contiver `*`.
+- **Pool de conexões ajustado para a Neon**, que suspende o banco após ~5 min ocioso e encerra
+  conexões paradas. Sem isso, o primeiro acesso do dia falharia em vez de apenas demorar.
+- **O health check não depende do banco**: com a Neon suspensa, o probe falharia e a plataforma
+  reiniciaria um contêiner saudável em laço.
+- **O build do frontend agora falha** se `NEXT_PUBLIC_API_URL` ou `NEXT_PUBLIC_SITE_URL`
+  faltarem. Antes caíam para `localhost`: o deploy subia "com sucesso" e quebrava só no navegador
+  da cliente, longe da causa.
+
+### Verificação feita (contêiner real, perfil `prod`)
+
+Imagem construída e executada contra um Postgres limpo. Confirmado: health check `UP`; CORS
+aceitando origem exata e preview, **bloqueando origem não autorizada (403)**; senha fraca e
+bootstrap sem credenciais **derrubando a aplicação**; segunda subida com credenciais diferentes
+**não** criando usuário novo nem trocando a senha do admin existente; catálogo público aberto sem
+token (200) e painel protegido (401 sem token, 200 com token válido); e o fluxo completo
+**admin cria produto → catálogo público mostra → admin muda o preço → o novo preço aparece →
+admin oculta → some do site mas continua no painel**.
+
+### Ressalva sobre o que "BUILD SUCCESS" significa neste projeto
+
+O backend não tem nenhum teste automatizado — isso já constava em "O que ainda falta implementar"
+§1, mas vale explicitar aqui: sessões anteriores citaram `mvn clean test → BUILD SUCCESS` ao
+relatar verificações. É verdade, e **não significa nada**, porque `src/test` está vazio e não há
+o que executar. Ao ler os relatos antigos, trate `BUILD SUCCESS` como "compila", nunca como
+"testado".
+
+A verificação desta sessão foi feita de outro jeito, justamente por isso: exercitando a API real
+dentro do contêiner com `curl`, incluindo os casos de falha.
 
 ---
 
@@ -337,11 +397,16 @@ duplicar, ocultar, exclusão reversível), integração de assinatura Cloudinary
       puras, fáceis de testar) com Vitest; considerar Playwright para o fluxo
       "adicionar à seleção → enviar pelo WhatsApp" e para o CRUD do painel mais adiante.
 
-### 2. Verificação manual real (ainda não foi possível — Docker indisponível nas sessões 2 e 3)
-- [ ] Rodar o projeto do zero seguindo o `README.md`, com Docker disponível, e confirmar no
-      navegador: login, CRUD de categoria/coleção/tamanho, CRUD de produto, upload de foto/vídeo
-      real no Cloudinary (precisa de uma conta Cloudinary de verdade), reordenação por
-      drag-and-drop, seleção, e o link do WhatsApp abrindo com a mensagem correta.
+### 2. Verificação manual real (parcialmente feita na sessão 5)
+
+**Já verificado** (sessão 5, via `curl` contra o contêiner de produção — sem navegador): login,
+autorização das rotas, CORS, criação de categoria e produto, alteração de preço, ocultar produto,
+e a propagação imediata para o catálogo público.
+
+**Continua faltando**, porque exige navegador e/ou dispositivo real:
+- [ ] Confirmar no navegador: upload de foto/vídeo real no Cloudinary (precisa de uma conta
+      Cloudinary de verdade), reordenação por drag-and-drop, a tela de seleção, e o link do
+      WhatsApp abrindo com a mensagem correta.
 - [ ] Testar responsividade do painel administrativo em mobile de verdade (foi construído
       mobile-first com Tailwind, mas nunca visualizado num navegador real).
 - [ ] **Específico da sessão 3, precisa de dispositivo real:** swipe da galeria num celular
@@ -349,15 +414,22 @@ duplicar, ocultar, exclusão reversível), integração de assinatura Cloudinary
       *inline* num iPhone, e o preview do link do produto colado numa conversa do WhatsApp
       aparecendo com a foto (depende de `NEXT_PUBLIC_SITE_URL` correto e do site publicado).
 
-### 3. Deploy (nada foi configurado ainda)
-- [ ] Criar banco na Neon, configurar variáveis de produção na Railway (backend) e na Vercel
-      (frontend) — ver `docs/ARCHITECTURE.md` §4. **Não esquecer `NEXT_PUBLIC_SITE_URL`** com o
-      domínio real: sem ele, o preview do link compartilhado no WhatsApp sai sem imagem e o
-      sitemap aponta para `localhost`.
-- [ ] Criar conta/credenciais reais do Cloudinary de produção.
-- [ ] Definir e criar o primeiro usuário admin de produção (o `DevAdminInitializer` só roda em
-      dev, de propósito — ver `docs/ARCHITECTURE.md` §2.7).
-- [ ] Configurar domínio próprio apontando para a Vercel.
+### 3. Deploy
+
+O **código** está pronto e verificado para produção (sessão 5 — ver changelog abaixo). O que
+falta é a parte que exige contas e cliques no navegador, documentada passo a passo em
+**[`docs/DEPLOY.md`](DEPLOY.md)**.
+
+- [x] ~~Preparar o backend para produção~~ — Dockerfile, health check, bootstrap seguro do
+      primeiro admin, CORS validado, pool ajustado para a Neon.
+- [x] ~~Impedir que um deploy mal configurado aponte para `localhost`~~ — o build do frontend
+      agora falha se `NEXT_PUBLIC_API_URL` ou `NEXT_PUBLIC_SITE_URL` faltarem.
+- [ ] Criar o projeto na **Neon** e pegar a connection string.
+- [ ] Criar o serviço na **Railway** (root directory `backend`) e preencher as variáveis.
+- [ ] Criar o projeto na **Vercel** (root directory `frontend`) e preencher as variáveis.
+- [ ] Rodar o bootstrap do primeiro admin e **remover as variáveis depois**.
+- [ ] Verificação ponta a ponta no ambiente real (o roteiro está em `DEPLOY.md` §8).
+- [ ] Configurar domínio próprio apontando para a Vercel (`DEPLOY.md` §10 — opcional, não bloqueia).
 
 ### 4. Pendências de design/produto
 - [x] ~~Paleta e logo reais~~ — **resolvido na sessão 4**: extraídos do catálogo impresso, não
@@ -409,17 +481,17 @@ critério (e §5, o escopo permanentemente excluído).
 
 ## Próximo passo recomendado
 
-1. **Verificação manual real** (item 2 acima) — continua sendo o maior risco residual do projeto:
-   o código compila e builda limpo em três sessões seguidas, mas **nunca foi visto rodando num
-   navegador de verdade com dados reais**. Precisa de Docker (Postgres) e uma conta Cloudinary de
-   teste. Tudo o mais nesta lista é menos urgente que isto.
-2. Com o fluxo manual confirmado, corrigir qualquer problema de UX/comportamento encontrado
-   (esperado que apareçam pequenos ajustes visuais — nenhuma tela deste painel foi vista
-   renderizada de verdade ainda).
-3. Testes automatizados (item 1) — pelo menos um smoke test de contexto do Spring Boot
+1. **Publicar** seguindo [`docs/DEPLOY.md`](DEPLOY.md) — Neon, depois Railway, depois Vercel.
+   O código já está preparado e verificado em contêiner; o que resta são contas e cliques.
+   Fazer isto primeiro resolve dois problemas de uma vez: coloca o sistema no ar **e** dá o
+   ambiente real onde a verificação visual finalmente pode acontecer.
+2. **Verificação visual no navegador** (item 2 acima) — segue sendo o maior risco residual: o
+   projeto compila e builda limpo há quatro sessões, mas **nenhuma tela foi vista renderizada com
+   dados reais**. Depois do deploy, dá para fazer isso no site publicado, do celular, sem montar
+   ambiente. Espere aparecerem pequenos ajustes visuais.
+3. Corrigir o que a verificação visual apontar.
+4. Testes automatizados (item 1) — pelo menos um smoke test de contexto do Spring Boot
    (`@SpringBootTest` com Testcontainers) e os testes unitários de `lib/cart.ts`/`whatsapp.ts`
    no frontend, que são baratos e de alto valor por serem lógica de negócio pura.
-4. Deploy (item 3) — banco na Neon primeiro (é pré-requisito dos outros dois), depois backend na
-   Railway, depois frontend na Vercel.
-5. Pendências de design (item 4) — dependem de material da cliente (logo, paleta, fotos reais de
-   produtos para o banner); podem rodar em paralelo com o deploy.
+5. Pendências de design (item 4) — principalmente orientar a administradora sobre fotos com fundo
+   removido; pode rodar em paralelo.

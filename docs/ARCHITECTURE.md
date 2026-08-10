@@ -349,13 +349,58 @@ modelo sem checar.
 | Camada | Local (dev) | Produção |
 |---|---|---|
 | Frontend | `npm run dev` (localhost:3000) | Vercel |
-| Backend | `./mvnw spring-boot:run` (perfil `dev`) | Railway (perfil `prod`) |
+| Backend | `./mvnw spring-boot:run` (perfil `dev`) | Railway (perfil `prod`, via `Dockerfile`) |
 | Banco | Docker Postgres local | Neon PostgreSQL |
 | Mídia | Cloudinary (mesma conta/pasta `dev/` vs `prod/`) | Cloudinary |
+
+📖 **O passo a passo operacional está em [`docs/DEPLOY.md`](DEPLOY.md)** — criação dos serviços,
+variáveis, primeiro admin, verificação e domínio próprio. Esta seção registra só as *decisões*.
 
 Variáveis sensíveis (JWT secret, credenciais Cloudinary, URL do banco) **nunca** são commitadas —
 sempre via variáveis de ambiente (`.env` local ignorado pelo git; variáveis configuradas
 diretamente no painel da Railway/Vercel em produção).
+
+### 4.1 Um deploy mal configurado precisa falhar, não degradar
+
+Três guardas derrubam a aplicação em vez de deixá-la subir num estado sutilmente quebrado. O
+princípio é o mesmo nos três: um erro de configuração que se manifesta longe da causa custa
+muito mais caro que um deploy que falha na cara do operador.
+
+| Guarda | Onde | Sem ela |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_SITE_URL` ausentes | `lib/api.ts`, `lib/config.ts` | O build cai para `localhost`; o site sobe "com sucesso" e quebra só no navegador da cliente |
+| `APP_CORS_ALLOWED_ORIGINS` vazio ou `*` | `SecurityConfig` | API com credenciais aberta a qualquer origem |
+| Senha do primeiro admin < 12 caracteres fora de `dev` | `AdminBootstrapInitializer` | Painel de produção publicado com senha adivinhável |
+
+Os fallbacks para `localhost` **continuam existindo em desenvolvimento** — a checagem só vale
+quando `NODE_ENV=production`.
+
+### 4.2 Criação do primeiro administrador
+
+Não há tela de cadastro (o painel é de uso exclusivo da loja), então o schema nasce sem nenhum
+usuário e o login seria impossível. `AdminBootstrapInitializer` resolve isso: com
+`app.admin-bootstrap.enabled=true` e o banco **sem nenhum usuário**, cria um ADMIN a partir de
+variáveis de ambiente.
+
+Duas propriedades importam mais que o resto:
+
+- **Nunca sobrescreve um usuário existente.** Se as variáveis ficarem ligadas por esquecimento,
+  elas não reabrem uma porta — a segunda subida apenas registra um aviso. Verificado na sessão 5
+  reiniciando o contêiner com credenciais diferentes: nenhum usuário novo, senha original intacta.
+- **É a mesma classe em dev e em produção.** Duas classes capazes de criar administradores seriam
+  uma armadilha: bastaria uma ser habilitada por engano. O que muda entre os ambientes é só a
+  origem dos valores e o rigor da senha.
+
+### 4.3 Health check não depende do banco
+
+`management.health.db.enabled: false` no perfil `prod`. A Neon suspende o banco após ~5 minutos
+ociosa; se o health check consultasse o banco, o primeiro probe após a suspensão falharia e a
+plataforma reiniciaria um contêiner perfeitamente saudável, em laço. A conectividade real
+continua garantida pelo Flyway, que roda na subida e falha alto se o banco não responder.
+
+Pelo mesmo motivo o pool do Hikari é configurado sem conexões ociosas mínimas e com reciclagem
+rápida: a Neon encerra conexões paradas do lado do servidor, e um pool que as segura entrega
+sockets mortos — o primeiro acesso do dia falharia em vez de apenas demorar.
 
 **Como o backend lê o `.env` local:** `application.yml` declara
 `spring.config.import: optional:file:.env[.properties]` — o Spring Boot trata o `.env` como um

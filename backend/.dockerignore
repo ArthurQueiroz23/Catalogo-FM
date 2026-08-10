@@ -1,0 +1,20 @@
+# Tudo aqui é reconstruído dentro da imagem ou não pertence a ela. Manter esta lista enxuta
+# importa por dois motivos: o contexto inteiro é enviado ao daemon do Docker a cada build, e
+# qualquer arquivo copiado sem querer (um .env, por exemplo) vira parte da imagem publicada.
+
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Segredos — nunca devem entrar na imagem. A configuração de produção vem das variáveis de
+# ambiente da hospedagem.
+.env
+.env.*
+!.env.example
+
+.git/
+.gitignore
+.idea/
+.vscode/
+*.iml
+*.log
+HELP.md

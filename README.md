@@ -21,6 +21,24 @@ comandos podem ser copiados e colados exatamente como estão.
 
 ---
 
+## 🌐 Só quer usar o sistema? Não precisa de nada disto
+
+Este README é sobre **desenvolvimento** — rodar o projeto na sua máquina para mexer no código.
+
+Para **usar** o catálogo, basta um link no navegador. Nada de PowerShell, Docker, Java ou Node:
+
+| | Endereço |
+|---|---|
+| **Catálogo** (o link que vai para as clientes) | _preencher após o deploy_ |
+| **Painel** (onde a administradora cadastra) | _o mesmo endereço + `/admin`_ |
+
+> 📖 **Como publicar:** [`docs/DEPLOY.md`](docs/DEPLOY.md) — passo a passo completo, do zero até o
+> site no ar. Depois de configurado, publicar uma alteração é só `git push`.
+
+Os dois ambientes convivem: publicar não tira nada do `localhost`.
+
+---
+
 ## Índice
 
 1. [O que precisa estar instalado](#1-o-que-precisa-estar-instalado)
@@ -442,9 +460,9 @@ Digite essas credenciais na tela de login. Depois de entrar, você cai direto na
 **Produtos** — que é o que a administradora vem fazer no painel — com a sidebar de navegação à
 esquerda (Produtos, Categorias, Coleções, Tamanhos).
 
-> ⚠️ Essas credenciais são só para desenvolvimento local — o backend nunca cria esse usuário
-> automaticamente em produção. Ver `docs/PROGRESS.md` para o processo de criar o primeiro admin
-> real antes de colocar o sistema no ar para a cliente de verdade.
+> ⚠️ Essas credenciais são só para desenvolvimento local. Em produção o sistema **recusa** subir
+> com uma senha assim (mínimo de 12 caracteres) — o processo de criar o primeiro admin real está
+> em [`docs/DEPLOY.md`](docs/DEPLOY.md) §7.
 
 ---
 
@@ -578,9 +596,16 @@ diretamente (simulando produção):
 java -jar target\catalogo.jar
 ```
 
-Em produção de verdade (Railway), as variáveis de ambiente (`DB_URL`, `APP_JWT_SECRET`, etc.) são
-configuradas direto no painel da Railway, não em um arquivo `.env` — ver `docs/PROGRESS.md` e
-`docs/ARCHITECTURE.md` §4 para o passo a passo de deploy (ainda pendente neste projeto).
+Em produção (Railway), as variáveis de ambiente (`DB_URL`, `APP_JWT_SECRET`, etc.) são
+configuradas direto no painel da Railway, não em um arquivo `.env`. O backend é publicado a
+partir do `backend/Dockerfile` — ver [`docs/DEPLOY.md`](docs/DEPLOY.md).
+
+Para reproduzir localmente exatamente o que roda em produção (útil para depurar um problema que
+só acontece no servidor):
+
+```powershell
+docker build -t frutodamalha-backend backend
+```
 
 ### Frontend
 
@@ -682,6 +707,7 @@ quando se confirma que Git, Java, Maven, Node e Docker estão instalados e no PA
 | Documento | Conteúdo |
 |---|---|
 | [docs/PROGRESS.md](docs/PROGRESS.md) | Checklist vivo de progresso do projeto |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Como colocar o sistema no ar e mantê-lo — **passo a passo** |
 | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Identidade visual extraída do catálogo impresso — **leia antes de mexer em estilo** |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Decisões de arquitetura, stack, estrutura de pastas |
 | [docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | Modelo de dados (ER), entidades e relacionamentos |
