@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Entidade central do catálogo. Ver docs/DATABASE_SCHEMA.md para o significado de cada campo
@@ -115,11 +117,34 @@ public class Produto extends BaseEntity {
         video.setProduto(null);
     }
 
-    /** Substitui por completo o conjunto de tamanhos disponíveis (orphanRemoval limpa os antigos). */
+    /**
+     * Ajusta o conjunto de tamanhos disponíveis para exatamente o informado.
+     *
+     * <p>Faz a diferença entre o que já existe e o que se quer, em vez de limpar tudo e recriar.
+     * Limpar e recriar parece equivalente, mas quebra: com {@code orphanRemoval}, o Hibernate
+     * enfileira o INSERT das linhas novas antes do DELETE das órfãs, e um tamanho que
+     * permaneceu selecionado colide com ele mesmo na constraint única
+     * {@code uk_produto_tamanho} — toda edição de produto que mantivesse algum tamanho falhava
+     * com erro 500.
+     *
+     * <p>Fazendo a diferença, as linhas que não mudaram nunca são tocadas: não há INSERT para
+     * colidir, e de quebra o UPDATE fica mais barato.
+     */
     public void definirTamanhos(List<Tamanho> tamanhos) {
-        this.produtoTamanhos.clear();
+        Set<Long> idsDesejados = tamanhos.stream()
+                .map(Tamanho::getId)
+                .collect(Collectors.toSet());
+
+        this.produtoTamanhos.removeIf(pt -> !idsDesejados.contains(pt.getTamanho().getId()));
+
+        Set<Long> idsJaPresentes = this.produtoTamanhos.stream()
+                .map(pt -> pt.getTamanho().getId())
+                .collect(Collectors.toSet());
+
         for (Tamanho tamanho : tamanhos) {
-            this.produtoTamanhos.add(new ProdutoTamanho(this, tamanho));
+            if (idsJaPresentes.add(tamanho.getId())) {
+                this.produtoTamanhos.add(new ProdutoTamanho(this, tamanho));
+            }
         }
     }
 }

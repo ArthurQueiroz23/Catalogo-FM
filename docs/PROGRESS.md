@@ -56,6 +56,33 @@ token (200) e painel protegido (401 sem token, 200 com token válido); e o fluxo
 **admin cria produto → catálogo público mostra → admin muda o preço → o novo preço aparece →
 admin oculta → some do site mas continua no painel**.
 
+### 🐛 Bug grave encontrado e corrigido: toda edição de produto falhava com 500
+
+Descoberto ao rodar o frontend de produção contra o backend em contêiner — **não** aparece em
+build, lint ou type-check, só exercitando a API.
+
+`Produto.definirTamanhos()` fazia `clear()` na coleção e recriava todos os `ProdutoTamanho`. Com
+`orphanRemoval = true`, o Hibernate enfileira o INSERT das linhas novas **antes** do DELETE das
+órfãs, e um tamanho que permaneceu selecionado colidia consigo mesmo na constraint única
+`uk_produto_tamanho`:
+
+```
+ERROR: duplicate key value violates unique constraint "uk_produto_tamanho"
+```
+
+**Impacto:** qualquer edição de produto que mantivesse ao menos um tamanho retornava 500 — ou
+seja, praticamente toda edição. Trocar um preço, a operação mais comum da administradora, era
+impossível.
+
+**Correção:** `definirTamanhos()` passou a fazer a diferença entre o conjunto atual e o desejado,
+removendo só o que saiu e inserindo só o que entrou. Linhas que não mudaram nunca são tocadas —
+não há INSERT para colidir.
+
+**Por que passou despercebido até agora:** um teste anterior desta mesma sessão reportou `200`
+neste fluxo, mas a lista de tamanhos tinha saído vazia por um erro na extração do ID no script —
+sem nenhum INSERT, não havia colisão. O falso positivo foi identificado ao repetir o teste de
+forma determinística, com 7 combinações de tamanhos.
+
 ### Ressalva sobre o que "BUILD SUCCESS" significa neste projeto
 
 O backend não tem nenhum teste automatizado — isso já constava em "O que ainda falta implementar"
