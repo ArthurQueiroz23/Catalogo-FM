@@ -40,6 +40,15 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Hot reload em desenvolvimento: detecta mudanças no código .java e reinicia o servidor
+             automaticamente. Desativado em produção pelo perfil prod. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Persistência -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
