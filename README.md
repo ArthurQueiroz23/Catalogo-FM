@@ -263,21 +263,25 @@ copia e preenche com seus próprios valores.
 
 ### 5.1 Banco de dados (Docker)
 
-Antes de configurar o `.env`, suba o banco de dados PostgreSQL local. Com o Docker Desktop
-aberto, rode em qualquer terminal:
+Antes de configurar o `.env`, suba o banco de dados PostgreSQL local. O `docker-compose.yml` na
+raiz do projeto já descreve o container com o usuário, a senha e o banco certos — com o Docker
+Desktop aberto, rode na raiz do projeto:
 
 ```powershell
-docker run --name frutodamalha-db -e POSTGRES_USER=frutodamalha -e POSTGRES_PASSWORD=frutodamalha -e POSTGRES_DB=frutodamalha -p 5432:5432 -d postgres:16-alpine
+docker compose up -d
 ```
 
-Isso cria e inicia um container Postgres. Nas próximas vezes, **não rode esse comando de novo**
-— apenas inicie o container já criado:
+Isso cria e inicia o container Postgres (`frutodamalha-db`). Nas próximas vezes o mesmo comando
+apenas religa o container existente, sem apagar nada: os dados ficam no volume `postgres_data`,
+que sobrevive a `docker compose down`.
 
 ```powershell
-docker start frutodamalha-db
+docker compose ps      # conferir se está de pé
+docker compose stop    # parar o banco
 ```
 
-(E, se quiser parar o banco: `docker stop frutodamalha-db`.)
+> **Nunca use `docker compose down -v`.** O `-v` remove o volume, e com ele todos os produtos,
+> categorias e coleções cadastrados no seu banco local.
 
 ### 5.2 Backend
 
@@ -291,9 +295,9 @@ Abra o arquivo `backend\.env` recém-criado no VS Code e preencha:
 ```dotenv
 SPRING_PROFILES_ACTIVE=dev
 
-DB_URL=jdbc:postgresql://localhost:5432/frutodamalha
+DB_URL=jdbc:postgresql://localhost:5432/frutodamalha_dev
 DB_USERNAME=frutodamalha
-DB_PASSWORD=frutodamalha
+DB_PASSWORD=senha123
 
 APP_JWT_SECRET=troque-isto-por-qualquer-texto-longo-e-aleatorio-com-32-caracteres-ou-mais
 APP_JWT_EXPIRATION_MS=86400000
@@ -641,11 +645,13 @@ exatamente em `backend\.env` (mesma pasta do `pom.xml`), com o valor de `APP_JWT
 preenchido — revise o [passo 5.2](#52-backend).
 
 ### O backend não sobe e aparece `Connection to localhost:5432 refused`
-O banco de dados PostgreSQL não está rodando. Confira se o Docker Desktop está aberto e rode:
+O banco de dados PostgreSQL não está rodando. Confira se o Docker Desktop está aberto (o ícone
+da baleia na bandeja precisa estar parado, não animado) e rode na raiz do projeto:
 ```powershell
-docker start frutodamalha-db
+docker compose up -d
 ```
-Se o container ainda não existe, volte ao [passo 5.1](#51-banco-de-dados-docker).
+Se o comando falhar dizendo que não encontrou o Docker, é o Docker Desktop que ainda não subiu —
+abra-o pelo menu Iniciar, espere ficar "Engine running" e repita. Ver [passo 5.1](#51-banco-de-dados-docker).
 
 ### `Port 8080 was already in use` (ou `porta 3000` no frontend)
 Já existe algo rodando naquela porta — provavelmente uma instância anterior do backend/frontend
@@ -662,9 +668,10 @@ Ou simplesmente reinicie o computador, se preferir o caminho mais simples.
 Confira se está usando exatamente `admin@frutodamalha.com.br` / `admin123` (ver
 [passo 11](#11-como-fazer-login)). Se o banco de dados já tinha algum usuário cadastrado antes
 (por exemplo, você recriou o container do banco do zero mas o `application-dev.yml` só cria o
-admin padrão **se não existir nenhum usuário**), pode ser necessário recriar o container do
-banco (`docker rm -f frutodamalha-db` e repetir o [passo 5.1](#51-banco-de-dados-docker)) para
-que o admin padrão seja recriado.
+admin padrão **se não existir nenhum usuário**), pode ser necessário zerar o banco
+(`docker compose down -v` e depois `docker compose up -d`) para que o admin padrão seja recriado.
+**Atenção:** isso apaga todos os produtos, categorias e coleções cadastrados localmente — só faça
+isso se o banco local não tiver nada que você precise manter.
 
 ### O site em `localhost:3000` carrega, mas nada aparece e o console do navegador mostra erro de rede
 O frontend não está conseguindo falar com o backend. Confira, nesta ordem:
