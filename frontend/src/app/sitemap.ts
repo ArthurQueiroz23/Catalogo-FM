@@ -35,6 +35,7 @@ async function buscarTodosOsProdutos(): Promise<ProdutoSummaryResponse[]> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paginasFixas: MetadataRoute.Sitemap = [
     { url: siteConfig.siteUrl, changeFrequency: 'daily', priority: 1 },
+    { url: `${siteConfig.siteUrl}/produtos`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${siteConfig.siteUrl}/categoria`, changeFrequency: 'weekly', priority: 0.8 },
   ];
 

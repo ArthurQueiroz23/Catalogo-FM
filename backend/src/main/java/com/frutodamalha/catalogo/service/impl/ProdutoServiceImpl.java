@@ -81,7 +81,12 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     public List<ProdutoSummaryResponse> listarDestaques() {
-        return listar(ProdutoFiltro.destaques(), org.springframework.data.domain.PageRequest.of(0, 12)).content();
+        // O `Sort` é obrigatório: sem ele o banco devolve os destaques em ordem indefinida, e a
+        // vitrine deixaria de respeitar a sequência comercial do catálogo impresso — que é
+        // justamente o que o campo `ordem` guarda (ver docs/ARCHITECTURE.md).
+        var pagina = org.springframework.data.domain.PageRequest.of(
+                0, 12, org.springframework.data.domain.Sort.by("ordem"));
+        return listar(ProdutoFiltro.destaques(), pagina).content();
     }
 
     @Override

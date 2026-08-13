@@ -1,29 +1,44 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { CategoryCard } from '@/components/category/CategoryCard';
+import { ProductCarousel } from '@/components/product/ProductCarousel';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { api } from '@/lib/api';
-import type { CategoriaResponse, ProdutoSummaryResponse } from '@/types/api';
+import type { CategoriaResponse, PageResponse, ProdutoSummaryResponse } from '@/types/api';
 
 // Sempre buscado sem cache — qualquer alteração da administradora deve refletir no próximo
 // carregamento da página, sem depender de revalidação manual (ver docs/ARCHITECTURE.md §3.3).
 export const dynamic = 'force-dynamic';
 
+/** Prévia do catálogo na home. Fecha linha certa nas grades de 2, 3 e 4 colunas. */
+const PECAS_NA_PREVIA = 12;
+
 async function buscarDadosIniciais() {
-  const [categorias, destaques] = await Promise.allSettled([
+  // `allSettled` de propósito: se só os destaques falharem, a home ainda mostra categorias e
+  // catálogo, em vez de derrubar a página inteira por causa de uma seção.
+  const [categorias, destaques, catalogo] = await Promise.allSettled([
     api.get<CategoriaResponse[]>('/categorias', { cache: 'no-store' }),
     api.get<ProdutoSummaryResponse[]>('/produtos/destaques', { cache: 'no-store' }),
+    // Sem `sort` na URL: o backend já devolve por `ordem` ASC, que é a sequência comercial do
+    // catálogo impresso. Passar qualquer ordenação aqui quebraria essa sequência.
+    api.get<PageResponse<ProdutoSummaryResponse>>(`/produtos?page=0&size=${PECAS_NA_PREVIA}`, {
+      cache: 'no-store',
+    }),
   ]);
 
   return {
     categorias: categorias.status === 'fulfilled' ? categorias.value : [],
     destaques: destaques.status === 'fulfilled' ? destaques.value : [],
+    produtos: catalogo.status === 'fulfilled' ? catalogo.value.content : [],
+    totalProdutos: catalogo.status === 'fulfilled' ? catalogo.value.totalElements : 0,
   };
 }
 
 export default async function HomePage() {
-  const { categorias, destaques } = await buscarDadosIniciais();
+  const { categorias, destaques, produtos, totalProdutos } = await buscarDadosIniciais();
+
+  const catalogoVazio = categorias.length === 0 && destaques.length === 0 && produtos.length === 0;
 
   return (
     <div className="pb-4">
@@ -45,10 +60,20 @@ export default async function HomePage() {
             seleção pelo WhatsApp e conversar direto com a gente.
           </p>
         </div>
-        <Link href="/categoria" className="btn-primary animate-surgir mt-1">
+        <Link href="/produtos" className="btn-primary animate-surgir mt-1">
           Ver o catálogo completo
         </Link>
       </section>
+
+      {destaques.length > 0 && (
+        <section className="container py-8 sm:py-10">
+          <SectionHeading
+            title="Produtos em destaque"
+            subtitle="Uma seleção especial da nossa vitrine"
+          />
+          <ProductCarousel produtos={destaques} />
+        </section>
+      )}
 
       {categorias.length > 0 && (
         <section className="container py-8 sm:py-10">
@@ -61,14 +86,28 @@ export default async function HomePage() {
         </section>
       )}
 
-      {destaques.length > 0 && (
+      {produtos.length > 0 && (
         <section className="container py-8 sm:py-10">
-          <SectionHeading title="Peças em destaque" subtitle="Uma seleção especial da nossa vitrine" />
-          <ProductGrid produtos={destaques} />
+          <SectionHeading
+            title="Todos os produtos"
+            subtitle="Na mesma ordem do nosso catálogo"
+            href="/produtos"
+            hrefLabel="Ver tudo"
+          />
+          <ProductGrid produtos={produtos} />
+
+          {/* Só oferece o caminho para o catálogo inteiro quando existe algo além da prévia. */}
+          {totalProdutos > produtos.length && (
+            <div className="mt-8 flex justify-center">
+              <Link href="/produtos" className="btn-secondary">
+                Ver as {totalProdutos} peças do catálogo
+              </Link>
+            </div>
+          )}
         </section>
       )}
 
-      {categorias.length === 0 && destaques.length === 0 && (
+      {catalogoVazio && (
         <div className="container py-16 text-center">
           <p className="text-lg font-semibold text-ink-700">O catálogo ainda está sendo montado.</p>
           <p className="mt-2 text-[0.9375rem] text-ink-500">

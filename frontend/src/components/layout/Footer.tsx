@@ -48,6 +48,7 @@ export function Footer() {
           <ul className="mt-3 space-y-1 text-[0.9375rem]">
             {[
               { href: '/', rotulo: 'Início' },
+              { href: '/produtos', rotulo: 'Catálogo completo' },
               { href: '/categoria', rotulo: 'Categorias' },
               { href: '/selecao', rotulo: 'Minha seleção' },
             ].map((link) => (
@@ -71,10 +72,13 @@ export function Footer() {
                 <a
                   href={contato.href}
                   {...(contato.externo ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="inline-flex min-h-11 items-center gap-2.5 rounded-pilula text-ink-600 transition-colors hover:text-coral-700 foco-marca"
+                  className="inline-flex min-h-11 max-w-full items-center gap-2.5 rounded-pilula text-ink-600 transition-colors hover:text-coral-700 foco-marca"
                 >
                   <contato.icone className="h-4 w-4 shrink-0 text-coral-500" />
-                  {contato.texto}
+                  {/* `min-w-0` + `break-all`: o e-mail é uma palavra só e mais larga que a coluna
+                      do rodapé no tablet — sem isto ele vaza da grade e cria rolagem horizontal
+                      na página inteira. */}
+                  <span className="min-w-0 break-all">{contato.texto}</span>
                 </a>
               </li>
             ))}

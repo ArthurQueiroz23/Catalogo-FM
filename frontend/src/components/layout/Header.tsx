@@ -13,6 +13,10 @@ export function Header() {
 
           {/* No celular a navegação principal vive aqui: fora da home, sem estes links a
               cliente só chegaria às categorias pelo rodapé. */}
+          {/* Navegação do celular. Só cabe UM link de texto ao lado do logo em telas de 390px —
+              com dois, o nome da marca quebra em três linhas e o cabeçalho estoura a largura da
+              tela. O catálogo completo continua a um toque pelo botão do topo da home, pelo
+              "Ver tudo" da seção de produtos e pelo rodapé. */}
           <nav className="flex items-center gap-1 md:hidden">
             <Link
               href="/categoria"
@@ -31,6 +35,12 @@ export function Header() {
         </div>
 
         <nav className="hidden items-center gap-1 md:flex">
+          <Link
+            href="/produtos"
+            className="inline-flex min-h-11 items-center rounded-pilula px-4 text-[0.9375rem] font-semibold text-ink-700 transition-colors hover:bg-coral-50 hover:text-coral-700 foco-marca"
+          >
+            Catálogo
+          </Link>
           <Link
             href="/categoria"
             className="inline-flex min-h-11 items-center rounded-pilula px-4 text-[0.9375rem] font-semibold text-ink-700 transition-colors hover:bg-coral-50 hover:text-coral-700 foco-marca"
