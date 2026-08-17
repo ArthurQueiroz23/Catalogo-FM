@@ -1,0 +1,1332 @@
+{
+ "categorias": [
+  "Macacão curto",
+  "Bodys",
+  "Conjunto, tapa fralda, calça e casaco",
+  "Macacões longo",
+  "Prematuros",
+  "Pijamas",
+  "Mijões",
+  "Camisetas",
+  "Shorts",
+  "Roupões",
+  "Babadores",
+  "Toalhas p/ chupeta",
+  "Toalhas",
+  "Kits de toalha"
+ ],
+ "tamanhos_necessarios": [
+  "Prematuro",
+  "RN",
+  "Único",
+  "P",
+  "M",
+  "G",
+  "1 ANO",
+  "2 ANOS",
+  "3 ANOS",
+  "50x60",
+  "60x70",
+  "80x90"
+ ],
+ "produtos": [
+  {
+   "ordem": 1,
+   "referencia": "01001",
+   "nome": "Macacão curto c/alça botão Silk screen",
+   "categoria": "Macacão curto",
+   "tecido": "Algodão",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "01_01001_1.png",
+    "01_01001_2.png"
+   ],
+   "pagina_origem": 7
+  },
+  {
+   "ordem": 2,
+   "referencia": "01002",
+   "nome": "Macacão curto regata / alça Silk screen",
+   "categoria": "Macacão curto",
+   "tecido": "Algodão",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "02_01002_1.png"
+   ],
+   "pagina_origem": 8
+  },
+  {
+   "ordem": 3,
+   "referencia": "01163",
+   "nome": "Macacão curto estampado",
+   "categoria": "Macacão curto",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "03_01163_1.png"
+   ],
+   "pagina_origem": 9
+  },
+  {
+   "ordem": 4,
+   "referencia": "01164",
+   "nome": "Macacão curto estampado c/botão alça",
+   "categoria": "Macacão curto",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "04_01164_1.png",
+    "04_01164_2.png"
+   ],
+   "pagina_origem": 10
+  },
+  {
+   "ordem": 5,
+   "referencia": "01003",
+   "nome": "Macacão curto c/manga Silk screen",
+   "categoria": "Macacão curto",
+   "tecido": "Algodão",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "05_01003_1.png"
+   ],
+   "pagina_origem": 11
+  },
+  {
+   "ordem": 6,
+   "referencia": "01165",
+   "nome": "Macacão curto estampado c/manga",
+   "categoria": "Macacão curto",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "06_01165_1.png"
+   ],
+   "pagina_origem": 12
+  },
+  {
+   "ordem": 7,
+   "referencia": "01181",
+   "nome": "Macacão curto estampado c/ zíper",
+   "categoria": "Macacão curto",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "07_01181_1.png",
+    "07_01181_2.png"
+   ],
+   "pagina_origem": 13
+  },
+  {
+   "ordem": 8,
+   "referencia": "01197",
+   "nome": "Macacão curto c/zíper Suede estampado",
+   "categoria": "Macacão curto",
+   "tecido": "Suede",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "08_01197_1.png",
+    "08_01197_2.png"
+   ],
+   "pagina_origem": 14
+  },
+  {
+   "ordem": 9,
+   "referencia": "01172",
+   "nome": "Macacão curto Suede estampado",
+   "categoria": "Macacão curto",
+   "tecido": "Suede",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "MENINA",
+   "observacoes": null,
+   "fotos": [
+    "09_01172_1.png",
+    "09_01172_2.png"
+   ],
+   "pagina_origem": 15
+  },
+  {
+   "ordem": 10,
+   "referencia": "01121",
+   "nome": "Body c/aplique regata",
+   "categoria": "Bodys",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "10_01121_1.png",
+    "10_01121_2.png"
+   ],
+   "pagina_origem": 17
+  },
+  {
+   "ordem": 11,
+   "referencia": "01120",
+   "nome": "Body c/aplique manga curta",
+   "categoria": "Bodys",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "11_01120_1.png"
+   ],
+   "pagina_origem": 18
+  },
+  {
+   "ordem": 12,
+   "referencia": "01124",
+   "nome": "Body Silk screen Regata",
+   "categoria": "Bodys",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "12_01124_1.png"
+   ],
+   "pagina_origem": 19
+  },
+  {
+   "ordem": 13,
+   "referencia": "01123",
+   "nome": "Body Silk screen c/Manga",
+   "categoria": "Bodys",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "13_01123_1.png"
+   ],
+   "pagina_origem": 20
+  },
+  {
+   "ordem": 14,
+   "referencia": "01154",
+   "nome": "Body Silk screen manga longa",
+   "categoria": "Bodys",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "14_01154_1.png"
+   ],
+   "pagina_origem": 21
+  },
+  {
+   "ordem": 15,
+   "referencia": "01182",
+   "nome": "Body estampado regata",
+   "categoria": "Bodys",
+   "tecido": "Suedi",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "15_01182_1.png"
+   ],
+   "pagina_origem": 22
+  },
+  {
+   "ordem": 16,
+   "referencia": "01183",
+   "nome": "Body estampado c/ manga",
+   "categoria": "Bodys",
+   "tecido": "Suedi",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "16_01183_1.png"
+   ],
+   "pagina_origem": 23
+  },
+  {
+   "ordem": 17,
+   "referencia": "01184",
+   "nome": "Body estampado c/ manga longa",
+   "categoria": "Bodys",
+   "tecido": "Suedi",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "17_01184_1.png"
+   ],
+   "pagina_origem": 24
+  },
+  {
+   "ordem": 18,
+   "referencia": "11170",
+   "nome": "Conjunto body manga longa suedine",
+   "categoria": "Conjunto, tapa fralda, calça e casaco",
+   "tecido": null,
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "18_11170_1.png",
+    "18_11170_2.png",
+    "18_11170_3.png"
+   ],
+   "pagina_origem": 26
+  },
+  {
+   "ordem": 19,
+   "referencia": "10157",
+   "nome": "Kit /2 pcs tapa fralda bordado em bichinho",
+   "categoria": "Conjunto, tapa fralda, calça e casaco",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "19_10157_1.png",
+    "19_10157_2.png"
+   ],
+   "pagina_origem": 27
+  },
+  {
+   "ordem": 20,
+   "referencia": "08169",
+   "nome": "Casaco cotton estampado",
+   "categoria": "Conjunto, tapa fralda, calça e casaco",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "20_08169_1.png"
+   ],
+   "pagina_origem": 28
+  },
+  {
+   "ordem": 21,
+   "referencia": "07171",
+   "nome": "Kit calça legging cotton e lisa e estampada c/2 pcs",
+   "categoria": "Conjunto, tapa fralda, calça e casaco",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "21_07171_1.png",
+    "21_07171_2.png"
+   ],
+   "pagina_origem": 29
+  },
+  {
+   "ordem": 22,
+   "referencia": "01195",
+   "nome": "Macacão comprido Suede estampado c/ zíper",
+   "categoria": "Macacões longo",
+   "tecido": "Suede",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "22_01195_1.png"
+   ],
+   "pagina_origem": 31
+  },
+  {
+   "ordem": 23,
+   "referencia": "01180",
+   "nome": "Macacão comprido bordado com zíper. Pés réversíveis",
+   "categoria": "Macacões longo",
+   "tecido": "Cotton liso",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "23_01180_1.png"
+   ],
+   "pagina_origem": 32
+  },
+  {
+   "ordem": 24,
+   "referencia": "01176",
+   "nome": "Macacão comprido cotton estampado c/ zíper",
+   "categoria": "Macacões longo",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "24_01176_1.png"
+   ],
+   "pagina_origem": 33
+  },
+  {
+   "ordem": 25,
+   "referencia": "01153",
+   "nome": "Macacão comprido estampado pés e mãos reversiveis",
+   "categoria": "Macacões longo",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "25_01153_1.png"
+   ],
+   "pagina_origem": 34
+  },
+  {
+   "ordem": 26,
+   "referencia": "01159",
+   "nome": "Macacão comprido c/bordado e viés estampado, pés e mãos reversíveis",
+   "categoria": "Macacões longo",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "26_01159_1.png"
+   ],
+   "pagina_origem": 35
+  },
+  {
+   "ordem": 27,
+   "referencia": "01013",
+   "nome": "Macacão esponja comprido c/ bordado",
+   "categoria": "Macacões longo",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "27_01013_1.png"
+   ],
+   "pagina_origem": 36
+  },
+  {
+   "ordem": 28,
+   "referencia": "01173",
+   "nome": "Body prematuro manga longa",
+   "categoria": "Prematuros",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "28_01173_1.png"
+   ],
+   "pagina_origem": 38
+  },
+  {
+   "ordem": 29,
+   "referencia": "07174",
+   "nome": "Calça vira pé prematuro",
+   "categoria": "Prematuros",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "29_07174_1.png"
+   ],
+   "pagina_origem": 39
+  },
+  {
+   "ordem": 30,
+   "referencia": "11190",
+   "nome": "Conjunto body manga longa e calça Suede estampado",
+   "categoria": "Prematuros",
+   "tecido": null,
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "30_11190_1.png",
+    "30_11190_2.png"
+   ],
+   "pagina_origem": 40
+  },
+  {
+   "ordem": 31,
+   "referencia": "01156",
+   "nome": "Macacão comprido esponja bola c/capuz, pés e mãos reversíveis",
+   "categoria": "Prematuros",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "31_01156_1.png",
+    "31_01156_2.png"
+   ],
+   "pagina_origem": 41
+  },
+  {
+   "ordem": 32,
+   "referencia": "01158",
+   "nome": "Macacão comprido liso viés estampado pés e mãos reversíveis",
+   "categoria": "Prematuros",
+   "tecido": "Suedine",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "32_01158_1.png"
+   ],
+   "pagina_origem": 42
+  },
+  {
+   "ordem": 33,
+   "referencia": "01160",
+   "nome": "Macacão comprido estampado pés e mãos réversíveis",
+   "categoria": "Prematuros",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "33_01160_1.png"
+   ],
+   "pagina_origem": 43
+  },
+  {
+   "ordem": 34,
+   "referencia": "01192",
+   "nome": "Macacão comprido Suede estampado c/ zíper",
+   "categoria": "Prematuros",
+   "tecido": "Suede",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "34_01192_1.png"
+   ],
+   "pagina_origem": 44
+  },
+  {
+   "ordem": 35,
+   "referencia": "01194",
+   "nome": "Macacão longo c/zíper c/aplique Cotton liso",
+   "categoria": "Prematuros",
+   "tecido": null,
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "35_01194_1.png"
+   ],
+   "pagina_origem": 45
+  },
+  {
+   "ordem": 36,
+   "referencia": "01193",
+   "nome": "Macacão comprido Cotton estampado c/ zíper",
+   "categoria": "Prematuros",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "Prematuro"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "36_01193_1.png"
+   ],
+   "pagina_origem": 46
+  },
+  {
+   "ordem": 37,
+   "referencia": "09198",
+   "nome": "Pijama manga longa estampado c/ calça",
+   "categoria": "Pijamas",
+   "tecido": "Suede",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "37_09198_1.png",
+    "37_09198_2.png"
+   ],
+   "pagina_origem": 48
+  },
+  {
+   "ordem": 38,
+   "referencia": "09199",
+   "nome": "Pijama manga longa estampado c/ calça",
+   "categoria": "Pijamas",
+   "tecido": "Suede",
+   "tamanhos": [
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "38_09199_1.png",
+    "38_09199_2.png"
+   ],
+   "pagina_origem": 49
+  },
+  {
+   "ordem": 39,
+   "referencia": "09133",
+   "nome": "Pijama manga longa Liso c/bordado",
+   "categoria": "Pijamas",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "39_09133_1.png",
+    "39_09133_2.png",
+    "39_09133_3.png"
+   ],
+   "pagina_origem": 50
+  },
+  {
+   "ordem": 40,
+   "referencia": "09026",
+   "nome": "Pijama malha pv c/ manga longa c/ calça",
+   "categoria": "Pijamas",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "40_09026_1.png",
+    "40_09026_2.png"
+   ],
+   "pagina_origem": 51
+  },
+  {
+   "ordem": 41,
+   "referencia": "09051",
+   "nome": "Pijama malha pv c/ manga longa",
+   "categoria": "Pijamas",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "41_09051_1.png",
+    "41_09051_2.png"
+   ],
+   "pagina_origem": 52
+  },
+  {
+   "ordem": 42,
+   "referencia": "09148",
+   "nome": "Pijama manga longa estampado",
+   "categoria": "Pijamas",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "42_09148_1.png",
+    "42_09148_2.png"
+   ],
+   "pagina_origem": 53
+  },
+  {
+   "ordem": 43,
+   "referencia": "07054",
+   "nome": "Kit mijão liso c/3 peças",
+   "categoria": "Mijões",
+   "tecido": null,
+   "tamanhos": [
+    "RN",
+    "1 ANO"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": "Referência 07054 no tamanho RN e 07056 no tamanho 1.",
+   "fotos": [
+    "43_07054_1.png"
+   ],
+   "pagina_origem": 55
+  },
+  {
+   "ordem": 44,
+   "referencia": "07028",
+   "nome": "Kit mijão estampado c/3 peças",
+   "categoria": "Mijões",
+   "tecido": null,
+   "tamanhos": [
+    "RN",
+    "1 ANO"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": "Referência 07028 no tamanho RN e 07045 no tamanho 1.",
+   "fotos": [
+    "44_07028_1.png"
+   ],
+   "pagina_origem": 56
+  },
+  {
+   "ordem": 45,
+   "referencia": "08205",
+   "nome": "Kit c/ 2 camisetas: lisa e estampada",
+   "categoria": "Camisetas",
+   "tecido": "Cotton",
+   "tamanhos": [
+    "RN",
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "45_08205_1.png",
+    "45_08205_2.png"
+   ],
+   "pagina_origem": 58
+  },
+  {
+   "ordem": 46,
+   "referencia": "08204",
+   "nome": "Kit camisetas com aplique c/ 3 peças",
+   "categoria": "Camisetas",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "RN",
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "46_08204_1.png"
+   ],
+   "pagina_origem": 59
+  },
+  {
+   "ordem": 47,
+   "referencia": "08203",
+   "nome": "Kit camisetas bordadas c/ 3 peças",
+   "categoria": "Camisetas",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "RN",
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "47_08203_1.png"
+   ],
+   "pagina_origem": 60
+  },
+  {
+   "ordem": 48,
+   "referencia": "08202",
+   "nome": "Kit camisetas estampadas c/ 3 peças",
+   "categoria": "Camisetas",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "RN",
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "48_08202_1.png"
+   ],
+   "pagina_origem": 61
+  },
+  {
+   "ordem": 49,
+   "referencia": "10063",
+   "nome": "Kit c/12 peças Short estampado",
+   "categoria": "Shorts",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "49_10063_1.png"
+   ],
+   "pagina_origem": 63
+  },
+  {
+   "ordem": 50,
+   "referencia": "10087",
+   "nome": "Kit c/12-peças Short liso c/ribana",
+   "categoria": "Shorts",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "50_10087_1.png"
+   ],
+   "pagina_origem": 64
+  },
+  {
+   "ordem": 51,
+   "referencia": "10065",
+   "nome": "Kit c/ 12 peças Short estampado",
+   "categoria": "Shorts",
+   "tecido": "Malha PV",
+   "tamanhos": [
+    "1 ANO",
+    "2 ANOS",
+    "3 ANOS"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "51_10065_1.png"
+   ],
+   "pagina_origem": 65
+  },
+  {
+   "ordem": 52,
+   "referencia": "03067",
+   "nome": "Saída de banho esponja c/capuz e bordado",
+   "categoria": "Roupões",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "52_03067_1.png",
+    "52_03067_2.png"
+   ],
+   "pagina_origem": 67
+  },
+  {
+   "ordem": 53,
+   "referencia": "03010",
+   "nome": "Saída de banho esponja c/detalhe em transfer",
+   "categoria": "Roupões",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "P",
+    "M",
+    "G"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "53_03010_1.png"
+   ],
+   "pagina_origem": 68
+  },
+  {
+   "ordem": 54,
+   "referencia": "03105",
+   "nome": "Saída de banho esponja bichinho bordado no capuz",
+   "categoria": "Roupões",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "54_03105_1.png"
+   ],
+   "pagina_origem": 69
+  },
+  {
+   "ordem": 55,
+   "referencia": "03161",
+   "nome": "Saída de banho esponja c/capuz em detalhes estampados",
+   "categoria": "Roupões",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "55_03161_1.png"
+   ],
+   "pagina_origem": 70
+  },
+  {
+   "ordem": 56,
+   "referencia": "05020",
+   "nome": "Babador esponja c/transfer c/1 unidade",
+   "categoria": "Babadores",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "56_05020_1.png"
+   ],
+   "pagina_origem": 72
+  },
+  {
+   "ordem": 57,
+   "referencia": "05102",
+   "nome": "Kit C/3 peças babador esponja bordado",
+   "categoria": "Babadores",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "57_05102_1.png"
+   ],
+   "pagina_origem": 73
+  },
+  {
+   "ordem": 58,
+   "referencia": "05021",
+   "nome": "Kit c/3 peças esponja babador c/transfer",
+   "categoria": "Babadores",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "58_05021_1.png",
+    "58_05021_2.png"
+   ],
+   "pagina_origem": 74
+  },
+  {
+   "ordem": 59,
+   "referencia": "06085",
+   "nome": "Kit c/3 pçs toalha esponja p/chupeta bordado",
+   "categoria": "Toalhas p/ chupeta",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "59_06085_1.png",
+    "59_06085_2.png"
+   ],
+   "pagina_origem": 76
+  },
+  {
+   "ordem": 60,
+   "referencia": "06016",
+   "nome": "Kit c/3 pçs toalha p/ chupeta esponja c/transfer",
+   "categoria": "Toalhas p/ chupeta",
+   "tecido": "Atoalhado",
+   "tamanhos": [],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "60_06016_1.png"
+   ],
+   "pagina_origem": 77
+  },
+  {
+   "ordem": 61,
+   "referencia": "06150",
+   "nome": "Kit c/3 pçs toalha p/ chupeta fralda estampada",
+   "categoria": "Toalhas p/ chupeta",
+   "tecido": "Fralda estampada",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "61_06150_1.png",
+    "61_06150_2.png",
+    "61_06150_3.png"
+   ],
+   "pagina_origem": 78
+  },
+  {
+   "ordem": 62,
+   "referencia": "06084",
+   "nome": "Toalha esponja p/chupeta bordado c/I unidade",
+   "categoria": "Toalhas p/ chupeta",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "62_06084_1.png"
+   ],
+   "pagina_origem": 79
+  },
+  {
+   "ordem": 63,
+   "referencia": "06155",
+   "nome": "Toalha esponja bola p/chupeta c/bico c/1 unidade",
+   "categoria": "Toalhas p/ chupeta",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "63_06155_1.png",
+    "63_06155_2.png"
+   ],
+   "pagina_origem": 80
+  },
+  {
+   "ordem": 64,
+   "referencia": "04151",
+   "nome": "Toalha c/capuz esponja bola c/vies gripir liso",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "64_04151_1.png",
+    "64_04151_2.png"
+   ],
+   "pagina_origem": 82
+  },
+  {
+   "ordem": 65,
+   "referencia": "04152",
+   "nome": "Toalha c/capuz esponja bola c/viés gripir estampado",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "65_04152_1.png",
+    "65_04152_2.png"
+   ],
+   "pagina_origem": 83
+  },
+  {
+   "ordem": 66,
+   "referencia": "04017",
+   "nome": "Toalha esponja c/capuz bordada c/bico",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "66_04017_1.png",
+    "66_04017_2.png"
+   ],
+   "pagina_origem": 84
+  },
+  {
+   "ordem": 67,
+   "referencia": "04068",
+   "nome": "Toalha esponja c/capuz bordado",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "67_04068_1.png"
+   ],
+   "pagina_origem": 85
+  },
+  {
+   "ordem": 68,
+   "referencia": "04011",
+   "nome": "Toalha esponja c/capuz bichinho bordado",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "68_04011_1.png"
+   ],
+   "pagina_origem": 86
+  },
+  {
+   "ordem": 69,
+   "referencia": "04005",
+   "nome": "Toalha esponja transfer no capuz",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "69_04005_1.png"
+   ],
+   "pagina_origem": 87
+  },
+  {
+   "ordem": 70,
+   "referencia": "04006",
+   "nome": "Toalha esponja c/capuz estampado",
+   "categoria": "Toalhas",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "50x60"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "70_04006_1.png"
+   ],
+   "pagina_origem": 88
+  },
+  {
+   "ordem": 71,
+   "referencia": "04201",
+   "nome": "Toalha soft bordado c/ capuz",
+   "categoria": "Toalhas",
+   "tecido": null,
+   "tamanhos": [
+    "80x90"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "71_04201_1.png",
+    "71_04201_2.png"
+   ],
+   "pagina_origem": 89
+  },
+  {
+   "ordem": 72,
+   "referencia": "04110",
+   "nome": "Toalha fralda estampada c/capuz bordado e viés c/bico",
+   "categoria": "Toalhas",
+   "tecido": "Fralda estampada",
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "72_04110_1.png",
+    "72_04110_2.png"
+   ],
+   "pagina_origem": 90
+  },
+  {
+   "ordem": 73,
+   "referencia": "04112",
+   "nome": "Toalha esponja c/ forro fralda estampada c/ capuz bordado com bico",
+   "categoria": "Toalhas",
+   "tecido": null,
+   "tamanhos": [
+    "60x70"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "73_04112_1.png",
+    "73_04112_2.png"
+   ],
+   "pagina_origem": 91
+  },
+  {
+   "ordem": 74,
+   "referencia": "04109",
+   "nome": "Kit c/3 peças bordado toalha c/capuz, toalha p/chupeta e babador",
+   "categoria": "Kits de toalha",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "74_04109_1.png",
+    "74_04109_2.png",
+    "74_04109_3.png"
+   ],
+   "pagina_origem": 93
+  },
+  {
+   "ordem": 75,
+   "referencia": "04018",
+   "nome": "Kit c/3 pcs transfer toalha esponja c/capuz, toalha p/chupeta e babador",
+   "categoria": "Kits de toalha",
+   "tecido": "Atoalhado",
+   "tamanhos": [
+    "Único"
+   ],
+   "sexo": "UNISSEX",
+   "observacoes": null,
+   "fotos": [
+    "75_04018_1.png",
+    "75_04018_2.png",
+    "75_04018_3.png"
+   ],
+   "pagina_origem": 94
+  }
+ ]
+}

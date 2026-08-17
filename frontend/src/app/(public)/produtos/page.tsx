@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Catálogo completo',
-  description: 'Todas as peças do catálogo Fruto da Malha, na ordem do nosso catálogo.',
+  description: 'Todas as peças Fruto da Malha para o seu negócio.',
   alternates: { canonical: '/produtos' },
 };
 
@@ -23,7 +23,7 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
 
   // Nenhum parâmetro de ordenação na URL: o backend já entrega por `ordem` ASC, que é a
   // sequência comercial definida pela loja. Ordenar aqui por nome, preço ou data desmontaria
-  // a organização do catálogo impresso.
+  // a organização da vitrine. Essa sequência é uma regra interna — nada na interface a explica.
   const produtos = await api.get<PageResponse<ProdutoSummaryResponse>>(
     `/produtos?page=${page}&size=${PRODUTOS_POR_PAGINA}`,
     { cache: 'no-store' }
@@ -33,7 +33,7 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
     <div className="container py-8">
       <h1 className="titulo-secao">Todos os produtos</h1>
       <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-600">
-        O catálogo inteiro na mesma ordem em que as peças aparecem no nosso catálogo.
+        Todas as peças Fruto da Malha para o seu negócio.
       </p>
       <p className="mt-1.5 text-sm text-ink-400">
         {produtos.totalElements} {produtos.totalElements === 1 ? 'peça' : 'peças'}
@@ -42,7 +42,7 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
       <div className="mt-6">
         <ProductGrid
           produtos={produtos.content}
-          mensagemVazia="O catálogo ainda está sendo montado."
+          mensagemVazia="Novas peças chegando em breve."
         />
       </div>
 

@@ -128,19 +128,47 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
           error={errors.preco?.message}
           {...register('preco')}
         />
-        <Select
-          label="Categoria"
-          required
-          placeholder="Selecione"
-          options={(categorias ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
-          error={errors.categoriaId?.message}
-          {...register('categoriaId')}
+        {/*
+          Categoria e Coleção usam `Controller`, e não `register`, porque as opções chegam por
+          requisição. Com um <select> não controlado, o valor inicial do produto é aplicado no
+          primeiro render — quando a lista ainda está vazia e não existe <option> correspondente —
+          e o campo trava no placeholder. Na edição isso derrubava a validação de "Categoria é
+          obrigatória" e impedia salvar qualquer alteração. Sendo controlado, o valor é reaplicado
+          assim que as opções aparecem.
+        */}
+        <Controller
+          name="categoriaId"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label="Categoria"
+              required
+              placeholder="Selecione"
+              options={(categorias ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
+              error={errors.categoriaId?.message}
+              name={field.name}
+              ref={field.ref}
+              onBlur={field.onBlur}
+              value={field.value ? String(field.value) : ''}
+              onChange={(e) => field.onChange(e.target.value)}
+            />
+          )}
         />
-        <Select
-          label="Coleção"
-          placeholder="Nenhuma"
-          options={(colecoes ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
-          {...register('colecaoId')}
+        <Controller
+          name="colecaoId"
+          control={control}
+          render={({ field }) => (
+            <Select
+              label="Coleção"
+              placeholder="Nenhuma"
+              options={(colecoes ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
+              name={field.name}
+              ref={field.ref}
+              onBlur={field.onBlur}
+              value={field.value ? String(field.value) : ''}
+              onChange={(e) => field.onChange(e.target.value)}
+            />
+          )}
         />
       </div>
 

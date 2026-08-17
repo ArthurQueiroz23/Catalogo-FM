@@ -90,7 +90,7 @@ export default async function HomePage() {
         <section className="container py-8 sm:py-10">
           <SectionHeading
             title="Todos os produtos"
-            subtitle="Na mesma ordem do nosso catálogo"
+            subtitle="Conheça nossa coleção"
             href="/produtos"
             hrefLabel="Ver tudo"
           />
@@ -109,9 +109,9 @@ export default async function HomePage() {
 
       {catalogoVazio && (
         <div className="container py-16 text-center">
-          <p className="text-lg font-semibold text-ink-700">O catálogo ainda está sendo montado.</p>
+          <p className="text-lg font-semibold text-ink-700">Novas peças chegando em breve.</p>
           <p className="mt-2 text-[0.9375rem] text-ink-500">
-            Assim que as peças forem cadastradas, elas aparecem aqui automaticamente.
+            Fale com a gente pelo WhatsApp para conhecer nossas peças.
           </p>
         </div>
       )}
