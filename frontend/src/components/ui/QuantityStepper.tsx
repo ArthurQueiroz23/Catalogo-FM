@@ -18,11 +18,15 @@ interface QuantityStepperProps {
 export function QuantityStepper({ value, onChange, min = 0, max = 999, label }: QuantityStepperProps) {
   const estiloBotao =
     'flex h-11 w-11 items-center justify-center rounded-pilula text-ink-700 transition-colors ' +
-    'hover:bg-coral-100 hover:text-coral-800 disabled:cursor-not-allowed disabled:opacity-30 ' +
-    'disabled:hover:bg-transparent foco-marca';
+    'duration-200 hover:bg-coral-100 hover:text-coral-800 disabled:cursor-not-allowed ' +
+    'disabled:opacity-25 disabled:hover:bg-transparent foco-marca';
 
   return (
-    <div className="inline-flex items-center rounded-pilula border-2 border-coral-200 bg-creme-50">
+    <div
+      className={`inline-flex items-center rounded-pilula bg-creme-50 shadow-suave ring-1 transition-colors ${
+        value > 0 ? 'ring-coral-300' : 'ring-coral-200'
+      }`}
+    >
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
@@ -34,8 +38,8 @@ export function QuantityStepper({ value, onChange, min = 0, max = 999, label }: 
       </button>
       <span
         aria-live="polite"
-        className={`w-9 text-center text-base font-bold tabular-nums ${
-          value > 0 ? 'text-coral-800' : 'text-ink-300'
+        className={`w-9 text-center text-base font-extrabold tabular-nums ${
+          value > 0 ? 'text-coral-800' : 'text-ink-500'
         }`}
       >
         {value}

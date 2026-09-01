@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useColecoes, useExcluirColecao } from '@/hooks/useColecoes';
 import type { ColecaoResponse } from '@/types/api';
@@ -37,22 +38,26 @@ export default function AdminColecoesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="titulo-pagina">Coleções</h1>
-          <p className="mt-1 text-[0.9375rem] text-ink-500">Agrupamentos opcionais de produtos (ex.: Verão 2026).</p>
-        </div>
-        <Button onClick={abrirCriacao}>
-          <Plus className="h-4 w-4" />
-          Nova coleção
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="Painel"
+        title="Coleções"
+        description="Agrupamentos opcionais de peças (ex.: Verão 2026). Uma peça pode ficar sem coleção."
+        contagem={
+          colecoes ? { valor: colecoes.length, singular: 'coleção', plural: 'coleções' } : undefined
+        }
+        acao={
+          <Button onClick={abrirCriacao}>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Nova coleção
+          </Button>
+        }
+      />
 
-      <div className="mt-6">
+      <div>
         {isLoading ? (
           <div className="flex flex-col gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="h-16" />
+              <Skeleton key={index} className="h-[4.25rem] rounded-2xl" />
             ))}
           </div>
         ) : !colecoes || colecoes.length === 0 ? (
@@ -70,32 +75,38 @@ export default function AdminColecoesPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {colecoes.map((colecao) => (
-              <div key={colecao.id} className="flex items-center gap-4 rounded-2xl bg-creme-50/80 px-4 py-3">
+              <div
+                key={colecao.id}
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-creme-50 px-4 py-3
+                  shadow-suave ring-1 ring-coral-100 transition-shadow hover:shadow-peca"
+              >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-ink-900">{colecao.nome}</p>
-                  <p className="text-sm text-ink-400">
-                    {colecao.totalProdutos} {colecao.totalProdutos === 1 ? 'produto' : 'produtos'}
+                  <p className="text-[0.8125rem] text-ink-500">
+                    {colecao.totalProdutos} {colecao.totalProdutos === 1 ? 'peça' : 'peças'}
                   </p>
                 </div>
 
                 <Badge tone={colecao.ativo ? 'green' : 'gray'}>{colecao.ativo ? 'Ativa' : 'Inativa'}</Badge>
 
-                <div className="flex shrink-0 gap-1">
+                <div className="ml-auto flex shrink-0 gap-0.5">
                   <button
                     type="button"
                     onClick={() => abrirEdicao(colecao)}
                     aria-label={`Editar ${colecao.nome}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                    title="Editar"
+                    className="btn-icone"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-4 w-4" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setColecaoExcluindo(colecao)}
                     aria-label={`Excluir ${colecao.nome}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                    title="Excluir"
+                    className="btn-icone"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>

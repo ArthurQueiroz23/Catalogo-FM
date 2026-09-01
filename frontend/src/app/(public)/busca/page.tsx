@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
+import { Search } from 'lucide-react';
+import Link from 'next/link';
 import { ProductGrid } from '@/components/product/ProductGrid';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PaginationLinks } from '@/components/ui/PaginationLinks';
 import { api } from '@/lib/api';
 import { PRODUTOS_POR_PAGINA, lerNumeroDaPagina } from '@/lib/paginacao';
@@ -36,35 +40,35 @@ export default async function BuscaPage({ searchParams }: BuscaPageProps) {
     : null;
 
   return (
-    <div className="container py-8">
-      <h1 className="titulo-secao">
-        {termo ? (
-          <>
-            Resultados para <span className="text-ink-800">&ldquo;{termo}&rdquo;</span>
-          </>
-        ) : (
-          'Buscar peças'
-        )}
-      </h1>
+    <div className="container secao-compacta">
+      <PageHeader
+        eyebrow="Busca"
+        title={termo ? <>Resultados para &ldquo;{termo}&rdquo;</> : 'Buscar peças'}
+        contagem={
+          produtos
+            ? { valor: produtos.totalElements, singular: 'peça encontrada', plural: 'peças encontradas' }
+            : undefined
+        }
+        migalhas={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Busca' }]}
+        acao={
+          <Link href="/produtos" className="btn-secondary">
+            Ver o catálogo completo
+          </Link>
+        }
+      />
 
-      {produtos && (
-        <p className="mt-1.5 text-sm text-ink-400">
-          {produtos.totalElements} {produtos.totalElements === 1 ? 'peça encontrada' : 'peças encontradas'}
-        </p>
+      {termo ? (
+        <ProductGrid
+          produtos={produtos?.content ?? []}
+          mensagemVazia={`Nenhuma peça encontrada para "${termo}".`}
+        />
+      ) : (
+        <EmptyState
+          icon={Search}
+          title="O que você procura?"
+          description="Digite o nome ou a referência de uma peça no campo de busca do topo da página."
+        />
       )}
-
-      <div className="mt-6">
-        {termo ? (
-          <ProductGrid
-            produtos={produtos?.content ?? []}
-            mensagemVazia={`Nenhuma peça encontrada para "${termo}".`}
-          />
-        ) : (
-          <p className="py-16 text-center text-[0.9375rem] text-ink-500">
-            Digite o nome ou a referência de uma peça para encontrá-la.
-          </p>
-        )}
-      </div>
 
       {produtos && (
         <PaginationLinks

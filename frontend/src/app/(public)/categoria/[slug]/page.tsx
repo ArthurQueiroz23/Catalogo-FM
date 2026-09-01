@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ProductGrid } from '@/components/product/ProductGrid';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PaginationLinks } from '@/components/ui/PaginationLinks';
 import { ApiError, api } from '@/lib/api';
 import { PRODUTOS_POR_PAGINA, lerNumeroDaPagina } from '@/lib/paginacao';
@@ -53,18 +54,23 @@ export default async function CategoriaPage({ params, searchParams }: CategoriaP
   );
 
   return (
-    <div className="container py-8">
-      <h1 className="titulo-secao">{categoria.nome}</h1>
-      {categoria.descricao && (
-        <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-600">{categoria.descricao}</p>
-      )}
-      <p className="mt-1.5 text-sm text-ink-400">
-        {produtos.totalElements} {produtos.totalElements === 1 ? 'peça' : 'peças'}
-      </p>
+    <div className="container secao-compacta">
+      <PageHeader
+        eyebrow="Categoria"
+        title={categoria.nome}
+        description={categoria.descricao}
+        contagem={{ valor: produtos.totalElements, singular: 'peça', plural: 'peças' }}
+        migalhas={[
+          { rotulo: 'Início', href: '/' },
+          { rotulo: 'Categorias', href: '/categoria' },
+          { rotulo: categoria.nome },
+        ]}
+      />
 
-      <div className="mt-6">
-        <ProductGrid produtos={produtos.content} />
-      </div>
+      <ProductGrid
+        produtos={produtos.content}
+        mensagemVazia="Nenhuma peça publicada nesta categoria por enquanto."
+      />
 
       <PaginationLinks
         page={produtos.page}

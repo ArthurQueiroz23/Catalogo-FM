@@ -1,16 +1,17 @@
 'use client';
 
 import {
+  Camera,
   Copy,
   Eye,
   EyeOff,
-  ImageOff,
   Package,
   Pencil,
   Plus,
-  Search,
+  SlidersHorizontal,
   Star,
   Trash2,
+  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Input } from '@/components/ui/Input';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Pagination } from '@/components/ui/Pagination';
 import { Select } from '@/components/ui/Select';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -70,11 +72,21 @@ export default function AdminProdutosPage() {
   const duplicar = useDuplicarProduto();
   const excluir = useExcluirProduto();
 
+  const temFiltro = Boolean(q || categoria || sexo || status);
+
   function atualizarFiltro<T>(setter: (valor: T) => void) {
     return (valor: T) => {
       setter(valor);
       setPage(0);
     };
+  }
+
+  function limparFiltros() {
+    setQ('');
+    setCategoria('');
+    setSexo('');
+    setStatus('');
+    setPage(0);
   }
 
   async function confirmarExclusao() {
@@ -85,113 +97,162 @@ export default function AdminProdutosPage() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="titulo-pagina">Peças</h1>
-          <p className="mt-1 text-[0.9375rem] text-ink-500">{data ? `${data.totalElements} peças cadastradas` : ' '}</p>
-        </div>
-        <Link href="/admin/produtos/novo">
-          <Button>
-            <Plus className="h-4 w-4" />
+      <PageHeader
+        eyebrow="Painel"
+        title="Peças"
+        description="Cadastre, publique e organize as peças que aparecem no catálogo."
+        contagem={
+          data ? { valor: data.totalElements, singular: 'peça cadastrada', plural: 'peças cadastradas' } : undefined
+        }
+        acao={
+          <Link href="/admin/produtos/novo" className="btn-primary">
+            <Plus className="h-4 w-4" aria-hidden="true" />
             Nova peça
-          </Button>
-        </Link>
-      </div>
+          </Link>
+        }
+      />
 
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Input
-          placeholder="Buscar por nome, referência..."
-          value={q}
-          onChange={(event) => atualizarFiltro(setQ)(event.target.value)}
-        />
-        <Select
-          placeholder="Todas as categorias"
-          options={(categorias ?? []).map((c) => ({ value: c.slug, label: c.nome }))}
-          value={categoria}
-          onChange={(event) => atualizarFiltro(setCategoria)(event.target.value)}
-        />
-        <Select
-          placeholder="Todos os sexos"
-          options={SEXO_OPCOES}
-          value={sexo}
-          onChange={(event) => atualizarFiltro(setSexo)(event.target.value as Sexo | '')}
-        />
-        <Select
-          placeholder="Todos os status"
-          options={STATUS_OPCOES}
-          value={status}
-          onChange={(event) => atualizarFiltro(setStatus)(event.target.value as StatusProduto | '')}
-        />
-      </div>
+      {/* Filtros num painel próprio: separados da lista, deixam claro que a contagem exibida é
+          o resultado de um recorte, e não o catálogo inteiro. */}
+      <section className="superficie p-4 sm:p-5" aria-label="Filtros">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="flex items-center gap-2 text-sm font-bold text-ink-700">
+            <SlidersHorizontal className="h-4 w-4 text-coral-600" aria-hidden="true" />
+            Filtrar
+          </p>
+          {temFiltro && (
+            <button
+              type="button"
+              onClick={limparFiltros}
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-pilula px-3 text-[0.8125rem]
+                font-bold text-ink-500 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+              Limpar filtros
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Input
+            placeholder="Buscar por nome, referência..."
+            aria-label="Buscar peça"
+            value={q}
+            onChange={(event) => atualizarFiltro(setQ)(event.target.value)}
+          />
+          <Select
+            placeholder="Todas as categorias"
+            aria-label="Filtrar por categoria"
+            options={(categorias ?? []).map((c) => ({ value: c.slug, label: c.nome }))}
+            value={categoria}
+            onChange={(event) => atualizarFiltro(setCategoria)(event.target.value)}
+          />
+          <Select
+            placeholder="Todos os sexos"
+            aria-label="Filtrar por sexo"
+            options={SEXO_OPCOES}
+            value={sexo}
+            onChange={(event) => atualizarFiltro(setSexo)(event.target.value as Sexo | '')}
+          />
+          <Select
+            placeholder="Todos os status"
+            aria-label="Filtrar por status"
+            options={STATUS_OPCOES}
+            value={status}
+            onChange={(event) => atualizarFiltro(setStatus)(event.target.value as StatusProduto | '')}
+          />
+        </div>
+      </section>
 
       <div className="mt-6">
         {isLoading ? (
           <div className="flex flex-col gap-2">
             {Array.from({ length: 6 }).map((_, index) => (
-              <Skeleton key={index} className="h-16" />
+              <Skeleton key={index} className="h-[4.75rem] rounded-2xl" />
             ))}
           </div>
         ) : !data || data.content.length === 0 ? (
           <EmptyState
             icon={Package}
             title="Nenhuma peça encontrada"
-            description="Ajuste os filtros ou cadastre uma peça nova."
+            description={
+              temFiltro
+                ? 'Nenhuma peça corresponde a estes filtros. Tente limpar o recorte.'
+                : 'Cadastre a primeira peça para ela aparecer no catálogo.'
+            }
             action={
-              <Link href="/admin/produtos/novo">
-                <Button variant="secondary">
-                  <Plus className="h-4 w-4" />
-                  Nova peça
+              temFiltro ? (
+                <Button variant="secondary" onClick={limparFiltros}>
+                  Limpar filtros
                 </Button>
-              </Link>
+              ) : (
+                <Link href="/admin/produtos/novo" className="btn-secondary">
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  Nova peça
+                </Link>
+              )
             }
           />
         ) : (
           <div className={isPlaceholderData ? 'opacity-60 transition-opacity' : ''}>
-            <div className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-2">
               {data.content.map((produto) => (
-                <div
+                <li
                   key={produto.id}
-                  className="flex flex-wrap items-center gap-4 rounded-2xl bg-creme-50/80 px-4 py-3"
+                  className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl bg-creme-50 p-3
+                    shadow-suave ring-1 ring-coral-100 transition-shadow hover:shadow-peca"
                 >
-                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-creme-50">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-creme-100 ring-1 ring-coral-100">
                     {produto.imagemPrincipalUrl ? (
-                      <Image src={produto.imagemPrincipalUrl} alt="" fill sizes="48px" className="object-cover" />
+                      <Image
+                        src={produto.imagemPrincipalUrl}
+                        alt=""
+                        fill
+                        sizes="56px"
+                        className="object-contain p-1"
+                      />
                     ) : (
-                      <span className="flex h-full w-full items-center justify-center text-ink-300">
-                        <ImageOff className="h-5 w-5" />
+                      <span className="flex h-full w-full items-center justify-center text-coral-200">
+                        <Camera className="h-5 w-5" aria-hidden="true" />
                       </span>
                     )}
                   </div>
 
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-bold text-ink-900">{produto.nome}</p>
-                    <p className="text-sm text-ink-400">
+                  <div className="min-w-0 flex-1 basis-48">
+                    {/* O `truncate` precisa ficar no elemento de texto, não no contêiner
+                        flex: num `display:flex`, o corte com reticências não se aplica ao
+                        conteúdo, e o nome longo era cortado na borda do card sem aviso. */}
+                    <p className="flex items-center gap-1.5 font-bold text-ink-900">
+                      {produto.destaque && (
+                        <Star
+                          className="h-3.5 w-3.5 shrink-0 fill-coral-400 text-coral-400"
+                          aria-label="Peça em destaque"
+                        />
+                      )}
+                      <span className="truncate">{produto.nome}</span>
+                    </p>
+                    <p className="truncate text-[0.8125rem] text-ink-500">
                       Ref. {produto.referencia} · {produto.categoriaNome}
                     </p>
                   </div>
 
-                  <div className="flex shrink-0 items-center gap-1.5">
-                    {produto.destaque && (
-                      <span title="Destaque" className="text-coral-500">
-                        <Star className="h-4 w-4 fill-current" />
-                      </span>
-                    )}
+                  <div className="flex items-center gap-3">
                     <Badge tone={produto.status === 'ATIVO' ? 'green' : 'gray'}>
                       {produto.status === 'ATIVO' ? 'Ativo' : 'Oculto'}
                     </Badge>
+                    <p className="w-24 text-right font-bold tabular-nums text-ink-800">
+                      {formatarPreco(produto.preco)}
+                    </p>
                   </div>
 
-                  <p className="w-24 shrink-0 text-right text-sm font-semibold text-ink-700">
-                    {formatarPreco(produto.preco)}
-                  </p>
-
-                  <div className="flex shrink-0 gap-1">
+                  <div className="ml-auto flex shrink-0 gap-0.5">
                     <Link
                       href={`/admin/produtos/${produto.id}`}
                       aria-label={`Editar ${produto.nome}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                      title="Editar"
+                      className="btn-icone"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" aria-hidden="true" />
                     </Link>
                     <button
                       type="button"
@@ -202,32 +263,39 @@ export default function AdminProdutosPage() {
                         })
                       }
                       aria-label={produto.status === 'ATIVO' ? 'Ocultar produto' : 'Ativar produto'}
-                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                      title={produto.status === 'ATIVO' ? 'Ocultar do site' : 'Publicar no site'}
+                      className="btn-icone"
                     >
-                      {produto.status === 'ATIVO' ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {produto.status === 'ATIVO' ? (
+                        <EyeOff className="h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Eye className="h-4 w-4" aria-hidden="true" />
+                      )}
                     </button>
                     <button
                       type="button"
                       onClick={() => duplicar.mutate(produto.id)}
                       aria-label={`Duplicar ${produto.nome}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                      title="Duplicar"
+                      className="btn-icone"
                     >
-                      <Copy className="h-4 w-4" />
+                      <Copy className="h-4 w-4" aria-hidden="true" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setProdutoExcluindo(produto)}
                       aria-label={`Excluir ${produto.nome}`}
-                      className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                      title="Excluir"
+                      className="btn-icone"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
 
-            <div className="mt-4">
+            <div className="mt-6">
               <Pagination page={data.page} totalPages={data.totalPages} onPageChange={setPage} />
             </div>
           </div>

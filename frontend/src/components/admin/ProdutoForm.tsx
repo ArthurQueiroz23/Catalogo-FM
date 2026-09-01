@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Controller, useForm } from 'react-hook-form';
+import { FormSection } from '@/components/admin/FormSection';
 import { TamanhoCheckboxGroup } from '@/components/admin/TamanhoCheckboxGroup';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -104,82 +105,90 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Input label="Nome" required error={errors.nome?.message} {...register('nome')} />
-        <Input
-          label="Referência"
-          required
-          hint="Código usado na URL do produto e nas mensagens de WhatsApp"
-          error={errors.referencia?.message}
-          {...register('referencia')}
-        />
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <FormSection
+        titulo="Identificação"
+        descricao="É o que a cliente lê primeiro na página da peça e na mensagem de WhatsApp."
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Input label="Nome" required error={errors.nome?.message} {...register('nome')} />
+          <Input
+            label="Referência"
+            required
+            hint="Código usado na URL do produto e nas mensagens de WhatsApp"
+            error={errors.referencia?.message}
+            {...register('referencia')}
+          />
+        </div>
 
-      <Textarea label="Descrição" error={errors.descricao?.message} {...register('descricao')} />
+        <Textarea label="Descrição" error={errors.descricao?.message} {...register('descricao')} />
+      </FormSection>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Input
-          label="Preço (R$)"
-          type="number"
-          step="0.01"
-          min="0"
-          required
-          error={errors.preco?.message}
-          {...register('preco')}
-        />
-        {/*
-          Categoria e Coleção usam `Controller`, e não `register`, porque as opções chegam por
-          requisição. Com um <select> não controlado, o valor inicial do produto é aplicado no
-          primeiro render — quando a lista ainda está vazia e não existe <option> correspondente —
-          e o campo trava no placeholder. Na edição isso derrubava a validação de "Categoria é
-          obrigatória" e impedia salvar qualquer alteração. Sendo controlado, o valor é reaplicado
-          assim que as opções aparecem.
-        */}
-        <Controller
-          name="categoriaId"
-          control={control}
-          render={({ field }) => (
-            <Select
-              label="Categoria"
-              required
-              placeholder="Selecione"
-              options={(categorias ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
-              error={errors.categoriaId?.message}
-              name={field.name}
-              ref={field.ref}
-              onBlur={field.onBlur}
-              value={field.value ? String(field.value) : ''}
-              onChange={(e) => field.onChange(e.target.value)}
-            />
-          )}
-        />
-        <Controller
-          name="colecaoId"
-          control={control}
-          render={({ field }) => (
-            <Select
-              label="Coleção"
-              placeholder="Nenhuma"
-              options={(colecoes ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
-              name={field.name}
-              ref={field.ref}
-              onBlur={field.onBlur}
-              value={field.value ? String(field.value) : ''}
-              onChange={(e) => field.onChange(e.target.value)}
-            />
-          )}
-        />
-      </div>
+      <FormSection titulo="Preço e organização" descricao="Onde a peça aparece no catálogo e por quanto ela é vendida.">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <Input
+            label="Preço (R$)"
+            type="number"
+            step="0.01"
+            min="0"
+            required
+            error={errors.preco?.message}
+            {...register('preco')}
+          />
+          {/*
+            Categoria e Coleção usam `Controller`, e não `register`, porque as opções chegam por
+            requisição. Com um <select> não controlado, o valor inicial do produto é aplicado no
+            primeiro render — quando a lista ainda está vazia e não existe <option> correspondente —
+            e o campo trava no placeholder. Na edição isso derrubava a validação de "Categoria é
+            obrigatória" e impedia salvar qualquer alteração. Sendo controlado, o valor é reaplicado
+            assim que as opções aparecem.
+          */}
+          <Controller
+            name="categoriaId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                label="Categoria"
+                required
+                placeholder="Selecione"
+                options={(categorias ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
+                error={errors.categoriaId?.message}
+                name={field.name}
+                ref={field.ref}
+                onBlur={field.onBlur}
+                value={field.value ? String(field.value) : ''}
+                onChange={(e) => field.onChange(e.target.value)}
+              />
+            )}
+          />
+          <Controller
+            name="colecaoId"
+            control={control}
+            render={({ field }) => (
+              <Select
+                label="Coleção"
+                placeholder="Nenhuma"
+                options={(colecoes ?? []).map((c) => ({ value: String(c.id), label: c.nome }))}
+                name={field.name}
+                ref={field.ref}
+                onBlur={field.onBlur}
+                value={field.value ? String(field.value) : ''}
+                onChange={(e) => field.onChange(e.target.value)}
+              />
+            )}
+          />
+        </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Input label="Tecido" error={errors.tecido?.message} {...register('tecido')} />
-        <Select label="Sexo" required options={SEXO_OPCOES} error={errors.sexo?.message} {...register('sexo')} />
-        <Select label="Status" options={STATUS_OPCOES} {...register('status')} />
-      </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Input label="Tecido" hint="Ex.: Suedine, malha PV" error={errors.tecido?.message} {...register('tecido')} />
+          <Select label="Sexo" required options={SEXO_OPCOES} error={errors.sexo?.message} {...register('sexo')} />
+        </div>
+      </FormSection>
 
-      <div>
-        <p className="mb-2 text-sm font-medium text-ink-700">Tamanhos disponíveis</p>
+      <FormSection
+        titulo="Tamanhos disponíveis"
+        descricao="Só os tamanhos marcados aparecem para a cliente escolher quantidade."
+      >
         <Controller
           name="tamanhoIds"
           control={control}
@@ -192,35 +201,48 @@ export function ProdutoForm({ produtoExistente }: ProdutoFormProps) {
             />
           )}
         />
-      </div>
+      </FormSection>
 
-      <Textarea
-        label="Observações"
-        hint="Aparece na página do produto, abaixo da descrição (ex.: “veste um número menor”)"
-        error={errors.observacoes?.message}
-        {...register('observacoes')}
-      />
+      <FormSection titulo="Publicação" descricao="Se a peça aparece no site e onde ela ganha destaque.">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Select label="Status" options={STATUS_OPCOES} {...register('status')} />
+        </div>
 
-      <div className="rounded-2xl border border-coral-100 bg-creme-50 p-4">
-        {/*
-          `lancamento` continua existindo no banco e no contrato da API, mas deixou de ter
-          controle na tela: manter dois destaques obrigava a administradora a lembrar de
-          desmarcar "Lançamento" manualmente, e a home envelhecia sozinha. O valor atual do
-          produto é preservado no submit (ver `valoresIniciais`).
-        */}
-        <Switch
-          label="Produto em destaque"
-          description="Aparece na seção 'Produtos em destaque' da home"
-          {...register('destaque')}
+        <Textarea
+          label="Observações"
+          hint="Aparece na página do produto, abaixo da descrição (ex.: “veste um número menor”)"
+          error={errors.observacoes?.message}
+          {...register('observacoes')}
         />
-      </div>
 
-      <div className="flex justify-end gap-3 border-t border-coral-100 pt-4">
+        <div className="rounded-2xl bg-creme-100 p-4 ring-1 ring-coral-100">
+          {/*
+            `lancamento` continua existindo no banco e no contrato da API, mas deixou de ter
+            controle na tela: manter dois destaques obrigava a administradora a lembrar de
+            desmarcar "Lançamento" manualmente, e a home envelhecia sozinha. O valor atual do
+            produto é preservado no submit (ver `valoresIniciais`).
+          */}
+          <Switch
+            label="Peça em destaque"
+            description="Aparece na vitrine de destaques, no topo da home"
+            {...register('destaque')}
+          />
+        </div>
+      </FormSection>
+
+      {/*
+        Barra de ações grudada no rodapé da janela: o formulário é mais alto que a tela, e sem
+        isso salvar exigia rolar até o fim depois de cada ajuste.
+      */}
+      <div
+        className="sticky bottom-4 z-10 flex flex-wrap items-center justify-end gap-3 rounded-peca
+          bg-creme-50/95 p-4 shadow-flutuante ring-1 ring-coral-100 backdrop-blur"
+      >
         <Button type="button" variant="secondary" onClick={() => router.push('/admin/produtos')} disabled={salvando}>
           Cancelar
         </Button>
         <Button type="submit" loading={salvando}>
-          {produtoExistente ? 'Salvar alterações' : 'Criar produto e continuar'}
+          {produtoExistente ? 'Salvar alterações' : 'Criar peça e continuar'}
         </Button>
       </div>
     </form>

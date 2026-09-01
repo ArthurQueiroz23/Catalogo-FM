@@ -10,7 +10,7 @@ import type { Config } from 'tailwindcss';
  *
  * ⚠️ O coral #FFA85A tem contraste 1.85:1 sobre o creme — no PDF ele carrega 97% do texto,
  * mas isso só funciona em impressão a 24pt. Na web ele é **cor de preenchimento**, nunca de
- * texto corrido. Texto usa `ink` (marrom); marca em texto usa `coral-800`.
+ * texto corrido. Texto usa `ink` (marrom); marca em texto usa `coral-700`/`coral-800`.
  */
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
@@ -58,10 +58,17 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // Manuscrita em todo o site, como no catálogo. Shantell Sans é a única manuscrita
-        // variável do Google Fonts desenhada para uso em interface — aguenta texto corrido,
-        // formulários e números sem virar decoração ilegível.
-        sans: ['var(--font-marca)', 'ui-rounded', 'Comic Sans MS', 'cursive'],
+        // Duas fontes com papéis separados (ver docs/DESIGN_SYSTEM.md §3.2):
+        //
+        // `sans` (padrão de todo o site) é a Nunito — humanista, de terminações arredondadas,
+        // desenhada para texto de interface. É ela que carrega leitura corrida, formulários,
+        // tabelas, preços e o painel inteiro.
+        //
+        // `marca` é a Shantell Sans, a manuscrita que representa o catálogo impresso. Fica
+        // reservada para títulos, logotipo e chamadas — onde ela é personalidade, e não
+        // obstáculo de leitura.
+        sans: ['var(--font-ui)', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Arial', 'sans-serif'],
+        marca: ['var(--font-marca)', 'ui-rounded', 'Comic Sans MS', 'cursive'],
       },
       backgroundImage: {
         // Ladrilho de rabiscos infantis recortado do próprio catálogo e espelhado nos dois
@@ -75,25 +82,47 @@ const config: Config = {
       },
       boxShadow: {
         // Sombras muito suaves e quentes — o catálogo não tem sombra dura em lugar nenhum.
-        peca: '0 2px 16px -4px rgba(117, 90, 73, 0.14)',
-        flutuante: '0 8px 32px -8px rgba(117, 90, 73, 0.22)',
+        // Duas camadas (contato + difusa) em vez de uma só: é o que dá sensação de peso real
+        // sem escurecer o creme.
+        suave: '0 1px 2px rgba(117, 90, 73, 0.05), 0 2px 8px -4px rgba(117, 90, 73, 0.10)',
+        peca: '0 1px 2px rgba(117, 90, 73, 0.05), 0 8px 24px -12px rgba(117, 90, 73, 0.20)',
+        flutuante: '0 2px 4px rgba(117, 90, 73, 0.06), 0 16px 40px -12px rgba(117, 90, 73, 0.28)',
+        alta: '0 24px 64px -16px rgba(117, 90, 73, 0.35)',
       },
       container: {
         center: true,
         padding: {
-          DEFAULT: '1rem',
+          DEFAULT: '1.25rem',
           sm: '1.5rem',
           lg: '2rem',
+        },
+        // Sem isto o container do Tailwind cresce até 1536px: numa tela ampla a grade de peças
+        // esticava e a página perdia o eixo de leitura. 1200px mantém 4 colunas confortáveis e
+        // margens visíveis nas laterais — enquadramento, não preenchimento.
+        screens: {
+          sm: '640px',
+          md: '768px',
+          lg: '1024px',
+          xl: '1200px',
+          '2xl': '1200px',
         },
       },
       keyframes: {
         surgir: {
-          from: { opacity: '0', transform: 'translateY(6px)' },
+          from: { opacity: '0', transform: 'translateY(8px)' },
           to: { opacity: '1', transform: 'none' },
+        },
+        brilho: {
+          '100%': { transform: 'translateX(100%)' },
         },
       },
       animation: {
-        surgir: 'surgir 0.35s ease-out both',
+        surgir: 'surgir 0.4s cubic-bezier(0.22, 1, 0.36, 1) both',
+        brilho: 'brilho 1.6s infinite',
+      },
+      transitionTimingFunction: {
+        // Curva de saída suave, usada nos hovers e nas entradas — evita o "elástico" barato.
+        marca: 'cubic-bezier(0.22, 1, 0.36, 1)',
       },
     },
   },

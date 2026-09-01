@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ProductGrid } from '@/components/product/ProductGrid';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PaginationLinks } from '@/components/ui/PaginationLinks';
 import { api } from '@/lib/api';
 import { PRODUTOS_POR_PAGINA, lerNumeroDaPagina } from '@/lib/paginacao';
@@ -30,21 +31,15 @@ export default async function ProdutosPage({ searchParams }: ProdutosPageProps) 
   );
 
   return (
-    <div className="container py-8">
-      <h1 className="titulo-secao">Todos os produtos</h1>
-      <p className="mt-2 max-w-2xl text-[0.9375rem] leading-relaxed text-ink-600">
-        Todas as peças Fruto da Malha para o seu negócio.
-      </p>
-      <p className="mt-1.5 text-sm text-ink-400">
-        {produtos.totalElements} {produtos.totalElements === 1 ? 'peça' : 'peças'}
-      </p>
+    <div className="container secao-compacta">
+      <PageHeader
+        eyebrow="Catálogo"
+        title="Todas as peças"
+        description="Todas as peças Fruto da Malha para o seu negócio."
+        migalhas={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Catálogo' }]}
+      />
 
-      <div className="mt-6">
-        <ProductGrid
-          produtos={produtos.content}
-          mensagemVazia="Novas peças chegando em breve."
-        />
-      </div>
+      <ProductGrid produtos={produtos.content} mensagemVazia="Novas peças chegando em breve." />
 
       <PaginationLinks
         page={produtos.page}

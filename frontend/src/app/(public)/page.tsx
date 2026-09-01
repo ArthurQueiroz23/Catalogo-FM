@@ -1,3 +1,4 @@
+import { ArrowRight, Handshake, MessageCircle, Shirt } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CategoryCard } from '@/components/category/CategoryCard';
@@ -5,6 +6,8 @@ import { ProductCarousel } from '@/components/product/ProductCarousel';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { api } from '@/lib/api';
+import { siteConfig } from '@/lib/config';
+import { montarLinkWhatsApp } from '@/lib/whatsapp';
 import type { CategoriaResponse, PageResponse, ProdutoSummaryResponse } from '@/types/api';
 
 // Sempre buscado sem cache — qualquer alteração da administradora deve refletir no próximo
@@ -35,50 +38,96 @@ async function buscarDadosIniciais() {
   };
 }
 
+/**
+ * Como o pedido funciona. Aparece na home porque este catálogo **não** é uma loja virtual: a
+ * cliente monta a seleção aqui e fecha a compra no WhatsApp. Quem chega esperando "carrinho e
+ * pagamento" precisa entender o caminho antes de começar a escolher — não depois.
+ */
+const PASSOS = [
+  {
+    icone: Shirt,
+    titulo: 'Escolha as peças',
+    texto: 'Navegue pelo catálogo e defina tamanhos e quantidades de cada peça.',
+  },
+  {
+    icone: MessageCircle,
+    titulo: 'Envie pelo WhatsApp',
+    texto: 'Sua seleção vira uma mensagem pronta, com referências, quantidades e valores.',
+  },
+  {
+    icone: Handshake,
+    titulo: 'A gente responde',
+    texto: 'Confirmamos disponibilidade, formas de pagamento e o envio do seu pedido.',
+  },
+];
+
 export default async function HomePage() {
   const { categorias, destaques, produtos, totalProdutos } = await buscarDadosIniciais();
 
   const catalogoVazio = categorias.length === 0 && destaques.length === 0 && produtos.length === 0;
 
+  const linkWhatsApp = siteConfig.whatsappNumber
+    ? montarLinkWhatsApp(siteConfig.whatsappNumber, 'Olá! Vim pelo catálogo e gostaria de tirar uma dúvida.')
+    : null;
+
   return (
-    <div className="pb-4">
+    <div>
       {/* Capa: a mesma composição da primeira página do catálogo — o logo em destaque sobre o
-          creme rabiscado, com a assinatura "Vestindo carinho" logo abaixo. */}
-      <section className="container flex flex-col items-center gap-5 py-12 text-center sm:py-16">
-        <Image
-          src="/marca/logo.png"
-          alt="Fruto da Malha"
-          width={150}
-          height={186}
-          priority
-          className="h-auto w-28 animate-surgir sm:w-36"
-        />
-        <div className="animate-surgir">
-          <h1 className="titulo-vitrine">Vestindo carinho</h1>
-          <p className="mx-auto mt-3 max-w-lg text-base leading-relaxed text-ink-600 sm:text-lg">
-            Escolha as peças, os tamanhos e as quantidades que quiser. No final, é só enviar sua
-            seleção pelo WhatsApp e conversar direto com a gente.
+          creme rabiscado, com a assinatura "Vestindo carinho" logo abaixo. O painel arredondado
+          dá a moldura que a página inteira não tem: um começo, e não um texto solto no topo. */}
+      <section className="container pt-6 sm:pt-8">
+        <div className="painel-rabiscos superficie-solida flex flex-col items-center px-6 py-14 text-center sm:px-10 sm:py-20">
+          <Image
+            src="/marca/logo.png"
+            alt="Fruto da Malha"
+            width={160}
+            height={198}
+            priority
+            className="h-auto w-24 animate-surgir sm:w-32"
+          />
+
+          <h1 className="titulo-vitrine mt-6 animate-surgir">Vestindo carinho</h1>
+
+          <p className="mt-4 max-w-xl animate-surgir text-base leading-relaxed text-ink-600 sm:text-lg">
+            Atacado de roupas infantis. Escolha as peças, os tamanhos e as quantidades que quiser —
+            no final, é só enviar sua seleção pelo WhatsApp e conversar direto com a gente.
           </p>
+
+          <div className="mt-9 flex animate-surgir flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+            <Link href="/produtos" className="btn-primary btn-grande">
+              Ver o catálogo completo
+              <ArrowRight className="h-5 w-5" aria-hidden="true" />
+            </Link>
+            {linkWhatsApp && (
+              <a
+                href={linkWhatsApp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary btn-grande"
+              >
+                <MessageCircle className="h-5 w-5" aria-hidden="true" />
+                Falar no WhatsApp
+              </a>
+            )}
+          </div>
         </div>
-        <Link href="/produtos" className="btn-primary animate-surgir mt-1">
-          Ver o catálogo completo
-        </Link>
       </section>
 
       {destaques.length > 0 && (
-        <section className="container py-8 sm:py-10">
+        <section className="container secao">
           <SectionHeading
-            title="Produtos em destaque"
-            subtitle="Uma seleção especial da nossa vitrine"
+            eyebrow="Vitrine"
+            title="Peças em destaque"
+            subtitle="Uma seleção especial, escolhida pela loja."
           />
           <ProductCarousel produtos={destaques} />
         </section>
       )}
 
       {categorias.length > 0 && (
-        <section className="container py-8 sm:py-10">
-          <SectionHeading title="Categorias" href="/categoria" />
-          <div className="grid grid-cols-3 gap-x-3 gap-y-6 sm:grid-cols-4 md:grid-cols-6">
+        <section className="container secao-compacta">
+          <SectionHeading title="Categorias" href="/categoria" hrefLabel="Ver todas" />
+          <div className="grid grid-cols-3 gap-x-4 gap-y-7 sm:grid-cols-5 lg:grid-cols-7">
             {categorias.map((categoria) => (
               <CategoryCard key={categoria.id} categoria={categoria} />
             ))}
@@ -87,10 +136,10 @@ export default async function HomePage() {
       )}
 
       {produtos.length > 0 && (
-        <section className="container py-8 sm:py-10">
+        <section className="container secao">
           <SectionHeading
-            title="Todos os produtos"
-            subtitle="Conheça nossa coleção"
+            eyebrow="Catálogo"
+            title="Todas as peças"
             href="/produtos"
             hrefLabel="Ver tudo"
           />
@@ -98,21 +147,71 @@ export default async function HomePage() {
 
           {/* Só oferece o caminho para o catálogo inteiro quando existe algo além da prévia. */}
           {totalProdutos > produtos.length && (
-            <div className="mt-8 flex justify-center">
+            <div className="mt-10 flex justify-center">
               <Link href="/produtos" className="btn-secondary">
-                Ver as {totalProdutos} peças do catálogo
+                Ver todas as peças
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
           )}
         </section>
       )}
 
+      {!catalogoVazio && (
+        <section className="container secao">
+          <div className="superficie-solida px-6 py-12 sm:px-10 sm:py-14">
+            <div className="mx-auto mb-10 max-w-lg text-center">
+              <p className="olho">Como funciona</p>
+              <h2 className="titulo-secao mt-2">Pedir é simples</h2>
+              <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-500">
+                Aqui você monta o pedido com calma. A compra é fechada por WhatsApp, com a gente.
+              </p>
+            </div>
+
+            <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
+              {PASSOS.map((passo, indice) => (
+                <li key={passo.titulo} className="flex flex-col items-center text-center">
+                  <span className="relative" aria-hidden="true">
+                    <span
+                      className="flex h-16 w-16 items-center justify-center rounded-pilula bg-coral-100
+                        text-coral-700 ring-1 ring-inset ring-coral-200"
+                    >
+                      <passo.icone className="h-7 w-7" />
+                    </span>
+                    <span
+                      className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-pilula
+                        bg-coral-400 text-xs font-extrabold tabular-nums text-ink-900 ring-2 ring-creme-50"
+                    >
+                      {indice + 1}
+                    </span>
+                  </span>
+
+                  <p className="titulo-bloco mt-4 text-base">{passo.titulo}</p>
+                  <p className="mt-2 max-w-xs text-[0.9375rem] leading-relaxed text-ink-500">{passo.texto}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
       {catalogoVazio && (
-        <div className="container py-16 text-center">
-          <p className="text-lg font-semibold text-ink-700">Novas peças chegando em breve.</p>
-          <p className="mt-2 text-[0.9375rem] text-ink-500">
+        <div className="container secao text-center">
+          <p className="titulo-pagina">Novas peças chegando em breve.</p>
+          <p className="mx-auto mt-3 max-w-md text-[0.9375rem] leading-relaxed text-ink-500">
             Fale com a gente pelo WhatsApp para conhecer nossas peças.
           </p>
+          {linkWhatsApp && (
+            <a
+              href={linkWhatsApp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary mt-6"
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+              Falar no WhatsApp
+            </a>
+          )}
         </div>
       )}
     </div>

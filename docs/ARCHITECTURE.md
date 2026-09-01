@@ -426,6 +426,9 @@ foi uma decisão explícita do produto (reafirmada na sessão de 2026-08-05), n�
   nem grava um pedido. Não criar entidades `Pedido`/`ItemPedido`, não logar pedidos, não guardar
   histórico de vendas. As quantidades escolhidas no carrinho existem só na memória/localStorage
   do navegador da cliente, exclusivamente para compor essa mensagem.
+  O mesmo vale para a **observação por peça** (`CartItem.observacao`, sessão 7): é texto da
+  cliente que viaja junto da peça dentro da mensagem do WhatsApp e morre ali — não há endpoint,
+  coluna nem DTO para ela, e não deve haver.
 
 Se o cliente (a empresa Fruto da Malha) pedir uma dessas features no futuro, trate como uma
 decisão de produto nova a ser confirmada explicitamente antes de implementar — não decida

@@ -18,4 +18,17 @@ export interface CartItem {
   imagemUrl: string | null;
   /** Uma entrada por tamanho escolhido; nunca deve haver duas entradas para o mesmo tamanhoId. */
   tamanhos: CartTamanhoQuantidade[];
+  /**
+   * Recado da cliente **sobre esta peça** — "quero uma azul e uma branca", "separar o 40",
+   * "se possível com manga curta". Vai junto do produto na mensagem do WhatsApp.
+   *
+   * Fica no item, e não no carrinho inteiro, porque a vendedora precisa saber a qual peça o
+   * recado se refere. Como o carrinho guarda **um item por produto** (com todos os tamanhos
+   * dentro), uma observação por item é uma observação por produto.
+   *
+   * Opcional de propósito: carrinhos salvos no `localStorage` antes desta funcionalidade não
+   * têm o campo, e precisam continuar carregando sem erro. Ausente e vazio significam a mesma
+   * coisa — "sem observação".
+   */
+  observacao?: string;
 }

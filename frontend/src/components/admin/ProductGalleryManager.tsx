@@ -82,10 +82,10 @@ export function ProductGalleryManager({ produtoId, referencia, imagens, videos }
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-bold text-ink-900">
-          Fotos e vídeos {total > 0 && <span className="font-semibold text-ink-400">({total})</span>}
-        </h3>
-        {total > 0 && <p className="text-sm text-ink-400">Arraste para mudar a ordem</p>}
+        <h2 className="titulo-bloco text-base">
+          Fotos e vídeos {total > 0 && <span className="font-bold tabular-nums text-ink-500">({total})</span>}
+        </h2>
+        {total > 0 && <p className="text-[0.8125rem] text-ink-500">Arraste para mudar a ordem</p>}
       </div>
 
       {/* Área única de envio: clique ou solte os arquivos aqui. */}
@@ -100,15 +100,15 @@ export function ProductGalleryManager({ produtoId, referencia, imagens, videos }
           setArrastando(false);
           void enviarArquivos(Array.from(evento.dataTransfer.files));
         }}
-        className={`rounded-peca border-2 border-dashed p-6 text-center transition-colors ${
-          arrastando ? 'border-coral-400 bg-coral-50' : 'border-coral-200 bg-creme-50/60'
+        className={`rounded-peca border border-dashed p-6 text-center transition-colors duration-200 ${
+          arrastando ? 'border-coral-400 bg-coral-50' : 'border-coral-200 bg-creme-100/70'
         }`}
       >
         <UploadCloud className={`mx-auto h-8 w-8 ${arrastando ? 'text-coral-500' : 'text-coral-300'}`} />
-        <p className="mt-2 text-[0.9375rem] font-semibold text-ink-700">
+        <p className="mt-3 text-[0.9375rem] font-bold text-ink-800">
           Arraste as fotos e os vídeos para cá
         </p>
-        <p className="mt-0.5 text-sm text-ink-400">
+        <p className="mt-1 text-[0.8125rem] text-ink-500">
           Pode enviar vários de uma vez. A primeira foto vira a capa da peça.
         </p>
         <button type="button" onClick={() => inputRef.current?.click()} disabled={enviando} className="btn-secondary mt-4">
@@ -148,7 +148,7 @@ export function ProductGalleryManager({ produtoId, referencia, imagens, videos }
             reordenarImagens.mutate(novaOrdem.map((imagem, index) => ({ id: imagem.id, ordem: index })))
           }
           renderItem={(imagem) => (
-            <div className="group relative aspect-square overflow-hidden rounded-2xl bg-creme-50 ring-2 ring-inset ring-coral-100">
+            <div className="group relative aspect-square overflow-hidden rounded-2xl bg-creme-100 shadow-suave ring-1 ring-inset ring-coral-100">
               <Image src={imagem.url} alt="" fill sizes="150px" className="object-contain p-1" />
 
               {imagem.principal && (
@@ -190,7 +190,7 @@ export function ProductGalleryManager({ produtoId, referencia, imagens, videos }
 
       {videos.length > 0 && (
         <div className="mt-5">
-          <p className="mb-2 text-sm font-semibold text-ink-500">Vídeos</p>
+          <p className="olho mb-2">Vídeos</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {videos.map((video) => (
               <div key={video.id} className="group relative aspect-video overflow-hidden rounded-2xl bg-ink-900">

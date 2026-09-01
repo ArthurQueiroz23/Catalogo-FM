@@ -1,22 +1,29 @@
 'use client';
 
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { ProdutoForm } from '@/components/admin/ProdutoForm';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export default function NovoProdutoPage() {
   return (
-    <div className="max-w-3xl">
-      <Link href="/admin/produtos" className="text-sm text-ink-400 hover:text-ink-600">
-        ← Voltar para produtos
+    <div className="mx-auto max-w-3xl">
+      <Link
+        href="/admin/produtos"
+        className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-pilula text-[0.9375rem] font-bold
+          text-coral-800 transition-colors hover:text-coral-900 foco-marca"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Voltar para as peças
       </Link>
-      <h1 className="mt-2 text-2xl font-bold text-ink-900">Novo produto</h1>
-      <p className="mt-1 text-[0.9375rem] text-ink-500">
-        Fotos e vídeos são adicionados depois de salvar, na tela de edição do produto.
-      </p>
 
-      <div className="mt-6">
-        <ProdutoForm />
-      </div>
+      <PageHeader
+        eyebrow="Nova peça"
+        title="Cadastrar peça"
+        description="Fotos e vídeos são adicionados depois de salvar, na tela de edição da peça."
+      />
+
+      <ProdutoForm />
     </div>
   );
 }

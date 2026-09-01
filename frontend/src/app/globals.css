@@ -2,17 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =====================================================================================
+   Design system da Fruto da Malha — ver docs/DESIGN_SYSTEM.md.
+
+   Regra de ouro da tipografia: a manuscrita (`font-marca`) é voz de marca, não fonte de
+   leitura. Ela aparece em logotipo, títulos e chamadas; todo o resto — texto corrido,
+   formulários, listas, preços e o painel inteiro — usa a Nunito (`font-sans`), que é a
+   fonte padrão do `body`.
+   ===================================================================================== */
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-creme text-ink-700 antialiased;
+    @apply bg-creme font-sans text-[0.9375rem] leading-relaxed text-ink-700 antialiased;
   }
 
   /* Fundo da marca: o creme do catálogo com os rabiscos infantis recortados dele.
-     A opacidade baixa mantém a assinatura reconhecível sem competir com as fotos das peças.
+     A opacidade é baixa de propósito — o padrão precisa ser reconhecível de longe e
+     desaparecer atrás do conteúdo de perto. Nas faixas onde ele deve aparecer com força
+     (capa da home, rodapé), use `.painel-rabiscos`.
      `fixed` faz o padrão ficar parado enquanto a página rola, como uma folha de papel. */
   body::before {
     content: '';
@@ -20,20 +32,24 @@
     inset: 0;
     z-index: -1;
     background-image: theme('backgroundImage.rabiscos');
-    background-size: 620px auto;
+    background-size: 560px auto;
     background-repeat: repeat;
-    opacity: 0.55;
+    opacity: 0.28;
     pointer-events: none;
   }
 
   @media (max-width: 640px) {
     body::before {
-      background-size: 420px auto;
+      background-size: 380px auto;
     }
   }
 
   /* Quem pede menos movimento não recebe nenhuma das animações de entrada. */
   @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
     *,
     *::before,
     *::after {
@@ -47,13 +63,33 @@
   ::selection {
     @apply bg-coral-200 text-ink-900;
   }
+
+  /* Números sempre alinhados em colunas (preços, quantidades, paginação). */
+  input[type='number'] {
+    @apply tabular-nums;
+  }
 }
 
 @layer components {
+  /* ---- Enquadramento ----------------------------------------------------------------
+     `container` (1200px) é a régua de todo o site. `container-largo` existe só para o
+     painel, onde a lista de peças precisa de mais largura útil que a vitrine. */
+
+  .container-largo {
+    @apply mx-auto w-full max-w-[1120px] px-5 sm:px-6 lg:px-8;
+  }
+
+  /* Ritmo vertical único das seções — antes cada página escolhia o seu. */
+  .secao {
+    @apply py-12 sm:py-16;
+  }
+
+  .secao-compacta {
+    @apply py-8 sm:py-10;
+  }
+
   /* ---- Controles -------------------------------------------------------------------
-     Um único vocabulário de botão para o site e o painel. Antes existiam dois
-     (.btn-primary aqui e a variante do <Button>), que renderizavam em tamanhos
-     diferentes na mesma função. */
+     Um único vocabulário de botão para o site e o painel. */
 
   .foco-marca {
     @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
@@ -62,59 +98,131 @@
 
   /* min-h-11 = 44px: mínimo de área de toque (WCAG 2.2 / Apple HIG). */
   .btn-base {
-    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-pilula px-5
-      text-[0.9375rem] font-semibold transition-all disabled:cursor-not-allowed
-      disabled:opacity-50 foco-marca;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-pilula
+      px-5 text-[0.9375rem] font-bold leading-none transition-all duration-200 ease-marca
+      disabled:cursor-not-allowed disabled:opacity-50 foco-marca;
   }
 
   /* Coral da marca preenchendo, tinta escura por cima: 6.81:1, passa AA com folga. */
   .btn-primary {
-    @apply btn-base bg-coral-400 text-ink-900 shadow-peca hover:bg-coral-300
-      active:translate-y-px disabled:hover:bg-coral-400;
+    @apply btn-base bg-coral-400 text-ink-900 shadow-suave hover:-translate-y-0.5
+      hover:bg-coral-300 hover:shadow-peca active:translate-y-0 active:shadow-suave;
+  }
+
+  /* Desabilitado tem estado próprio, e não um coral a 50%: um botão "quase coral" parecia
+     clicável e sujava a cor da marca. Aqui ele fica claramente inerte. */
+  .btn-primary:disabled,
+  .btn-primary[aria-disabled='true'] {
+    @apply translate-y-0 bg-creme-300 text-ink-400 opacity-100 shadow-none
+      hover:translate-y-0 hover:bg-creme-300 hover:shadow-none;
   }
 
   .btn-secondary {
-    @apply btn-base border-2 border-coral-200 bg-creme-50 text-ink-700
-      hover:border-coral-300 hover:bg-coral-50 active:translate-y-px;
+    @apply btn-base border border-coral-200 bg-creme-50 text-ink-800 shadow-suave
+      hover:-translate-y-0.5 hover:border-coral-300 hover:bg-coral-50 hover:shadow-peca
+      active:translate-y-0 disabled:hover:translate-y-0;
+  }
+
+  /* Degrau maior, para as chamadas principais (capa da home, envio da seleção). */
+  .btn-grande {
+    @apply min-h-[3.25rem] px-7 text-base;
   }
 
   .btn-fantasma {
-    @apply btn-base px-3 text-ink-600 hover:bg-coral-50 hover:text-ink-900;
+    @apply btn-base px-3.5 text-ink-600 hover:bg-coral-50 hover:text-coral-800;
+  }
+
+  /* Ícone-botão quadrado (editar, excluir, fechar) — 44px, sempre. */
+  .btn-icone {
+    @apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-pilula
+      text-ink-400 transition-colors duration-200 hover:bg-coral-50 hover:text-coral-800
+      foco-marca;
   }
 
   /* ---- Superfícies ------------------------------------------------------------------
-     O catálogo não tem card nem borda dura: as peças flutuam sobre o creme. Aqui o card
-     é apenas um véu creme mais claro, suficiente para organizar a grade sem virar caixa. */
+     O catálogo não tem card nem borda dura: as peças flutuam sobre o creme. Aqui a
+     superfície é um véu creme mais claro com um fio de contorno — o suficiente para
+     organizar a grade sem virar caixa pesada. */
 
   .superficie {
-    @apply rounded-peca bg-creme-50/80 backdrop-blur-[2px];
+    @apply rounded-peca bg-creme-50/80 ring-1 ring-coral-100/70 backdrop-blur-[2px];
   }
 
   .superficie-solida {
-    @apply rounded-peca bg-creme-50 shadow-peca;
+    @apply rounded-peca bg-creme-50 shadow-peca ring-1 ring-coral-100/70;
+  }
+
+  /* Card clicável: o mesmo corpo da superfície, mais a resposta ao ponteiro. */
+  .cartao-interativo {
+    @apply superficie-solida transition-all duration-300 ease-marca hover:-translate-y-1
+      hover:shadow-flutuante hover:ring-coral-200;
+  }
+
+  /* Faixa com o padrão do catálogo em destaque (capa da home, rodapé). */
+  .painel-rabiscos {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .painel-rabiscos::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: theme('backgroundImage.rabiscos');
+    background-size: 520px auto;
+    background-repeat: repeat;
+    opacity: 0.42;
+    pointer-events: none;
   }
 
   /* ---- Tipografia -------------------------------------------------------------------
-     Escala única. Os títulos de seção imitam os divisores de categoria do catálogo
-     ("Macacão curto", "Bodys"), em coral grande — decorativo, sempre acima de 24px,
-     onde o mínimo de contraste é 3:1. */
+     Escala única, em degraus com papel definido. Os títulos usam a manuscrita da marca;
+     o corpo, a fonte de interface. Títulos em coral ficam sempre acima de 24px, onde o
+     mínimo de contraste é 3:1 (coral-700 sobre creme = 4.47:1). */
+
+  /* Rótulo curto acima de um título. Em `coral-800` (6.34:1 sobre o creme) porque é texto
+     pequeno: o `coral-700` do título grande dá 4.47:1, suficiente para 24px, não para 12px. */
+  .olho {
+    @apply text-xs font-extrabold uppercase tracking-[0.14em] text-coral-800;
+  }
 
   .titulo-vitrine {
-    @apply text-[2rem] font-bold leading-[1.15] text-coral-600 sm:text-[2.75rem];
+    @apply font-marca text-[clamp(2.25rem,7vw,3.75rem)] font-bold leading-[1.05] text-coral-600;
   }
 
   .titulo-secao {
-    @apply text-2xl font-bold leading-tight text-coral-700 sm:text-3xl;
+    @apply font-marca text-[1.75rem] font-bold leading-tight text-coral-700 sm:text-[2.125rem];
   }
 
   .titulo-pagina {
-    @apply text-2xl font-bold leading-tight text-ink-900 sm:text-3xl;
+    @apply font-marca text-[1.75rem] font-bold leading-tight text-ink-900 sm:text-[2.125rem];
+  }
+
+  .titulo-bloco {
+    @apply text-lg font-extrabold leading-snug text-ink-900;
+  }
+
+  .texto-apoio {
+    @apply text-[0.9375rem] leading-relaxed text-ink-500;
   }
 
   /* Bloco de dados da peça, na ordem exata do catálogo:
      referência → descrição → tecido → tamanho → sexo. */
   .ficha-peca {
     @apply text-[0.9375rem] leading-relaxed text-ink-600;
+  }
+
+  /* ---- Etiquetas e divisórias -------------------------------------------------------- */
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-pilula bg-coral-50 px-3 py-1.5 text-sm
+      font-bold text-coral-800 ring-1 ring-inset ring-coral-100;
+  }
+
+  .divisoria {
+    @apply border-t border-coral-100/80;
   }
 
   /* ---- Rolagem horizontal -----------------------------------------------------------
@@ -129,5 +237,24 @@
 
   .rolagem-invisivel::-webkit-scrollbar {
     display: none;
+  }
+
+  /* ---- Carregamento -----------------------------------------------------------------
+     Esqueleto com varredura de luz: comunica "estamos buscando" melhor que um pulso de
+     opacidade, e não pisca a página inteira. */
+
+  .esqueleto {
+    @apply relative overflow-hidden rounded-2xl bg-creme-300/60;
+  }
+
+  .esqueleto::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full animate-brilho;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 253, 248, 0.7),
+      transparent
+    );
   }
 }

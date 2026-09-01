@@ -16,12 +16,12 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
     <label htmlFor={inputId} className="flex min-h-11 cursor-pointer items-start gap-3 py-1">
       <span className="relative mt-0.5 inline-flex h-7 w-12 shrink-0 items-center">
         <input id={inputId} ref={ref} type="checkbox" className="peer sr-only" {...props} />
-        <span className="absolute inset-0 rounded-pilula bg-creme-300 transition-colors peer-checked:bg-coral-400 peer-focus-visible:ring-4 peer-focus-visible:ring-coral-100" />
-        <span className="absolute left-1 h-5 w-5 rounded-pilula bg-creme-50 shadow-peca transition-transform peer-checked:translate-x-5" />
+        <span className="absolute inset-0 rounded-pilula bg-creme-300 ring-1 ring-inset ring-coral-100 transition-colors duration-200 peer-checked:bg-coral-400 peer-checked:ring-coral-400 peer-focus-visible:ring-4 peer-focus-visible:ring-coral-200" />
+        <span className="absolute left-1 h-5 w-5 rounded-pilula bg-creme-50 shadow-suave transition-transform duration-200 ease-marca peer-checked:translate-x-5" />
       </span>
       <span>
-        <span className="block text-[0.9375rem] font-semibold text-ink-800">{label}</span>
-        {description && <span className="mt-0.5 block text-sm text-ink-400">{description}</span>}
+        <span className="block text-[0.9375rem] font-bold text-ink-800">{label}</span>
+        {description && <span className="mt-0.5 block text-[0.8125rem] leading-relaxed text-ink-500">{description}</span>}
       </span>
     </label>
   );

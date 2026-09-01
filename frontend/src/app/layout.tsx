@@ -1,21 +1,33 @@
 import type { Metadata, Viewport } from 'next';
-import { Shantell_Sans } from 'next/font/google';
+import { Nunito, Shantell_Sans } from 'next/font/google';
 import { siteConfig } from '@/lib/config';
 import { Providers } from './providers';
 import './globals.css';
 
 /**
- * O catálogo impresso é 100% manuscrito (fonte Ballpoint, do Canva — proprietária e não
- * licenciável para web). Shantell Sans é a substituta: é a única manuscrita variável do Google
- * Fonts desenhada para uso em interface, então preserva a personalidade do catálogo sem
- * inviabilizar leitura de texto corrido, formulários e números.
- * Ver `docs/DESIGN_SYSTEM.md`.
+ * Duas fontes, dois papéis (ver `docs/DESIGN_SYSTEM.md` §3.2).
+ *
+ * `fonteMarca` — Shantell Sans, a manuscrita que representa o catálogo impresso (feito na
+ * fonte Ballpoint do Canva, proprietária e não licenciável para web). Ela é **voz de marca**:
+ * logotipo, títulos e chamadas. Usá-la também em texto corrido, formulário e tabela era o que
+ * mais fazia o site parecer protótipo — manuscrita cansa em bloco e some em 15px no celular.
+ *
+ * `fonteUi` — Nunito, humanista de terminações arredondadas. É a fonte padrão do `body`:
+ * carrega leitura, campos, preços, listas e o painel inteiro. Foi escolhida por conversar com
+ * o traço redondo da marca sem imitá-lo, e por ter uma família larga o bastante (400–800)
+ * para sustentar hierarquia sem trocar de fonte.
  */
 const fonteMarca = Shantell_Sans({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-marca',
   display: 'swap',
   weight: ['400', '500', '600', '700'],
+});
+
+const fonteUi = Nunito({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-ui',
+  display: 'swap',
 });
 
 const DESCRICAO =
@@ -52,7 +64,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={fonteMarca.variable}>
+    // `data-scroll-behavior` é como o Next.js reconhece o `scroll-behavior: smooth` que o
+    // `globals.css` define — sem ele, o roteador avisa no console e a troca de rota rola
+    // suavemente até o topo em vez de saltar.
+    <html
+      lang="pt-BR"
+      data-scroll-behavior="smooth"
+      className={`${fonteMarca.variable} ${fonteUi.variable}`}
+    >
       <body>
         <Providers>{children}</Providers>
       </body>

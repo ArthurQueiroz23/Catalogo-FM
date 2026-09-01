@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { Logo } from '@/components/layout/Logo';
 import { estaAutenticado } from '@/lib/auth';
 
 /**
@@ -12,6 +13,10 @@ import { estaAutenticado } from '@/lib/auth';
  * docs/ARCHITECTURE.md §2.7/§3.2), então a checagem só pode acontecer no cliente — por isso
  * este layout (e, na prática, todas as telas sob /admin/(protegido)) é Client Component.
  * `/admin/login` fica fora deste grupo de rotas de propósito, para não herdar esse guard.
+ *
+ * O conteúdo vive dentro de `.container-largo`: sem um teto de largura, as listas do painel
+ * esticavam de ponta a ponta num monitor grande e a linha de uma peça ficava com meio metro
+ * de vazio entre o nome e os botões.
  */
 export default function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -40,22 +45,25 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
       <AdminSidebar aberta={sidebarAberta} onFechar={() => setSidebarAberta(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-coral-100 bg-creme/90 px-3 py-2 backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-20 flex items-center gap-2 border-b border-coral-100 bg-creme/90 px-3 py-2 backdrop-blur-xl lg:hidden">
           <button
             type="button"
             onClick={() => setSidebarAberta(true)}
             aria-label="Abrir menu"
-            className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-600 hover:bg-coral-50 foco-marca"
+            aria-expanded={sidebarAberta}
+            className="btn-icone text-ink-600"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
-          <p className="text-lg font-bold text-coral-700">Fruto da Malha</p>
+          <Logo tamanho="sm" href="/admin/produtos" />
         </header>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-10">{children}</main>
+        <main className="flex-1 py-6 sm:py-8 lg:py-10">
+          <div className="container-largo">{children}</div>
+        </main>
       </div>
 
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

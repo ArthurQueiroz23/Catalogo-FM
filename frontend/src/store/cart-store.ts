@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { CartItem, CartTamanhoQuantidade } from '@/types/cart';
+
+/**
+ * Teto do texto da observação. O pedido sai como link `wa.me?text=...`, e a mensagem inteira
+ * viaja na URL — sem um limite por item, dez recados longos poderiam estourar o tamanho que o
+ * WhatsApp aceita e o link simplesmente não abriria. 280 caracteres cobrem com folga o tipo de
+ * recado real ("separar o 40", "uma azul e uma branca").
+ */
+export const LIMITE_OBSERVACAO = 280;
 
 export interface DadosProdutoCarrinho {
   produtoId: number;
@@ -25,6 +33,11 @@ interface CartState {
   removerTamanho: (produtoId: number, tamanhoId: number) => void;
   /** Remove o produto inteiro do carrinho, com todos os seus tamanhos. */
   removerProduto: (produtoId: number) => void;
+  /**
+   * Grava (ou apaga) a observação de UM produto. Texto em branco apaga — assim "adicionar",
+   * "editar" e "remover" da interface são a mesma operação, e não três caminhos diferentes.
+   */
+  definirObservacao: (produtoId: number, observacao: string) => void;
   limparCarrinho: () => void;
 }
 
@@ -96,6 +109,23 @@ export const useCartStore = create<CartState>()(
       removerProduto: (produtoId) =>
         set((state) => ({ itens: state.itens.filter((item) => item.produtoId !== produtoId) })),
 
+      definirObservacao: (produtoId, observacao) =>
+        set((state) => {
+          const texto = observacao.trim().slice(0, LIMITE_OBSERVACAO);
+          return {
+            itens: state.itens.map((item) => {
+              if (item.produtoId !== produtoId) return item;
+              if (!texto) {
+                // Apaga a chave em vez de guardar string vazia: o item volta a ser exatamente
+                // o que era antes de existir observação.
+                const { observacao: _removida, ...semObservacao } = item;
+                return semObservacao;
+              }
+              return { ...item, observacao: texto };
+            }),
+          };
+        }),
+
       limparCarrinho: () => set({ itens: [] }),
     }),
     {
@@ -106,21 +136,23 @@ export const useCartStore = create<CartState>()(
 );
 
 /**
- * O zustand `persist` reidrata o carrinho do localStorage de forma assíncrona (para não gerar
- * mismatch de hidratação entre servidor e cliente no Next.js) — componentes que renderizam o
- * conteúdo do carrinho devem esperar esse hook antes de confiar em `itens`, ou verão um estado
- * vazio por um instante mesmo com itens salvos.
+ * Diz se o carrinho salvo no `localStorage` já foi lido. Componentes que mostram o conteúdo da
+ * seleção precisam esperar por isto antes de confiar em `itens` — no HTML gerado no servidor a
+ * seleção é sempre vazia, e renderizá-la como definitiva faria a tela piscar "está vazia" para
+ * quem tem peças escolhidas.
  *
- * `useCartStore.persist` fica `undefined` durante a pré-renderização estática no servidor (não
- * há `localStorage` em Node.js) — nesse caso o valor correto é "ainda não hidratado", o mesmo
- * estado inicial que o cliente usa antes de reidratar, então o acesso é sempre opcional.
+ * `useCartStore.persist` fica `undefined` durante a renderização no servidor (não há
+ * `localStorage` em Node.js), então todo acesso é opcional.
  */
 export function useCartHasHydrated(): boolean {
-  const [hidratado, setHidratado] = useState(() => useCartStore.persist?.hasHydrated() ?? false);
-
-  useEffect(() => {
-    return useCartStore.persist?.onFinishHydration(() => setHidratado(true));
-  }, []);
-
-  return hidratado;
+  // `useSyncExternalStore` é a API do React feita exatamente para este caso: ela renderiza o
+  // snapshot do servidor (`false`) durante a hidratação e só então passa a ler o snapshot do
+  // cliente. Antes, o estado inicial lia `hasHydrated()` direto — e como o `localStorage` é
+  // síncrono, o zustand já havia reidratado nesse instante: o cliente devolvia `true` contra o
+  // `false` do HTML do servidor e o React derrubava a tela de seleção com "Hydration failed".
+  return useSyncExternalStore(
+    (aoReidratar) => useCartStore.persist?.onFinishHydration(aoReidratar) ?? (() => {}),
+    () => useCartStore.persist?.hasHydrated() ?? false,
+    () => false
+  );
 }

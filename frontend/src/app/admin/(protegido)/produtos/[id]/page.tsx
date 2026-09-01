@@ -1,9 +1,12 @@
 'use client';
 
+import { ArrowLeft, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ProductGalleryManager } from '@/components/admin/ProductGalleryManager';
 import { ProdutoForm } from '@/components/admin/ProdutoForm';
+import { Badge } from '@/components/ui/Badge';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useProdutoAdmin } from '@/hooks/useProdutos';
 
@@ -13,31 +16,56 @@ export default function EditarProdutoPage() {
   const { data: produto, isLoading } = useProdutoAdmin(Number.isFinite(id) ? id : undefined);
 
   return (
-    <div className="max-w-3xl">
-      <Link href="/admin/produtos" className="text-sm text-ink-400 hover:text-ink-600">
-        ← Voltar para produtos
+    <div className="mx-auto max-w-3xl">
+      <Link
+        href="/admin/produtos"
+        className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-pilula text-[0.9375rem] font-bold
+          text-coral-800 transition-colors hover:text-coral-900 foco-marca"
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+        Voltar para as peças
       </Link>
 
       {isLoading || !produto ? (
-        <div className="mt-6 flex flex-col gap-4">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-96" />
+        <div className="flex flex-col gap-4">
+          <Skeleton className="h-9 w-72" />
+          <Skeleton className="h-72 rounded-peca" />
+          <Skeleton className="h-96 rounded-peca" />
         </div>
       ) : (
         <>
-          <h1 className="mt-2 text-2xl font-bold text-ink-900">{produto.nome}</h1>
-          <p className="mt-1 text-[0.9375rem] text-ink-500">Ref. {produto.referencia}</p>
+          <PageHeader
+            eyebrow={`Ref. ${produto.referencia}`}
+            title={produto.nome}
+            acao={
+              produto.status === 'ATIVO' ? (
+                // Ver a peça publicada é o jeito mais rápido de conferir uma alteração; quando
+                // ela está oculta, o link levaria a um 404 no site, então nem aparece.
+                <Link
+                  href={`/produto/${produto.referencia}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-secondary"
+                >
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                  Ver no site
+                </Link>
+              ) : (
+                <Badge tone="gray">Oculta no site</Badge>
+              )
+            }
+          />
 
-          <div className="mt-6 rounded-2xl border border-coral-100 bg-creme-50 p-6">
-            <ProductGalleryManager
-              produtoId={produto.id}
-              referencia={produto.referencia}
-              imagens={produto.imagens}
-              videos={produto.videos}
-            />
-          </div>
+          <div className="flex flex-col gap-5">
+            <section className="superficie-solida p-5 sm:p-6">
+              <ProductGalleryManager
+                produtoId={produto.id}
+                referencia={produto.referencia}
+                imagens={produto.imagens}
+                videos={produto.videos}
+              />
+            </section>
 
-          <div className="mt-6 rounded-2xl border border-coral-100 bg-creme-50 p-6">
             <ProdutoForm produtoExistente={produto} />
           </div>
         </>

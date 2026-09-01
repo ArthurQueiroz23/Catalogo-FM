@@ -64,11 +64,11 @@ export function ProductCarousel({ produtos }: { produtos: ProdutoSummaryResponse
   // abaixo, e a página inteira perderia o prumo da coluna. Escondidas no celular, onde arrastar
   // com o dedo é o gesto natural e a seta só roubaria área da foto.
   const estiloSeta =
-    'absolute top-[30%] z-10 hidden h-10 w-10 items-center justify-center rounded-pilula ' +
-    'border-2 border-coral-200 bg-creme-50/95 text-ink-700 shadow-peca backdrop-blur-sm ' +
-    'transition-colors hover:border-coral-300 hover:bg-coral-50 disabled:cursor-not-allowed ' +
-    'disabled:border-coral-100/60 disabled:text-ink-300 disabled:hover:bg-creme-50/95 ' +
-    'foco-marca sm:inline-flex';
+    'absolute top-[32%] z-10 hidden h-11 w-11 items-center justify-center rounded-pilula ' +
+    'border border-coral-200 bg-creme-50/95 text-ink-700 shadow-peca backdrop-blur-sm ' +
+    'transition-all duration-200 hover:border-coral-300 hover:bg-coral-50 hover:shadow-flutuante ' +
+    'disabled:cursor-not-allowed disabled:border-coral-100/60 disabled:text-ink-300 ' +
+    'disabled:shadow-suave disabled:hover:bg-creme-50/95 foco-marca sm:inline-flex';
 
   return (
     <div className="relative">
@@ -78,10 +78,10 @@ export function ProductCarousel({ produtos }: { produtos: ProdutoSummaryResponse
         // As margens negativas com o padding dos itens formam a calha entre os cards sem usar
         // `gap`: assim `w-1/2` continua valendo exatamente meia tela, e cada página do snap
         // fecha certinho na borda de um card.
-        className="-mx-2 flex snap-x snap-mandatory overflow-x-auto rolagem-invisivel pb-1"
+        className="-mx-2.5 flex snap-x snap-mandatory overflow-x-auto rolagem-invisivel pb-2"
       >
         {produtos.map((produto) => (
-          <li key={produto.id} className="w-1/2 shrink-0 snap-start px-2 sm:w-1/3 lg:w-1/4 xl:w-1/5">
+          <li key={produto.id} className="w-1/2 shrink-0 snap-start px-2.5 sm:w-1/3 lg:w-1/4">
             <ProductCard produto={produto} />
           </li>
         ))}
@@ -109,7 +109,7 @@ export function ProductCarousel({ produtos }: { produtos: ProdutoSummaryResponse
             <ChevronRight className="h-5 w-5" aria-hidden="true" />
           </button>
 
-          <div className="mt-4 flex justify-center gap-2">
+          <div className="mt-6 flex justify-center gap-2">
             {Array.from({ length: totalPaginas }, (_, indice) => (
               <button
                 key={indice}
@@ -117,8 +117,8 @@ export function ProductCarousel({ produtos }: { produtos: ProdutoSummaryResponse
                 onClick={() => irPara(indice)}
                 aria-label={`Ir para o grupo ${indice + 1} de ${totalPaginas}`}
                 aria-current={indice === pagina ? 'true' : undefined}
-                className={`h-2.5 rounded-pilula transition-all foco-marca ${
-                  indice === pagina ? 'w-6 bg-coral-500' : 'w-2.5 bg-coral-200 hover:bg-coral-300'
+                className={`h-2 rounded-pilula transition-all duration-300 ease-marca foco-marca ${
+                  indice === pagina ? 'w-7 bg-coral-400' : 'w-2 bg-coral-200 hover:bg-coral-300'
                 }`}
               />
             ))}

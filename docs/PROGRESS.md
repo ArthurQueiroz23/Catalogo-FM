@@ -4,7 +4,286 @@
 > projeto parou. Depois de ler, confira também `docs/ARCHITECTURE.md` (decisões técnicas),
 > `docs/DATABASE_SCHEMA.md` (modelo de dados) e `docs/API_CONTRACT.md` (contrato de endpoints).
 
-Última atualização: **2026-08-10** — Sessão 5 (preparação do ambiente de produção).
+Última atualização: **2026-09-01** — Sessão 7 (limpeza de textos e observação por peça no carrinho).
+
+---
+
+## Changelog da sessão 7 (2026-09-01) — limpeza de textos e observação por peça no carrinho
+
+Duas frentes pedidas pelo dono do projeto: **tirar da interface quatro textos que ele não quis
+manter** e **deixar a cliente escrever um recado para cada peça** da seleção.
+
+### Alterações visuais — o que saiu da interface
+
+| O que saiu | Onde estava |
+|---|---|
+| Selo "Catálogo sempre atualizado" | faixa de números da capa da home |
+| Subtítulo "A mesma sequência do catálogo impresso da loja." | seção "Todas as peças" da home |
+| Rótulo "Navegue" | acima de "Categorias", na home e na página `/categoria` |
+| Contagem total do catálogo ("69 peças") | faixa da capa da home, etiqueta do cabeçalho de `/produtos` e o rótulo do botão "Ver as 69 peças do catálogo" |
+
+Consequências de layout, para não sobrar buraco:
+
+- A faixa de números da capa continha os três primeiros itens da lista acima, então **ela deixou
+  de existir por inteiro**. A capa fechou no par de botões, com o respiro entre parágrafo e
+  botões subindo de `mt-8` para `mt-9` — sem isso o espaço lido como "meio da composição"
+  passaria a ser o fim dela.
+- O botão do fim da prévia virou **"Ver todas as peças"**: sem o número, ele repetiria palavra
+  por palavra a chamada principal da capa.
+- Em `/produtos`, a descrição também perdeu o trecho "na mesma sequência do catálogo impresso" e
+  voltou a ser "Todas as peças Fruto da Malha para o seu negócio." A `<PageHeader contagem>`
+  continua existindo como recurso — só não é mais usada ali.
+
+**Duas leituras que fiz e vale conferir**, porque o pedido falava em "quantidade total de
+produtos do catálogo":
+
+1. **Mantive a contagem por categoria** (`/categoria/[slug]` → "9 peças") **e a de resultados da
+   busca** ("9 peças encontradas"). Nenhuma das duas diz quantas peças o catálogo tem; a segunda
+   é o retorno de que a busca funcionou. Se a intenção era esconder qualquer número, é só pedir.
+2. **Mantive "75 peças cadastradas" no painel**, que é ferramenta da administradora — lá o total
+   (incluindo as ocultas) é justamente o dado de trabalho.
+
+A palavra "navegue" continua aparecendo em duas frases ("Navegue pelo catálogo e defina
+tamanhos…"), onde ela é verbo dentro de uma explicação, não o rótulo que foi removido.
+
+### Nova funcionalidade — observação individual por peça
+
+A cliente pode escrever um recado **para cada peça** da seleção ("quero uma azul e uma branca",
+"separar o 40"). O recado acompanha a peça na mensagem do WhatsApp.
+
+**Onde a informação mora, e por quê.** O carrinho guarda **um item por produto**, com todos os
+tamanhos dentro dele (`CartItem.tamanhos`, ver `types/cart.ts`). Logo, uma observação por item
+já é uma observação por produto, e não existe caminho em que o recado de uma peça encoste no de
+outra — tudo é endereçado pelo `produtoId`. Por isso o campo novo é `CartItem.observacao`, e
+**não** um campo de observação do carrinho inteiro.
+
+O campo é **opcional de propósito**: carrinhos salvos no `localStorage` antes desta sessão não
+têm a chave e precisam continuar abrindo sem erro. Ausente e vazio significam a mesma coisa.
+Não foi preciso versionar nem migrar o storage.
+
+**Uma ação só no store.** `definirObservacao(produtoId, texto)`: texto em branco **apaga** a
+chave. Assim "adicionar", "editar" e "remover" da interface são a mesma operação — não três
+caminhos com três oportunidades de divergir.
+
+**Limite de 280 caracteres** (`LIMITE_OBSERVACAO`), aplicado no `maxLength` do campo e de novo no
+store. O motivo não é estético: o pedido sai como link `wa.me?text=…` e a mensagem inteira viaja
+na URL; sem teto por item, dez recados longos poderiam estourar o tamanho que o WhatsApp aceita
+e o link simplesmente não abriria.
+
+**A interface tem três estados no mesmo lugar** (`components/cart/ItemObservacao.tsx`), sem modal
+e sem campo aberto por padrão:
+
+1. **sem observação** → botão discreto "Adicionar observação";
+2. **escrevendo** → o campo abre no lugar do botão, já com o foco e o cursor no fim do texto,
+   mostrando quantos caracteres ainda cabem; `Esc` desiste, `Ctrl`/`⌘`+`Enter` salva, `Enter`
+   sozinho continua quebrando linha;
+3. **com observação** → bloco coral com o texto e as ações "Editar" e "Remover".
+
+O campo fechado por padrão foi a decisão central: com dez peças na seleção, dez caixas de texto
+vazias empilhadas transformariam a tela de pedido num formulário. Quem não tem recado não vê
+campo. Tudo usa os tokens que já existem (pílula, `coral-50`, `ring-coral-100`, 44px de alvo de
+toque) — nenhum componente novo de aparência estranha ao resto.
+
+**Na mensagem do WhatsApp**, a observação entra como **última linha do bloco da própria peça**,
+com o prefixo 📝 — nunca como um recado geral no rodapé, que obrigaria a vendedora a cruzar de
+cabeça qual referência tem qual pedido:
+
+```
+📦 Ref. 01001 — Macacão curto c/alça botão Silk screen
+Único: 2 un.
+Valor unitário: R$ 12,95
+Subtotal: R$ 25,90
+📝 Observação: Quero uma azul e uma branca.
+```
+
+**Nada mudou no backend** — nenhum endpoint, coluna, DTO ou migration. Registrado também em
+`docs/ARCHITECTURE.md` §5, junto da decisão de não persistir pedido: a observação é texto da
+cliente que morre na mensagem do WhatsApp, e deve continuar assim.
+
+### Arquivos desta sessão
+
+| Arquivo | O que mudou |
+|---|---|
+| `src/types/cart.ts` | campo `observacao?: string` no `CartItem`, com o racional |
+| `src/store/cart-store.ts` | ação `definirObservacao` + constante `LIMITE_OBSERVACAO` |
+| `src/components/cart/ItemObservacao.tsx` | **novo** — os três estados da observação |
+| `src/components/cart/CartItemRow.tsx` | encaixe do bloco entre quantidade e subtotal |
+| `src/lib/whatsapp.ts` | observação dentro do bloco de cada peça |
+| `src/app/(public)/page.tsx` | remoção da faixa de números, do selo, do rótulo "Navegue" e do subtítulo; rótulo do botão |
+| `src/app/(public)/categoria/page.tsx` | remoção do rótulo "Navegue" |
+| `src/app/(public)/produtos/page.tsx` | remoção da contagem e do trecho da descrição |
+| `docs/ARCHITECTURE.md` | §5: a observação também não é persistida no backend |
+
+### Verificação feita
+
+Ambiente real (Postgres + backend perfil `dev` + `npm run dev`) e navegador de verdade (Edge
+dirigido por Playwright), com **20 asserções automatizadas** cobrindo os sete testes pedidos:
+
+| Teste | Resultado |
+|---|---|
+| 1. categoria → peça → carrinho → adicionar observação → salvar | ✅ (inclusive o campo abrindo já com foco) |
+| 2. duas peças, observações diferentes | ✅ A fica com A, B fica com B (conferido no `localStorage`) |
+| 3. editar uma | ✅ só a editada muda — e "Cancelar" descarta de verdade |
+| 4. remover uma | ✅ some só aquela; a peça continua no carrinho |
+| 5. alterar quantidade | ✅ observação permanece; sobrevive a sair, voltar e recarregar |
+| 6. remover a peça | ✅ a observação vai junto, e some da mensagem |
+| 7. mensagem do WhatsApp | ✅ recado dentro do bloco da peça certa; peça sem recado não ganha linha vazia |
+
+Também: `npm run type-check` → 0 erros · `npm run lint` → 0 erros e 0 avisos · `npm run build` →
+sucesso, 18 rotas · varredura de console nas 8 rotas → **0 erro e 0 aviso** · telas conferidas em
+1440px e 390px (no celular os botões "Salvar"/"Cancelar" começaram com 36px e foram corrigidos
+para os 44px que o resto do projeto usa).
+
+**Não verificado**: envio real pelo WhatsApp (o link é montado corretamente, mas quem o abriu foi
+um navegador de teste) e o comportamento com fotos reais, que continuam pendentes de Cloudinary.
+
+---
+
+## Changelog da sessão 6 (2026-09-01) — redesign visual: de protótipo a produto
+
+> **Duas rodadas de trabalho entre a sessão 5 e esta não estão descritas neste arquivo** —
+> existem só no histórico do git: `f66f2da` *"Corrigir responsive e overflow no mobile"*
+> (2026-08-13) e `70f1928` *"Importar catálogo: 75 produtos, 14 categorias, 13 tamanhos, preço
+> 0,00 e oculto"*. Quem quiser o detalhe delas precisa ler o diff.
+
+Objetivo desta sessão: tirar do site a aparência de protótipo acadêmico, **sem trocar a
+identidade da marca, a arquitetura ou qualquer funcionalidade**. A sessão 4 já tinha dado ao
+projeto a cara da Fruto da Malha (creme, coral, rabiscos, logo real); o que faltava era ofício de
+interface — enquadramento, hierarquia, ritmo e consistência entre telas.
+
+Esta foi também **a primeira sessão em que o sistema inteiro rodou de verdade num navegador**,
+com Postgres, backend e os 75 produtos reais carregados (ver "Verificação", abaixo). Até aqui o
+projeto só tinha sido compilado, buildado e exercitado por `curl`.
+
+### O diagnóstico (o que fazia o site parecer protótipo)
+
+1. **A manuscrita carregava 100% do texto** — inclusive formulários, listas, preços e o painel
+   inteiro. Fonte de personalidade usada como fonte de leitura é o sinal mais forte de
+   "protótipo bonitinho".
+2. **Sem enquadramento**: o `container` do Tailwind cresce até 1536px. Numa tela ampla a grade
+   esticava de ponta a ponta e a página perdia o eixo de leitura.
+3. **Sem hierarquia repetida**: cada página inventava o próprio cabeçalho — a mesma informação
+   (título, contagem, descrição) em três tamanhos e três espaçamentos diferentes.
+4. **Fundo competindo com o conteúdo**: os rabiscos a `opacity: 0.55` atrás de tudo.
+5. **Ruído no card da peça**: um "Ver peça" com cara de botão em cada card (o card inteiro já é
+   um link) e uma pílula coral de categoria sobre cada foto.
+6. **Painel de trabalho pouco cuidado**: menu que rolava para fora da tela, 12 campos empilhados
+   sem divisão no formulário de peça, listas esticadas até a borda do monitor.
+
+### Etapa 1 — base visual
+
+- **Duas fontes, dois papéis** (a mudança de maior impacto): **Nunito** (`font-sans`, padrão do
+  `body`) carrega leitura, formulários, listas, preços e o painel; **Shantell Sans**
+  (`font-marca`) fica com logotipo, títulos e chamadas. A manuscrita continua em toda tela — só
+  parou de ser obrigada a fazer o que ela não faz bem. Ver `docs/DESIGN_SYSTEM.md` §3.2.
+- **Enquadramento**: `container` limitado a **1200px** (`container.screens` no
+  `tailwind.config.ts`) e `.container-largo` de **1120px** para o painel.
+- **Ritmo vertical único**: `.secao` (py-12/16) e `.secao-compacta` (py-8/10) no lugar de um
+  espaçamento diferente por página.
+- **Escala tipográfica com papel definido**: `.olho` (rótulo curto), `.titulo-vitrine`,
+  `.titulo-secao`, `.titulo-pagina`, `.titulo-bloco`, `.texto-apoio`, `.ficha-peca`.
+- **Sombras em duas camadas** (contato + difusa) e uma curva de transição única (`ease-marca`).
+- **Fundo dos rabiscos de `0.55` para `0.28`**, com a classe `.painel-rabiscos` devolvendo o
+  padrão em força total onde ele é assinatura (capa da home, rodapé, tela de login).
+
+### Etapa 2 — componentes globais
+
+Novos: **`PageHeader`** (cabeçalho único das listagens), **`Breadcrumbs`**, **`NavLink`** (marca
+a seção atual no menu — antes todos os links eram idênticos em qualquer página),
+**`FormSection`**, **`ProductGridSkeleton`** e quatro **`loading.tsx`** (catálogo, categoria,
+busca e peça): as rotas públicas são renderizadas no servidor a cada acesso, e sem eles a espera
+acontecia com a tela anterior congelada.
+
+Revisados: `Button` (tamanho `lg`; estado desabilitado próprio, em vez de um coral a 50% que
+parecia clicável), campos (`Input`/`Select`/`Textarea` com um só corpo; o `<select>` ganhou seta
+desenhada na cor da marca), `Badge` (ponto de estado), `EmptyState`, `Skeleton` (varredura de
+luz), `Modal`, `QuantityStepper`, `Switch`, `Pagination`/`PaginationLinks`, `TopBar` (deixou de
+ser uma faixa coral de ponta a ponta — ela competia com os botões de ação), `Header`, `Footer`,
+`Logo`, `SearchBar` (com botão de limpar), `CartButton`, `WhatsAppFloatingButton`. `.btn-icone`
+passou a ser a classe única dos ícones-botão de 44px, que estavam copiados em nove arquivos.
+
+### Etapa 3 — páginas
+
+- **Home**: capa em painel arredondado com o padrão do catálogo, números **reais** do acervo
+  (nada de promessa de marketing), CTA duplo (catálogo + WhatsApp) e uma seção nova **"Como
+  funciona"** em três passos — o site não é loja virtual, e quem chega esperando carrinho e
+  pagamento precisa entender o caminho antes de escolher, não depois.
+- **Catálogo / categoria / busca**: mesmo cabeçalho, mesma grade (2→3→4 colunas), mesma
+  paginação, estados vazios de verdade.
+- **Peça**: duas colunas equilibradas (a galeria tem teto de 26rem — sem ele a foto ficava com
+  800px de altura e a ficha sobrava no vazio), ficha técnica em bloco, e o seletor de tamanhos
+  virou um painel com cabeçalho, linhas que acendem quando escolhidas e rodapé de total.
+- **Seleção**: cabeçalho com contagem, linhas com subtotal destacado, resumo grudado no topo e
+  uma frase explicando o que acontece ao tocar em "Enviar pelo WhatsApp".
+- **Painel**: menu de altura inteira (`sticky`) com o usuário identificado, filtros num painel
+  separado da lista (com "limpar filtros"), linhas legíveis, **formulário de peça dividido em
+  quatro blocos** (Identificação · Preço e organização · Tamanhos · Publicação) e barra de ação
+  grudada no rodapé da janela, login recomposto.
+
+### Etapa 4 — responsividade
+
+Revisado em 1440px, 768px e 390px com navegador real. Duas correções vieram daí: a virada do
+cabeçalho para uma linha passou de `md` para `lg` (no tablet a busca ficava espremida a ponto de
+cortar o próprio texto de exemplo) e o logotipo ganhou largura responsiva — em 390px o nome da
+marca quebrava em duas linhas e dobrava a altura do cabeçalho.
+
+### Três defeitos reais encontrados por rodar o sistema (nenhum aparece em build/lint/type-check)
+
+1. **`Hydration failed` na tela de seleção — bug pré-existente, provavelmente desde a sessão 2.**
+   `useCartHasHydrated` lia `persist.hasHydrated()` no inicializador do `useState`. Como o
+   `localStorage` é síncrono, o zustand já havia reidratado nesse instante: o cliente renderizava
+   `true` contra o `false` do HTML do servidor, e o React derrubava e refazia a árvore inteira da
+   página. Corrigido com **`useSyncExternalStore`**, que é a API feita exatamente para isso
+   (snapshot do servidor durante a hidratação, snapshot do cliente depois).
+2. **`totalProdutos` das categorias conta também as peças ocultas** (75 cadastradas contra 69
+   publicadas). Por isso a contagem por categoria **não é exibida no site público** — apareceria
+   errada para a cliente, sem nenhum sinal de que está errada. No painel ela continua, onde
+   incluir o oculto é o comportamento correto, agora com o rótulo "(inclui as ocultas)".
+3. **`truncate` num contêiner flex não corta nada** — introduzido e corrigido nesta sessão: o
+   nome da peça no painel era cortado na borda do card, sem reticências, no celular.
+
+Também silenciado o aviso do Next sobre `scroll-behavior: smooth` (`data-scroll-behavior` no
+`<html>`).
+
+### Acessibilidade: regra de contraste explicitada (e aplicada)
+
+A sessão 4 resolveu o coral em texto; faltava fechar os degraus intermediários.
+
+| Uso | Antes | Agora | Contraste sobre o creme |
+|---|---|---|---|
+| Rótulo pequeno em coral (`.olho`, categoria do card) | `coral-700` | **`coral-800`** | 6,34:1 ✅ |
+| Título grande em coral | `coral-700` | `coral-700` (mantido) | 4,47:1 ✅ (≥24px) |
+| Texto auxiliar (dicas, contagens, migalhas) | `ink-400`/`ink-300` | **`ink-500`** | 4,54:1 ✅ |
+
+`ink-400` e `ink-300` continuam existindo, mas **só para ícone, placeholder e estado
+desabilitado** — nunca para texto que carrega informação exclusiva.
+
+### Verificação feita nesta sessão
+
+Ambiente real, pela primeira vez: `docker compose up -d` (Postgres) + `./mvnw spring-boot:run`
+(perfil `dev`, com as 69 peças ativas e 6 ocultas já no banco) + `npm run dev`.
+
+- **Navegador real** (Edge dirigido por Playwright): as 8 rotas públicas e do painel
+  respondendo 200 e renderizando, com **zero erro e zero aviso no console** — incluindo um
+  recarregamento da `/selecao` com itens, que é onde o erro de hidratação aparecia.
+- **Fluxo completo**: peça → escolher tamanhos → "Adicionar à seleção" → `/selecao` com contagem
+  e totais corretos (5 peças, R$ 63,10) → link do WhatsApp montado.
+- **Painel**: login real, listagem paginada das 75 peças, filtros e a tela de edição carregando
+  uma peça existente.
+- **Três larguras**: 1440px, 768px e 390px.
+- `npm run type-check` → 0 erros · `npm run lint` → 0 erros e 0 avisos · `npm run build` →
+  sucesso, 18 rotas.
+
+### O que esta sessão **não** verificou
+
+- **Fotos reais.** O Cloudinary continua com credenciais de exemplo em `backend/.env`, então
+  todas as peças aparecem com o estado "Foto em breve" — que por isso mesmo foi **desenhado**
+  nesta sessão, no card, na galeria e na seleção. Como o catálogo fica com foto de verdade,
+  ninguém viu ainda.
+- Upload de mídia, arrastar-e-soltar da galeria e reordenação (dependem do Cloudinary).
+- Dispositivo real: swipe da galeria no celular e vídeo *inline* no iPhone seguem por testar.
+- **O backend não foi tocado** nesta sessão (nenhum arquivo em `backend/` no diff) e continua
+  sem nenhum teste automatizado.
 
 ---
 
@@ -377,7 +656,8 @@ duplicar, ocultar, exclusão reversível), integração de assinatura Cloudinary
 
 **Site público**: Home, `/categoria`, `/categoria/[slug]`, `/produto/[referencia]`, `/busca`,
 `/selecao` (+ `robots.txt` e `sitemap.xml` gerados). Construído na sessão 1; revisado na sessão 3
-(paginação real, galeria com swipe, SEO, vocabulário de seleção — ver changelog).
+(paginação real, galeria com swipe, SEO, vocabulário de seleção — ver changelog); redesenhado na
+sessão 6; observação por peça na seleção adicionada na sessão 7.
 
 **Painel administrativo — construído inteiro nesta sessão:**
 - [x] `/admin/login` — formulário com react-hook-form + Zod, redireciona se já autenticado.
@@ -424,22 +704,29 @@ duplicar, ocultar, exclusão reversível), integração de assinatura Cloudinary
       puras, fáceis de testar) com Vitest; considerar Playwright para o fluxo
       "adicionar à seleção → enviar pelo WhatsApp" e para o CRUD do painel mais adiante.
 
-### 2. Verificação manual real (parcialmente feita na sessão 5)
+### 2. Verificação manual real (avançou muito na sessão 6)
 
-**Já verificado** (sessão 5, via `curl` contra o contêiner de produção — sem navegador): login,
-autorização das rotas, CORS, criação de categoria e produto, alteração de preço, ocultar produto,
-e a propagação imediata para o catálogo público.
+**Já verificado por `curl`** (sessão 5, contra o contêiner de produção): login, autorização das
+rotas, CORS, criação de categoria e produto, alteração de preço, ocultar produto, e a propagação
+imediata para o catálogo público.
 
-**Continua faltando**, porque exige navegador e/ou dispositivo real:
-- [ ] Confirmar no navegador: upload de foto/vídeo real no Cloudinary (precisa de uma conta
-      Cloudinary de verdade), reordenação por drag-and-drop, a tela de seleção, e o link do
-      WhatsApp abrindo com a mensagem correta.
-- [ ] Testar responsividade do painel administrativo em mobile de verdade (foi construído
-      mobile-first com Tailwind, mas nunca visualizado num navegador real).
-- [ ] **Específico da sessão 3, precisa de dispositivo real:** swipe da galeria num celular
-      (inclusive confirmando que o scroll vertical da página não troca a foto), vídeo tocando
-      *inline* num iPhone, e o preview do link do produto colado numa conversa do WhatsApp
-      aparecendo com a foto (depende de `NEXT_PUBLIC_SITE_URL` correto e do site publicado).
+**Já verificado em navegador** (sessão 6, ambiente de desenvolvimento com o banco real e as 75
+peças importadas; Edge dirigido por Playwright): as 8 rotas públicas e do painel renderizando
+sem erro nem aviso de console, o fluxo peça → tamanhos → "Adicionar à seleção" → `/selecao` com
+totais corretos, o link do WhatsApp sendo montado, o login do painel, a listagem paginada com
+filtros e a tela de edição de uma peça — em 1440px, 768px e 390px.
+
+**Continua faltando**, porque exige Cloudinary configurado e/ou dispositivo real:
+- [ ] Upload de foto/vídeo real no Cloudinary (precisa das credenciais em `backend/.env` —
+      hoje são `xxx`), reordenação da galeria por drag-and-drop e marcação de capa.
+- [ ] **Ver o catálogo com fotos de verdade.** Todas as peças estão no estado "Foto em breve";
+      o desenho das telas com foto nunca foi visto com imagem real.
+- [ ] Abrir o link do WhatsApp num celular e conferir a mensagem no aplicativo (o link é
+      montado corretamente, mas quem abriu foi um navegador de teste).
+- [ ] **Precisa de dispositivo real:** swipe da galeria num celular (inclusive confirmando que
+      o scroll vertical da página não troca a foto), vídeo tocando *inline* num iPhone, e o
+      preview do link do produto colado numa conversa do WhatsApp aparecendo com a foto
+      (depende de `NEXT_PUBLIC_SITE_URL` correto e do site publicado).
 
 ### 3. Deploy
 
@@ -461,6 +748,9 @@ falta é a parte que exige contas e cliques no navegador, documentada passo a pa
 ### 4. Pendências de design/produto
 - [x] ~~Paleta e logo reais~~ — **resolvido na sessão 4**: extraídos do catálogo impresso, não
       inventados. Ver `docs/DESIGN_SYSTEM.md`.
+- [x] ~~Acabamento de interface (enquadramento, hierarquia, tipografia de leitura, consistência
+      entre telas, painel)~~ — **resolvido na sessão 6**. Ver o changelog no topo e
+      `docs/DESIGN_SYSTEM.md` §3.2, §3.5 e §7.
 - [x] ~~Favicon e imagem de Open Graph~~ — **resolvido na sessão 4** (a da página do produto já
       vinha da sessão 3, pela foto principal da peça).
 - [x] ~~Banner da home~~ — **resolvido na sessão 4**: a home abre com o logo sobre o creme
@@ -508,17 +798,20 @@ critério (e §5, o escopo permanentemente excluído).
 
 ## Próximo passo recomendado
 
-1. **Publicar** seguindo [`docs/DEPLOY.md`](DEPLOY.md) — Neon, depois Railway, depois Vercel.
-   O código já está preparado e verificado em contêiner; o que resta são contas e cliques.
-   Fazer isto primeiro resolve dois problemas de uma vez: coloca o sistema no ar **e** dá o
-   ambiente real onde a verificação visual finalmente pode acontecer.
-2. **Verificação visual no navegador** (item 2 acima) — segue sendo o maior risco residual: o
-   projeto compila e builda limpo há quatro sessões, mas **nenhuma tela foi vista renderizada com
-   dados reais**. Depois do deploy, dá para fazer isso no site publicado, do celular, sem montar
-   ambiente. Espere aparecerem pequenos ajustes visuais.
-3. Corrigir o que a verificação visual apontar.
-4. Testes automatizados (item 1) — pelo menos um smoke test de contexto do Spring Boot
-   (`@SpringBootTest` com Testcontainers) e os testes unitários de `lib/cart.ts`/`whatsapp.ts`
-   no frontend, que são baratos e de alto valor por serem lógica de negócio pura.
-5. Pendências de design (item 4) — principalmente orientar a administradora sobre fotos com fundo
-   removido; pode rodar em paralelo.
+1. **Credenciais reais do Cloudinary e as fotos no ar.** Passou a ser o item mais urgente: as 111
+   fotos estão em `referencias/fotos-catalogo/`, o script `scripts/catalogo/enviar_fotos.py` está
+   pronto, e hoje **todas as peças do catálogo aparecem com "Foto em breve"**. Um catálogo de
+   roupas sem foto é o maior buraco que sobrou — bem maior que qualquer ajuste visual.
+2. **Publicar** seguindo [`docs/DEPLOY.md`](DEPLOY.md) — Neon, depois Railway, depois Vercel. O
+   código já está preparado e verificado em contêiner; o que resta são contas e cliques.
+3. **Rever as telas com foto de verdade.** O redesign da sessão 6 foi validado num navegador,
+   mas com o placeholder em 100% das peças. Card, galeria e seleção usam `object-contain` e
+   foram desenhados para foto recortada (ver `DESIGN_SYSTEM.md` §3.4); espere pequenos ajustes
+   quando as imagens reais entrarem.
+4. **Os 6 preços pendentes** das peças que continuam ocultas (o dígito "1" que o OCR comeu — a
+   lista está no changelog da sessão que importou o catálogo e no `conferir_catalogo.py`).
+5. Testes automatizados (item 1 acima) — pelo menos um smoke test de contexto do Spring Boot
+   (`@SpringBootTest` com Testcontainers) e os testes unitários de `lib/cart.ts`/`whatsapp.ts` no
+   frontend, que são baratos e de alto valor por serem lógica de negócio pura.
+6. Verificação em dispositivo real (item 2 acima): swipe da galeria, vídeo *inline* no iPhone e o
+   preview do link no WhatsApp.

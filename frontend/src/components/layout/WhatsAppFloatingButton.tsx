@@ -14,7 +14,8 @@ export function WhatsAppFloatingButton() {
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"
       className="fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-pilula
-        bg-[#25D366] text-white shadow-flutuante transition-transform hover:scale-105
+        bg-[#25D366] text-white shadow-flutuante ring-4 ring-creme/70 transition-all duration-300 ease-marca
+        hover:-translate-y-0.5 hover:bg-[#1FBB59] hover:shadow-alta sm:bottom-6 sm:right-6
         focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral-700"
     >
       <MessageCircle className="h-7 w-7" fill="currentColor" strokeWidth={0} />

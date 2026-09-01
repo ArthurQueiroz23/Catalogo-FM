@@ -1,6 +1,6 @@
 'use client';
 
-import { ImageOff, Trash2 } from 'lucide-react';
+import { Camera, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { subtotalDoItem } from '@/lib/cart';
@@ -8,69 +8,92 @@ import { formatarPreco } from '@/lib/format';
 import { useCartStore } from '@/store/cart-store';
 import type { CartItem } from '@/types/cart';
 import { QuantityStepper } from '@/components/ui/QuantityStepper';
+import { ItemObservacao } from './ItemObservacao';
 
+/**
+ * Linha de uma peça na seleção: foto, identificação, um seletor de quantidade por tamanho, a
+ * observação da cliente sobre aquela peça e o subtotal. O subtotal fica no rodapé da linha,
+ * alinhado à direita e separado por um fio — antes era mais uma frase solta no meio do bloco,
+ * do mesmo peso do resto.
+ *
+ * A ordem é intencional: quantidade → recado → valor. O recado nasce da escolha das
+ * quantidades ("quero uma azul e uma branca" só faz sentido depois de escolher duas), e o
+ * subtotal fecha o bloco.
+ */
 export function CartItemRow({ item }: { item: CartItem }) {
   const atualizarQuantidade = useCartStore((state) => state.atualizarQuantidade);
   const removerProduto = useCartStore((state) => state.removerProduto);
 
   return (
-    <div className="flex flex-col gap-4 rounded-peca bg-creme-50/70 p-4 sm:flex-row">
-      <Link
-        href={`/produto/${item.referencia}`}
-        className="relative h-24 w-24 shrink-0 overflow-hidden rounded-peca bg-creme-50 foco-marca"
-      >
-        {item.imagemUrl ? (
-          <Image src={item.imagemUrl} alt={item.nome} fill sizes="96px" className="object-contain p-1" />
-        ) : (
-          <span className="flex h-full w-full items-center justify-center text-coral-200">
-            <ImageOff className="h-6 w-6" />
-          </span>
-        )}
-      </Link>
+    <article className="superficie-solida p-4 sm:p-5">
+      <div className="flex gap-4">
+        <Link
+          href={`/produto/${item.referencia}`}
+          className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-creme-100 ring-1 ring-coral-100 foco-marca"
+        >
+          {item.imagemUrl ? (
+            <Image src={item.imagemUrl} alt={item.nome} fill sizes="96px" className="object-contain p-1.5" />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-coral-200">
+              <Camera className="h-6 w-6" aria-hidden="true" />
+            </span>
+          )}
+        </Link>
 
-      <div className="flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-coral-600">Ref. {item.referencia}</p>
-            <Link
-              href={`/produto/${item.referencia}`}
-              className="rounded-pilula text-base font-bold text-ink-900 transition-colors hover:text-coral-700 foco-marca"
-            >
-              {item.nome}
-            </Link>
-            <p className="mt-0.5 text-sm text-ink-500">{formatarPreco(item.preco)} por peça</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => removerProduto(item.produtoId)}
-            aria-label={`Remover ${item.nome} da seleção`}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-pilula text-ink-400
-              transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {item.tamanhos.map((tamanho) => (
-            <div
-              key={tamanho.tamanhoId}
-              className="flex items-center gap-2 rounded-pilula bg-creme py-1 pl-3.5 pr-1"
-            >
-              <span className="text-sm font-bold text-ink-700">{tamanho.tamanhoNome}</span>
-              <QuantityStepper
-                value={tamanho.quantidade}
-                onChange={(valor) => atualizarQuantidade(item.produtoId, tamanho.tamanhoId, valor)}
-                label={`${item.nome} tamanho ${tamanho.tamanhoNome}`}
-              />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[0.6875rem] font-extrabold uppercase tracking-[0.12em] text-coral-800">
+                Ref. {item.referencia}
+              </p>
+              <Link
+                href={`/produto/${item.referencia}`}
+                className="mt-0.5 block rounded-pilula font-bold leading-snug text-ink-900 transition-colors
+                  hover:text-coral-800 foco-marca"
+              >
+                {item.nome}
+              </Link>
+              <p className="mt-1 text-[0.8125rem] tabular-nums text-ink-500">
+                {formatarPreco(item.preco)} por peça
+              </p>
             </div>
-          ))}
-        </div>
 
-        <p className="mt-3 text-[0.9375rem] font-bold text-ink-900">
-          Subtotal: {formatarPreco(subtotalDoItem(item))}
-        </p>
+            <button
+              type="button"
+              onClick={() => removerProduto(item.produtoId)}
+              aria-label={`Remover ${item.nome} da seleção`}
+              className="btn-icone"
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {item.tamanhos.map((tamanho) => (
+          <div
+            key={tamanho.tamanhoId}
+            className="flex items-center gap-2 rounded-pilula bg-creme-100 py-1 pl-3.5 pr-1 ring-1 ring-coral-100"
+          >
+            <span className="text-sm font-extrabold text-ink-700">{tamanho.tamanhoNome}</span>
+            <QuantityStepper
+              value={tamanho.quantidade}
+              onChange={(valor) => atualizarQuantidade(item.produtoId, tamanho.tamanhoId, valor)}
+              label={`${item.nome} tamanho ${tamanho.tamanhoNome}`}
+            />
+          </div>
+        ))}
+      </div>
+
+      <ItemObservacao item={item} />
+
+      <p className="mt-4 flex items-baseline justify-end gap-2 border-t border-coral-100 pt-3">
+        <span className="text-[0.8125rem] font-semibold text-ink-500">Subtotal</span>
+        <span className="text-lg font-extrabold tabular-nums text-ink-900">
+          {formatarPreco(subtotalDoItem(item))}
+        </span>
+      </p>
+    </article>
   );
 }

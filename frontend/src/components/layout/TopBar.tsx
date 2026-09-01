@@ -8,6 +8,10 @@ import { montarLinkWhatsApp } from '@/lib/whatsapp';
  * fora da tela e devolve altura para o catálogo, enquanto a busca e o menu continuam grudados
  * no topo.
  *
+ * É uma faixa **discreta** (creme, texto marrom): o coral da marca fica reservado para os
+ * botões de ação. Uma barra coral de ponta a ponta no topo competia com eles e roubava o
+ * destaque do "Adicionar à seleção", que é o que a loja precisa que a cliente encontre.
+ *
  * Cada contato só aparece se estiver configurado em `frontend/.env.local` (ver `.env.example`):
  * nenhum endereço é embutido no código, então uma variável em branco simplesmente esconde a
  * linha em vez de gerar um link quebrado.
@@ -27,13 +31,19 @@ export function TopBar() {
   }
 
   const estiloLink =
-    'inline-flex min-h-11 items-center gap-2 rounded-pilula px-2.5 text-sm font-semibold ' +
-    'text-ink-800 transition-colors hover:bg-coral-300/60 foco-marca';
+    'inline-flex min-h-9 items-center gap-2 rounded-pilula px-2.5 text-[0.8125rem] font-bold ' +
+    'text-ink-600 transition-colors hover:bg-coral-100/70 hover:text-coral-800 foco-marca';
 
   return (
-    <div className="bg-coral-400/90">
-      <div className="container flex flex-wrap items-center justify-between gap-x-2 py-0.5">
-        <div className="flex items-center gap-1">
+    <div className="border-b border-coral-100 bg-creme-200/70">
+      <div className="container flex flex-wrap items-center justify-between gap-x-2 py-1">
+        {/* A assinatura do catálogo impresso ("Atacado de confiança para o seu negócio
+            CRESCER!", p.2) posicionada como o que a faixa diz quando ninguém está clicando. */}
+        <p className="hidden text-[0.8125rem] font-semibold text-ink-500 sm:block">
+          Atacado de confiança para o seu negócio crescer
+        </p>
+
+        <div className="flex flex-wrap items-center gap-0.5">
           {instagramUrl && (
             <a
               href={instagramUrl}
@@ -42,7 +52,7 @@ export function TopBar() {
               className={estiloLink}
               aria-label={`Instagram da loja: @${siteConfig.instagramHandle}`}
             >
-              <Instagram className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <Instagram className="h-4 w-4 shrink-0 text-coral-600" aria-hidden="true" />
               {/* O arroba é ruído no celular, onde o ícone já identifica a rede. */}
               <span className="hidden sm:inline">@{siteConfig.instagramHandle}</span>
             </a>
@@ -56,22 +66,22 @@ export function TopBar() {
               className={estiloLink}
               aria-label="Falar com a loja no WhatsApp"
             >
-              <MessageCircle className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <MessageCircle className="h-4 w-4 shrink-0 text-coral-600" aria-hidden="true" />
               <span className="hidden sm:inline">WhatsApp</span>
             </a>
           )}
-        </div>
 
-        {siteConfig.telefone && (
-          <a
-            href={`tel:${siteConfig.telefone.replace(/\D/g, '')}`}
-            className={estiloLink}
-            aria-label={`Ligar para ${siteConfig.telefone}`}
-          >
-            <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
-            {siteConfig.telefone}
-          </a>
-        )}
+          {siteConfig.telefone && (
+            <a
+              href={`tel:${siteConfig.telefone.replace(/\D/g, '')}`}
+              className={estiloLink}
+              aria-label={`Ligar para ${siteConfig.telefone}`}
+            >
+              <Phone className="h-4 w-4 shrink-0 text-coral-600" aria-hidden="true" />
+              <span className="tabular-nums">{siteConfig.telefone}</span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );

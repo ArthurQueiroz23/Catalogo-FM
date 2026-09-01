@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, ImageOff, Play, X, ZoomIn } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, Play, X, ZoomIn } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ImagemProdutoResponse, VideoProdutoResponse } from '@/types/api';
@@ -89,10 +89,19 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
 
   const itemAtivo = itens[indiceAtivo];
 
+  // Peça sem nenhuma mídia. É um estado comum hoje (as fotos do catálogo ainda não subiram
+  // para o Cloudinary), então ele precisa parecer intencional, e não uma imagem quebrada.
   if (total === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-peca bg-creme-50/60 text-coral-200">
-        <ImageOff className="h-16 w-16" />
+      <div
+        className="flex aspect-[4/5] w-full flex-col items-center justify-center gap-3 rounded-peca
+          border border-dashed border-coral-200 bg-creme-50/70 px-6 text-center"
+      >
+        <Camera className="h-10 w-10 text-coral-200" aria-hidden="true" />
+        <p className="text-sm font-extrabold uppercase tracking-[0.12em] text-ink-500">Foto em breve</p>
+        <p className="max-w-[15rem] text-[0.8125rem] leading-relaxed text-ink-500">
+          Ainda não publicamos as fotos desta peça. Fale com a gente pelo WhatsApp para vê-la.
+        </p>
       </div>
     );
   }
@@ -100,7 +109,8 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
   return (
     <div>
       <div
-        className="group relative aspect-square w-full touch-pan-y overflow-hidden rounded-peca bg-creme-50/60"
+        className="group relative aspect-[4/5] w-full touch-pan-y overflow-hidden rounded-peca
+          bg-creme-50 shadow-peca ring-1 ring-coral-100/70"
         onTouchStart={aoIniciarToque}
         onTouchEnd={aoTerminarToque}
       >
@@ -112,7 +122,7 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
               fill
               priority
               sizes="(min-width: 1024px) 48vw, 100vw"
-              className="object-contain p-3"
+              className="object-contain p-4"
             />
             <button
               type="button"
@@ -164,7 +174,7 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
       </div>
 
       {total > 1 && (
-        <div ref={tiras} className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        <div ref={tiras} className="mt-3 flex gap-2.5 overflow-x-auto pb-1 rolagem-invisivel">
           {itens.map((item, index) => (
             <button
               key={`${item.tipo}-${item.dados.id}`}
@@ -172,9 +182,12 @@ export function ProductGallery({ nome, imagens, videos }: ProductGalleryProps) {
               onClick={() => setIndiceAtivo(index)}
               aria-label={`Ver ${item.tipo === 'imagem' ? 'foto' : 'vídeo'} ${index + 1} de ${total}`}
               aria-current={index === indiceAtivo}
-              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-creme-50 ring-2 transition-all foco-marca ${
-                index === indiceAtivo ? 'ring-coral-400' : 'ring-coral-100 hover:ring-coral-200'
-              }`}
+              className={`relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-creme-50 shadow-suave
+                ring-2 transition-all duration-200 foco-marca ${
+                  index === indiceAtivo
+                    ? 'ring-coral-400'
+                    : 'ring-coral-100 hover:ring-coral-300 hover:shadow-peca'
+                }`}
             >
               {item.tipo === 'imagem' ? (
                 <Image src={item.dados.url} alt="" fill sizes="64px" className="object-contain p-1" />

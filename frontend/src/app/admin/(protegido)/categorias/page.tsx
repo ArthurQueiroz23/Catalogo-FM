@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useCategorias, useExcluirCategoria, useReordenarCategorias } from '@/hooks/useCategorias';
 import type { CategoriaResponse } from '@/types/api';
@@ -40,22 +41,26 @@ export default function AdminCategoriasPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="titulo-pagina">Categorias</h1>
-          <p className="mt-1 text-[0.9375rem] text-ink-500">Arraste para reordenar como aparecem no site.</p>
-        </div>
-        <Button onClick={abrirCriacao}>
-          <Plus className="h-4 w-4" />
-          Nova categoria
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="Painel"
+        title="Categorias"
+        description="Os blocos do catálogo. Arraste para mudar a ordem em que aparecem no site."
+        contagem={
+          categorias ? { valor: categorias.length, singular: 'categoria', plural: 'categorias' } : undefined
+        }
+        acao={
+          <Button onClick={abrirCriacao}>
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Nova categoria
+          </Button>
+        }
+      />
 
-      <div className="mt-6">
+      <div>
         {isLoading ? (
           <div className="flex flex-col gap-2">
             {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-16" />
+              <Skeleton key={index} className="h-[4.75rem] rounded-2xl" />
             ))}
           </div>
         ) : !categorias || categorias.length === 0 ? (
@@ -77,42 +82,47 @@ export default function AdminCategoriasPage() {
             handleClassName="left-3 top-1/2 -translate-y-1/2"
             onReorder={(novaOrdem) => reordenar.mutate(novaOrdem.map((item, index) => ({ id: item.id, ordem: index })))}
             renderItem={(categoria) => (
-              <div className="flex items-center gap-4 rounded-2xl border border-coral-100 bg-creme-50 py-3 pl-10 pr-4">
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-creme-50">
+              <div
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-creme-50 py-3 pl-10 pr-4
+                  shadow-suave ring-1 ring-coral-100 transition-shadow hover:shadow-peca"
+              >
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-creme-100 ring-1 ring-coral-100">
                   {categoria.imagemUrl ? (
                     <Image src={categoria.imagemUrl} alt="" fill sizes="48px" className="object-cover" />
                   ) : (
-                    <span className="flex h-full w-full items-center justify-center text-ink-300">
-                      <ImageOff className="h-5 w-5" />
+                    <span className="flex h-full w-full items-center justify-center text-coral-200">
+                      <ImageOff className="h-5 w-5" aria-hidden="true" />
                     </span>
                   )}
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-ink-900">{categoria.nome}</p>
-                  <p className="text-sm text-ink-400">
-                    {categoria.totalProdutos} {categoria.totalProdutos === 1 ? 'produto' : 'produtos'}
+                  <p className="text-[0.8125rem] text-ink-500">
+                    {categoria.totalProdutos} {categoria.totalProdutos === 1 ? 'peça' : 'peças'} (inclui as ocultas)
                   </p>
                 </div>
 
                 <Badge tone={categoria.ativo ? 'green' : 'gray'}>{categoria.ativo ? 'Ativa' : 'Inativa'}</Badge>
 
-                <div className="flex shrink-0 gap-1">
+                <div className="ml-auto flex shrink-0 gap-0.5">
                   <button
                     type="button"
                     onClick={() => abrirEdicao(categoria)}
                     aria-label={`Editar ${categoria.nome}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                    title="Editar"
+                    className="btn-icone"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Pencil className="h-4 w-4" aria-hidden="true" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setCategoriaExcluindo(categoria)}
                     aria-label={`Excluir ${categoria.nome}`}
-                    className="flex h-11 w-11 items-center justify-center rounded-pilula text-ink-400 transition-colors hover:bg-coral-50 hover:text-coral-800 foco-marca"
+                    title="Excluir"
+                    className="btn-icone"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>

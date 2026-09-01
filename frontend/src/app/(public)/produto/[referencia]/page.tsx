@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { ProductAddToCart } from '@/components/product/ProductAddToCart';
 import { ProductGallery } from '@/components/product/ProductGallery';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ApiError, api } from '@/lib/api';
 import { formatarPreco } from '@/lib/format';
 import type { ProdutoResponse } from '@/types/api';
@@ -75,41 +77,48 @@ export default async function ProdutoPage({ params }: ProdutoPageProps) {
   ].filter(Boolean) as { rotulo: string; valor: string }[];
 
   return (
-    <div className="container py-6 sm:py-8">
-      <nav aria-label="Você está aqui" className="mb-5 text-sm text-ink-500">
-        <Link href="/" className="rounded-pilula transition-colors hover:text-coral-700 foco-marca">
-          Início
-        </Link>
-        <span className="mx-2 text-coral-300">/</span>
-        <Link
-          href={`/categoria/${produto.categoria.slug}`}
-          className="rounded-pilula transition-colors hover:text-coral-700 foco-marca"
-        >
-          {produto.categoria.nome}
-        </Link>
-        <span className="mx-2 text-coral-300">/</span>
-        <span className="text-ink-700">{produto.nome}</span>
-      </nav>
+    <div className="container secao-compacta">
+      <Breadcrumbs
+        itens={[
+          { rotulo: 'Início', href: '/' },
+          { rotulo: 'Categorias', href: '/categoria' },
+          { rotulo: produto.categoria.nome, href: `/categoria/${produto.categoria.slug}` },
+          { rotulo: produto.nome },
+        ]}
+      />
 
+      {/* Duas colunas iguais, com teto de largura na galeria: sem ele, a foto ocupava metade
+          de uma tela de 1440px, ficava com 800px de altura e a ficha ao lado sobrava no vazio. */}
       <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <ProductGallery nome={produto.nome} imagens={produto.imagens} videos={produto.videos} />
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <div className="mx-auto w-full max-w-[26rem]">
+            <ProductGallery nome={produto.nome} imagens={produto.imagens} videos={produto.videos} />
+          </div>
         </div>
 
-        <div>
-          <p className="text-sm font-bold uppercase tracking-wide text-coral-600">
-            Referência {produto.referencia}
-          </p>
-          <h1 className="mt-1.5 text-[1.75rem] font-bold leading-tight text-ink-900 sm:text-4xl">
+        <div className="min-w-0 lg:max-w-xl">
+          <p className="olho">Referência {produto.referencia}</p>
+
+          <h1 className="mt-2 text-[1.625rem] font-extrabold leading-tight text-ink-900 sm:text-[2rem]">
             {produto.nome}
           </h1>
-          <p className="mt-3 text-3xl font-bold text-coral-700">{formatarPreco(produto.preco)}</p>
 
-          <dl className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+          <p className="mt-4 flex items-baseline gap-2">
+            <span className="text-[2rem] font-extrabold leading-none tabular-nums text-coral-700">
+              {formatarPreco(produto.preco)}
+            </span>
+            <span className="text-sm font-semibold text-ink-500">por peça</span>
+          </p>
+
+          {/* Ficha técnica em bloco próprio: no catálogo impresso esses dados vêm sempre juntos,
+              na mesma ordem, e é assim que a cliente procura por eles. */}
+          <dl className="superficie mt-6 grid grid-cols-2 gap-x-6 gap-y-4 p-5 sm:grid-cols-4">
             {ficha.map((item) => (
-              <div key={item.rotulo}>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-ink-400">{item.rotulo}</dt>
-                <dd className="mt-0.5 font-semibold text-ink-800">{item.valor}</dd>
+              <div key={item.rotulo} className="min-w-0">
+                <dt className="text-[0.6875rem] font-extrabold uppercase tracking-[0.12em] text-ink-500">
+                  {item.rotulo}
+                </dt>
+                <dd className="mt-1 break-words font-bold text-ink-800">{item.valor}</dd>
               </div>
             ))}
           </dl>
@@ -117,7 +126,7 @@ export default async function ProdutoPage({ params }: ProdutoPageProps) {
           {produto.descricao && <p className="ficha-peca mt-6 whitespace-pre-line">{produto.descricao}</p>}
 
           {produto.observacoes && (
-            <p className="ficha-peca mt-4 whitespace-pre-line rounded-peca bg-coral-50 p-4">
+            <p className="ficha-peca mt-4 whitespace-pre-line rounded-peca bg-coral-50 p-4 ring-1 ring-inset ring-coral-100">
               {produto.observacoes}
             </p>
           )}
@@ -125,6 +134,15 @@ export default async function ProdutoPage({ params }: ProdutoPageProps) {
           <div className="mt-8">
             <ProductAddToCart produto={produto} />
           </div>
+
+          <Link
+            href={`/categoria/${produto.categoria.slug}`}
+            className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-pilula text-[0.9375rem] font-bold
+              text-coral-800 transition-colors hover:text-coral-900 foco-marca"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            Ver mais peças de {produto.categoria.nome}
+          </Link>
         </div>
       </div>
     </div>
