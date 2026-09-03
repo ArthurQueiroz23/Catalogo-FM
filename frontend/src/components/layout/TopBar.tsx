@@ -38,12 +38,19 @@ export function TopBar() {
     <div className="border-b border-coral-100 bg-creme-200/70">
       <div className="container flex flex-wrap items-center justify-between gap-x-2 py-1">
         {/* A assinatura do catálogo impresso ("Atacado de confiança para o seu negócio
-            CRESCER!", p.2) posicionada como o que a faixa diz quando ninguém está clicando. */}
-        <p className="hidden text-[0.8125rem] font-semibold text-ink-500 sm:block">
-          Atacado de confiança para o seu negócio crescer
+            CRESCER!", p.2), agora dizendo também o que a loja vende — é a primeira linha que
+            uma lojista lê ao chegar, e "atacado" sozinho não conta que é infantil.
+
+            Aparece só a partir de `lg`: a frase mais longa não cabia ao lado dos três contatos
+            num tablet, e a faixa quebrava em duas linhas. Abaixo disso a barra fica só com os
+            contatos, como já ficava no celular. */}
+        <p className="hidden text-[0.8125rem] font-semibold text-ink-500 lg:block">
+          Fornecedor em atacado infantil de confiança para o seu negócio crescer
         </p>
 
-        <div className="flex flex-wrap items-center gap-0.5">
+        {/* `ml-auto`: sem a frase à esquerda, o `justify-between` deixaria os contatos colados
+            na borda esquerda no tablet. */}
+        <div className="ml-auto flex flex-wrap items-center gap-0.5">
           {instagramUrl && (
             <a
               href={instagramUrl}

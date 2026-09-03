@@ -1,13 +1,24 @@
 import type { LoginResponse, UsuarioResponse } from '@/types/api';
-import { TOKEN_STORAGE_KEY } from './api';
+
+/** Chave usada para persistir o JWT do admin no localStorage. */
+export const TOKEN_STORAGE_KEY = 'frutodamalha_admin_token';
 
 const USUARIO_STORAGE_KEY = 'frutodamalha_admin_usuario';
 
 /**
+ * Margem de segurança na checagem de validade: um token que vence nos próximos segundos já é
+ * tratado como vencido. Evita o caso em que a tela passa no guard e a requisição disparada logo
+ * depois chega ao backend com o token já expirado — o painel abriria só para falhar em seguida.
+ */
+const MARGEM_EXPIRACAO_MS = 30_000;
+
+/**
  * Sessão do admin persistida em localStorage (JWT stateless — ver docs/ARCHITECTURE.md §2.7 e
- * §3.2). Funções simples em vez de um store reativo por ora: a tela de login e o layout
- * protegido do painel (`/admin/**`) ainda serão implementados na próxima sessão de trabalho, e
- * é nesse momento que decidimos se compensa envolver isso num store — ver docs/PROGRESS.md.
+ * §3.2). Como o token tem validade fixa (`APP_JWT_EXPIRATION_MS`, 24h por padrão) e nada o
+ * renova, "ter um token guardado" **não** é o mesmo que "estar autenticada": expirado, ele
+ * continua no localStorage e o backend responde 401 a cada chamada do painel. Por isso a leitura
+ * do token valida `exp` e descarta a sessão vencida — sem isso o painel abria normalmente e
+ * todas as listas voltavam vazias, dando a impressão de um catálogo sem dados.
  */
 
 export function salvarSessao(login: LoginResponse): void {
@@ -20,9 +31,37 @@ export function limparSessao(): void {
   window.localStorage.removeItem(USUARIO_STORAGE_KEY);
 }
 
+/**
+ * Lê o `exp` (segundos desde a época, padrão JWT) do payload do token. Só inspeciona: a
+ * verificação de assinatura é do backend — aqui o objetivo é apenas não mandar o painel abrir
+ * com uma sessão que sabidamente já não vale. Token ilegível conta como vencido.
+ */
+function tokenExpirado(token: string): boolean {
+  const payloadBruto = token.split('.')[1];
+  if (!payloadBruto) return true;
+
+  try {
+    const base64 = payloadBruto.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(window.atob(base64)) as { exp?: number };
+    if (typeof payload.exp !== 'number') return true;
+    return payload.exp * 1000 - MARGEM_EXPIRACAO_MS <= Date.now();
+  } catch {
+    return true;
+  }
+}
+
 export function obterToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(TOKEN_STORAGE_KEY);
+
+  const token = window.localStorage.getItem(TOKEN_STORAGE_KEY);
+  if (!token) return null;
+
+  if (tokenExpirado(token)) {
+    limparSessao();
+    return null;
+  }
+
+  return token;
 }
 
 export function obterUsuario(): UsuarioResponse | null {

@@ -8,13 +8,14 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useExcluirTamanho, useReordenarTamanhos, useTamanhos } from '@/hooks/useTamanhos';
 import type { TamanhoResponse } from '@/types/api';
 
 export default function AdminTamanhosPage() {
-  const { data: tamanhos, isLoading } = useTamanhos();
+  const { data: tamanhos, isLoading, isError, error, refetch } = useTamanhos();
   const reordenar = useReordenarTamanhos();
   const excluir = useExcluirTamanho();
 
@@ -60,6 +61,8 @@ export default function AdminTamanhosPage() {
               <Skeleton key={index} className="h-14 rounded-2xl" />
             ))}
           </div>
+        ) : isError ? (
+          <ErrorState error={error} recurso="os tamanhos" onRetry={() => refetch()} />
         ) : !tamanhos || tamanhos.length === 0 ? (
           <EmptyState
             icon={Ruler}

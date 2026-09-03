@@ -7,6 +7,7 @@ import { ProductGallery } from '@/components/product/ProductGallery';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { ApiError, api } from '@/lib/api';
 import { formatarPreco } from '@/lib/format';
+import { SEXO_LABEL } from '@/lib/rotulos';
 import type { ProdutoResponse } from '@/types/api';
 
 export const dynamic = 'force-dynamic';
@@ -52,12 +53,6 @@ export async function generateMetadata({ params }: ProdutoPageProps): Promise<Me
     },
   };
 }
-
-const SEXO_LABEL: Record<ProdutoResponse['sexo'], string> = {
-  MENINO: 'Menino',
-  MENINA: 'Menina',
-  UNISSEX: 'Unissex',
-};
 
 export default async function ProdutoPage({ params }: ProdutoPageProps) {
   const { referencia } = await params;

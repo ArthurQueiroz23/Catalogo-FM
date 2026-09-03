@@ -9,13 +9,14 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useCategorias, useExcluirCategoria, useReordenarCategorias } from '@/hooks/useCategorias';
 import type { CategoriaResponse } from '@/types/api';
 
 export default function AdminCategoriasPage() {
-  const { data: categorias, isLoading } = useCategorias();
+  const { data: categorias, isLoading, isError, error, refetch } = useCategorias();
   const reordenar = useReordenarCategorias();
   const excluir = useExcluirCategoria();
 
@@ -63,6 +64,11 @@ export default function AdminCategoriasPage() {
               <Skeleton key={index} className="h-[4.75rem] rounded-2xl" />
             ))}
           </div>
+        ) : isError ? (
+          // Falha de carregamento não é catálogo vazio: sem esta ramificação, uma sessão
+          // expirada (401) caía no EmptyState e o painel oferecia "criar a primeira categoria"
+          // sobre um catálogo cheio — ver src/lib/auth.ts.
+          <ErrorState error={error} recurso="as categorias" onRetry={() => refetch()} />
         ) : !categorias || categorias.length === 0 ? (
           <EmptyState
             icon={Tags}

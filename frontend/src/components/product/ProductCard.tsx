@@ -55,7 +55,7 @@ export function ProductCard({ produto }: { produto: ProdutoSummaryResponse }) {
             from-ink-900/25 to-transparent pb-4 pt-10 opacity-0 transition-opacity duration-300
             group-hover:opacity-100 sm:flex"
         >
-          <span className="rounded-pilula bg-coral-400 px-4 py-2 text-sm font-bold text-ink-900 shadow-peca">
+          <span className="rounded-pilula bg-coral-400 px-4 py-2 text-sm font-bold text-white shadow-peca">
             Ver peça
           </span>
         </span>

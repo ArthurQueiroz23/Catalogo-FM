@@ -39,7 +39,7 @@ export function TamanhoCheckboxGroup({ tamanhos, value, onChange, error }: Taman
                 'min-h-11 rounded-pilula border px-5 text-[0.9375rem] font-bold transition-all duration-200',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral-700',
                 selecionado
-                  ? 'border-coral-400 bg-coral-400 text-ink-900 shadow-suave'
+                  ? 'border-coral-400 bg-coral-400 text-white shadow-suave'
                   : 'border-coral-100 bg-creme-50 text-ink-600 hover:border-coral-300 hover:bg-coral-50'
               )}
             >

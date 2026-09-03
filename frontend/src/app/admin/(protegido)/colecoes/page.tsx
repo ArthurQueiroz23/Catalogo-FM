@@ -7,13 +7,14 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useColecoes, useExcluirColecao } from '@/hooks/useColecoes';
 import type { ColecaoResponse } from '@/types/api';
 
 export default function AdminColecoesPage() {
-  const { data: colecoes, isLoading } = useColecoes();
+  const { data: colecoes, isLoading, isError, error, refetch } = useColecoes();
   const excluir = useExcluirColecao();
 
   const [modalAberto, setModalAberto] = useState(false);
@@ -60,6 +61,8 @@ export default function AdminColecoesPage() {
               <Skeleton key={index} className="h-[4.25rem] rounded-2xl" />
             ))}
           </div>
+        ) : isError ? (
+          <ErrorState error={error} recurso="as coleções" onRetry={() => refetch()} />
         ) : !colecoes || colecoes.length === 0 ? (
           <EmptyState
             icon={Shirt}

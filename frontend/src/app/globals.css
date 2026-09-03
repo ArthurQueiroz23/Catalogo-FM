@@ -103,9 +103,13 @@
       disabled:cursor-not-allowed disabled:opacity-50 foco-marca;
   }
 
-  /* Coral da marca preenchendo, tinta escura por cima: 6.81:1, passa AA com folga. */
+  /* #FEA758 preenchendo, rótulo branco por cima — decisão visual da loja.
+     ⚠️ Contraste medido: 1.93:1. Está abaixo do mínimo da WCAG (4.5:1) e foi adotado mesmo
+     assim, por preferência estética explícita: o branco sobre o laranja é a leitura que a
+     marca quer. Se um dia isso for revisto, a alternativa que passa é `text-ink-900` no mesmo
+     preenchimento (6.74:1) — trocar só esta propriedade resolve, sem mexer no tom. */
   .btn-primary {
-    @apply btn-base bg-coral-400 text-ink-900 shadow-suave hover:-translate-y-0.5
+    @apply btn-base bg-coral-400 text-white shadow-suave hover:-translate-y-0.5
       hover:bg-coral-300 hover:shadow-peca active:translate-y-0 active:shadow-suave;
   }
 
@@ -179,11 +183,13 @@
 
   /* ---- Tipografia -------------------------------------------------------------------
      Escala única, em degraus com papel definido. Os títulos usam a manuscrita da marca;
-     o corpo, a fonte de interface. Títulos em coral ficam sempre acima de 24px, onde o
-     mínimo de contraste é 3:1 (coral-700 sobre creme = 4.47:1). */
+     o corpo, a fonte de interface. Títulos em laranja ficam sempre acima de 24px, onde o
+     mínimo de contraste é 3:1 — é por isso que eles podem usar o `coral-600` vivo (3.21:1) em
+     vez de descer para um laranja escuro. */
 
-  /* Rótulo curto acima de um título. Em `coral-800` (6.34:1 sobre o creme) porque é texto
-     pequeno: o `coral-700` do título grande dá 4.47:1, suficiente para 24px, não para 12px. */
+  /* Rótulo curto acima de um título. Em `coral-800` (6.29:1 sobre o creme) porque é o único
+     laranja que passa em texto de 12px: o `coral-600` do título dá 3.21:1, suficiente para
+     28px, não para um rótulo miúdo em caixa alta. */
   .olho {
     @apply text-xs font-extrabold uppercase tracking-[0.14em] text-coral-800;
   }
@@ -193,7 +199,7 @@
   }
 
   .titulo-secao {
-    @apply font-marca text-[1.75rem] font-bold leading-tight text-coral-700 sm:text-[2.125rem];
+    @apply font-marca text-[1.75rem] font-bold leading-tight text-coral-600 sm:text-[2.125rem];
   }
 
   .titulo-pagina {

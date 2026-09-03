@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { Input } from '@/components/ui/Input';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Pagination } from '@/components/ui/Pagination';
@@ -34,13 +35,8 @@ import {
   useProdutosAdmin,
 } from '@/hooks/useProdutos';
 import { formatarPreco } from '@/lib/format';
+import { SEXO_OPCOES } from '@/lib/rotulos';
 import type { ProdutoSummaryResponse, Sexo, StatusProduto } from '@/types/api';
-
-const SEXO_OPCOES = [
-  { value: 'MENINO', label: 'Menino' },
-  { value: 'MENINA', label: 'Menina' },
-  { value: 'UNISSEX', label: 'Unissex' },
-];
 
 const STATUS_OPCOES = [
   { value: 'ATIVO', label: 'Ativo' },
@@ -67,7 +63,7 @@ export default function AdminProdutosPage() {
     size: 20,
   };
 
-  const { data, isLoading, isPlaceholderData } = useProdutosAdmin(filtro);
+  const { data, isLoading, isPlaceholderData, isError, error, refetch } = useProdutosAdmin(filtro);
   const alterarStatus = useAlterarStatusProduto();
   const duplicar = useDuplicarProduto();
   const excluir = useExcluirProduto();
@@ -171,6 +167,11 @@ export default function AdminProdutosPage() {
               <Skeleton key={index} className="h-[4.75rem] rounded-2xl" />
             ))}
           </div>
+        ) : isError ? (
+          // Falha de carregamento não é lista vazia: sem esta ramificação, uma sessão expirada
+          // (401) caía no EmptyState e o painel pedia para "cadastrar a primeira peça" sobre um
+          // catálogo cheio — ver src/lib/auth.ts.
+          <ErrorState error={error} recurso="as peças" onRetry={() => refetch()} />
         ) : !data || data.content.length === 0 ? (
           <EmptyState
             icon={Package}

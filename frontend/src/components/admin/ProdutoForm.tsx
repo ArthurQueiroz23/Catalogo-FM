@@ -14,14 +14,9 @@ import { useCategorias } from '@/hooks/useCategorias';
 import { useColecoes } from '@/hooks/useColecoes';
 import { useCriarProduto, useAtualizarProduto } from '@/hooks/useProdutos';
 import { useTamanhos } from '@/hooks/useTamanhos';
+import { SEXO_OPCOES } from '@/lib/rotulos';
 import { produtoSchema, type ProdutoFormValues } from '@/lib/schemas';
 import type { ProdutoRequest, ProdutoResponse } from '@/types/api';
-
-const SEXO_OPCOES = [
-  { value: 'MENINO', label: 'Menino' },
-  { value: 'MENINA', label: 'Menina' },
-  { value: 'UNISSEX', label: 'Unissex' },
-];
 
 const STATUS_OPCOES = [
   { value: 'ATIVO', label: 'Ativo (visível no site)' },

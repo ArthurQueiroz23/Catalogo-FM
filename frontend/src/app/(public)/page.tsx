@@ -1,5 +1,4 @@
 import { ArrowRight, Handshake, MessageCircle, Shirt } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { CategoryCard } from '@/components/category/CategoryCard';
 import { ProductCarousel } from '@/components/product/ProductCarousel';
@@ -39,9 +38,9 @@ async function buscarDadosIniciais() {
 }
 
 /**
- * Como o pedido funciona. Aparece na home porque este catálogo **não** é uma loja virtual: a
- * cliente monta a seleção aqui e fecha a compra no WhatsApp. Quem chega esperando "carrinho e
- * pagamento" precisa entender o caminho antes de começar a escolher — não depois.
+ * Como o pedido funciona. Abre a home porque este catálogo **não** é uma loja virtual: a cliente
+ * monta a seleção aqui e fecha a compra no WhatsApp. Quem chega esperando "carrinho e pagamento"
+ * precisa entender o caminho antes de começar a escolher — não depois.
  */
 const PASSOS = [
   {
@@ -72,44 +71,72 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Capa: a mesma composição da primeira página do catálogo — o logo em destaque sobre o
-          creme rabiscado, com a assinatura "Vestindo carinho" logo abaixo. O painel arredondado
-          dá a moldura que a página inteira não tem: um começo, e não um texto solto no topo. */}
+      {/* Abertura da home: o mesmo quadro "Como funciona" que ficava mais abaixo na página,
+          movido para cá — é o desenho que já existia, sem nada acrescentado dentro dele.
+          Ele ocupa o lugar da antiga chamada "Vestindo carinho", que saiu: a assinatura já
+          aparece no logotipo do cabeçalho e no rodapé, e a dobra mais valiosa da página rende
+          mais explicando o que a cliente não consegue deduzir sozinha — que a compra se fecha
+          por WhatsApp.
+
+          O título é `h1` (e não `h2`, como quando o bloco vivia no meio da página) só pelo
+          esqueleto do documento: é o primeiro título da home. A classe é a mesma, então nada
+          muda visualmente.
+
+          As duas ações ficam **fora** do quadro, logo abaixo dele, para o quadro continuar
+          sendo exatamente o que era. */}
       <section className="container pt-6 sm:pt-8">
-        <div className="painel-rabiscos superficie-solida flex flex-col items-center px-6 py-14 text-center sm:px-10 sm:py-20">
-          <Image
-            src="/marca/logo.png"
-            alt="Fruto da Malha"
-            width={160}
-            height={198}
-            priority
-            className="h-auto w-24 animate-surgir sm:w-32"
-          />
-
-          <h1 className="titulo-vitrine mt-6 animate-surgir">Vestindo carinho</h1>
-
-          <p className="mt-4 max-w-xl animate-surgir text-base leading-relaxed text-ink-600 sm:text-lg">
-            Atacado de roupas infantis. Escolha as peças, os tamanhos e as quantidades que quiser —
-            no final, é só enviar sua seleção pelo WhatsApp e conversar direto com a gente.
-          </p>
-
-          <div className="mt-9 flex animate-surgir flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-            <Link href="/produtos" className="btn-primary btn-grande">
-              Ver o catálogo completo
-              <ArrowRight className="h-5 w-5" aria-hidden="true" />
-            </Link>
-            {linkWhatsApp && (
-              <a
-                href={linkWhatsApp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary btn-grande"
-              >
-                <MessageCircle className="h-5 w-5" aria-hidden="true" />
-                Falar no WhatsApp
-              </a>
-            )}
+        <div className="superficie-solida px-6 py-12 sm:px-10 sm:py-14">
+          <div className="mx-auto mb-10 max-w-lg text-center">
+            <p className="olho">Como funciona</p>
+            <h1 className="titulo-secao mt-2">Pedir é simples</h1>
+            <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-500">
+              Aqui você monta o pedido com calma. A compra é fechada por WhatsApp, com a gente.
+            </p>
           </div>
+
+          <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
+            {PASSOS.map((passo, indice) => (
+              <li key={passo.titulo} className="flex flex-col items-center text-center">
+                <span className="relative" aria-hidden="true">
+                  <span
+                    className="flex h-16 w-16 items-center justify-center rounded-pilula bg-coral-100
+                      text-coral-700 ring-1 ring-inset ring-coral-200"
+                  >
+                    <passo.icone className="h-7 w-7" />
+                  </span>
+                  <span
+                    className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-pilula
+                      bg-coral-400 text-xs font-extrabold tabular-nums text-white ring-2 ring-creme-50"
+                  >
+                    {indice + 1}
+                  </span>
+                </span>
+
+                <p className="titulo-bloco mt-4 text-base">{passo.titulo}</p>
+                <p className="mt-2 max-w-xs text-[0.9375rem] leading-relaxed text-ink-500">{passo.texto}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* `flex-col` no celular para os dois ficarem em largura cheia — dois botões de 44px
+            lado a lado numa tela de 390px viram dois alvos apertados. */}
+        <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+          <Link href="/produtos" className="btn-primary btn-grande">
+            Ver catálogo completo
+            <ArrowRight className="h-5 w-5" aria-hidden="true" />
+          </Link>
+          {linkWhatsApp && (
+            <a
+              href={linkWhatsApp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary btn-grande"
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden="true" />
+              Falar no WhatsApp
+            </a>
+          )}
         </div>
       </section>
 
@@ -154,44 +181,6 @@ export default async function HomePage() {
               </Link>
             </div>
           )}
-        </section>
-      )}
-
-      {!catalogoVazio && (
-        <section className="container secao">
-          <div className="superficie-solida px-6 py-12 sm:px-10 sm:py-14">
-            <div className="mx-auto mb-10 max-w-lg text-center">
-              <p className="olho">Como funciona</p>
-              <h2 className="titulo-secao mt-2">Pedir é simples</h2>
-              <p className="mt-3 text-[0.9375rem] leading-relaxed text-ink-500">
-                Aqui você monta o pedido com calma. A compra é fechada por WhatsApp, com a gente.
-              </p>
-            </div>
-
-            <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
-              {PASSOS.map((passo, indice) => (
-                <li key={passo.titulo} className="flex flex-col items-center text-center">
-                  <span className="relative" aria-hidden="true">
-                    <span
-                      className="flex h-16 w-16 items-center justify-center rounded-pilula bg-coral-100
-                        text-coral-700 ring-1 ring-inset ring-coral-200"
-                    >
-                      <passo.icone className="h-7 w-7" />
-                    </span>
-                    <span
-                      className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-pilula
-                        bg-coral-400 text-xs font-extrabold tabular-nums text-ink-900 ring-2 ring-creme-50"
-                    >
-                      {indice + 1}
-                    </span>
-                  </span>
-
-                  <p className="titulo-bloco mt-4 text-base">{passo.titulo}</p>
-                  <p className="mt-2 max-w-xs text-[0.9375rem] leading-relaxed text-ink-500">{passo.texto}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
         </section>
       )}
 

@@ -71,7 +71,7 @@ export function AdminSidebar({ aberta, onFechar }: { aberta: boolean; onFechar: 
                       'flex min-h-11 items-center gap-3 rounded-pilula px-4 text-[0.9375rem] font-bold',
                       'transition-all duration-200 foco-marca',
                       ativo
-                        ? 'bg-coral-400 text-ink-900 shadow-suave'
+                        ? 'bg-coral-400 text-white shadow-suave'
                         : 'text-ink-600 hover:bg-coral-50 hover:text-coral-800'
                     )}
                   >
@@ -100,7 +100,7 @@ export function AdminSidebar({ aberta, onFechar }: { aberta: boolean; onFechar: 
             <div className="mt-2 flex items-center gap-3 rounded-2xl bg-creme-100 px-3 py-2.5 ring-1 ring-coral-100">
               <span
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-pilula bg-coral-400
-                  text-sm font-extrabold text-ink-900"
+                  text-sm font-extrabold text-white"
                 aria-hidden="true"
               >
                 {usuario.nome.trim().charAt(0).toUpperCase()}

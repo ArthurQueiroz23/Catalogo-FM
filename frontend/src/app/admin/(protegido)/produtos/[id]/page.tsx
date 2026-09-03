@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { ProductGalleryManager } from '@/components/admin/ProductGalleryManager';
 import { ProdutoForm } from '@/components/admin/ProdutoForm';
 import { Badge } from '@/components/ui/Badge';
+import { ErrorState } from '@/components/ui/ErrorState';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useProdutoAdmin } from '@/hooks/useProdutos';
@@ -13,7 +14,9 @@ import { useProdutoAdmin } from '@/hooks/useProdutos';
 export default function EditarProdutoPage() {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
-  const { data: produto, isLoading } = useProdutoAdmin(Number.isFinite(id) ? id : undefined);
+  const { data: produto, isLoading, isError, error, refetch } = useProdutoAdmin(
+    Number.isFinite(id) ? id : undefined
+  );
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -26,12 +29,16 @@ export default function EditarProdutoPage() {
         Voltar para as peças
       </Link>
 
-      {isLoading || !produto ? (
+      {isLoading ? (
         <div className="flex flex-col gap-4">
           <Skeleton className="h-9 w-72" />
           <Skeleton className="h-72 rounded-peca" />
           <Skeleton className="h-96 rounded-peca" />
         </div>
+      ) : isError || !produto ? (
+        // Antes, qualquer falha aqui deixava a tela em esqueleto para sempre — `!produto` caía
+        // no mesmo ramo do carregamento. Uma sessão expirada travava a edição sem dizer por quê.
+        <ErrorState error={error} recurso="esta peça" onRetry={() => refetch()} />
       ) : (
         <>
           <PageHeader

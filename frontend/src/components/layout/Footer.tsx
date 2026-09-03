@@ -45,8 +45,8 @@ export function Footer() {
         <div>
           <Logo comAssinatura href={null} />
           <p className="mt-5 max-w-xs text-[0.9375rem] leading-relaxed text-ink-600">
-            Atacado de confiança para o seu negócio crescer. Escolha as peças no catálogo e
-            converse com a gente pelo WhatsApp.
+            Fornecedor em atacado infantil de confiança para o seu negócio crescer. Escolha as
+            peças no catálogo e converse com a gente pelo WhatsApp.
           </p>
 
           {whatsappUrl && (

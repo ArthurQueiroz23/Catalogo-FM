@@ -65,9 +65,14 @@ Fontes e cores lidas diretamente das entranhas do PDF (PyMuPDF), não a olho sob
 
 > Regra que guiou estas decisões: *extrair a identidade do PDF, não copiar as limitações do PDF.*
 
-### 3.1 O coral da marca não pode ser cor de texto
+### 3.1 O laranja da marca não pode ser cor de texto
 
-**`#FFA85A` sobre `#FFFBEF` dá contraste de 1,85:1.** O mínimo da WCAG é 4,5:1 para texto normal
+> **Sessão 7 — o laranja foi reancorado em `#FEA758`**, a referência entregue pela loja. A escala
+> inteira foi redesenhada travada na matiz dele (~28,5°) e com croma alto: os degraus escuros
+> puxavam para o marrom avermelhado (`#B95A15`, `#944818`) e agora são o mesmo laranja, só mais
+> denso. Os papéis abaixo não mudaram — só os valores.
+
+**`#FEA758` sobre `#FFFBEF` dá contraste de 1,9:1.** O mínimo da WCAG é 4,5:1 para texto normal
 e 3:1 para texto grande. No catálogo isso passa despercebido porque é impressão a 24pt; na web,
 em 15px num celular ao sol, seria ilegível — e reprovaria em acessibilidade de forma grave.
 
@@ -77,11 +82,18 @@ Solução que preserva a marca inteira:
 |---|---|---|
 | Texto corrido | `ink-600` `#755A49` (marrom do próprio PDF) | 6,12:1 ✅ |
 | Títulos | `ink-900` `#3D2E24` | 12,57:1 ✅ |
-| Títulos de seção (grandes) | `coral-700` `#B95A15` | 4,47:1 ✅ (≥3:1 para texto grande) |
-| **Preenchimento** | `coral-400` `#FFA85A` — **o valor exato do PDF** | usado com `ink-900` por cima: 6,81:1 ✅ |
+| Títulos de seção (grandes) | `coral-600` `#E06C09` | 3,21:1 ✅ (≥3:1 para texto grande) |
+| **Preenchimento** | `coral-400` `#FEA758` — **o tom de referência da loja** | com `ink-900` por cima: 6,74:1 ✅ |
 
-Ou seja: **o coral da marca continua presente e dominante** — só mudou de papel. Ele preenche
-botões, chips, indicadores e o item ativo do menu, em vez de escrever.
+Ou seja: **o laranja da marca continua presente e dominante** — só mudou de papel. Ele preenche
+botões, círculos de categoria, chips, indicadores e o item ativo do menu, em vez de escrever.
+
+**Por que o texto sobre laranja é escuro, e não branco.** Branco sobre `#FEA758` dá **1,9:1** —
+reprova em qualquer tamanho de texto, sem exceção de "texto grande". A única forma de fazer o
+branco passar seria escurecer o preenchimento até algo como `#BC5A00`, e aí o botão deixa de
+mostrar a cor da marca — que é exatamente o que ele existe para fazer. Foi testado na sessão 7 e
+revertido: o laranja escuro lia como queimado ao lado do resto da paleta. Fica `#FEA758` cheio
+com `ink-900` por cima, 6,74:1.
 
 ### 3.2 Tipografia: manuscrita como voz da marca, não como fonte de leitura
 
@@ -164,9 +176,12 @@ creme    DEFAULT #FFFBEF   fundo do site (valor do PDF)
          50      #FFFDF8   superfícies elevadas (cards, campos)
          200/300           divisórias e estados desabilitados
 
-coral    400     #FFA85A   ← COR DA MARCA (valor exato do PDF). Preenchimento.
-         100/200           chips suaves, bordas, anéis
-         600/700/800       texto de marca, hover, estados fortes
+coral    400     #FEA758   ← COR DA MARCA (referência da loja). Preenchimento de superfície.
+         700     #BC5A00   ← degrau de ação: único preenchimento com texto BRANCO (4,56:1)
+         100/200/300       chips suaves, bordas, anéis, círculos de categoria
+         600/800/900       título de capa, texto pequeno em laranja, hover
+
+perigo   600     #C0341F   ← só o botão destrutivo do painel (ver §3.1)
 
 ink      600     #755A49   ← corpo de texto (valor do PDF)
          900     #3D2E24   títulos
@@ -263,11 +278,11 @@ os assets resultantes estão versionados.
   |---|---|---|
   | `ink-900` `#3D2E24` | 12,57:1 | qualquer texto |
   | `ink-600` `#755A49` | 6,12:1 | qualquer texto |
-  | `coral-800` `#944818` | 6,34:1 | qualquer texto — **é o coral dos rótulos pequenos** |
+  | `coral-800` `#96480A` | 6,29:1 | qualquer texto — **é o laranja dos rótulos pequenos** |
   | `ink-500` `#8A6E5D` | 4,54:1 | **piso do texto auxiliar** (dicas, contagens, migalhas) |
-  | `coral-700` `#B95A15` | 4,47:1 | **só texto grande** (≥24px, ou ≥18,7px em negrito) |
+  | `coral-700` `#BC5A00` | 4,41:1 | **só texto grande** (≥24px, ou ≥18,7px em negrito) — e o preenchimento que aceita branco (4,56:1) |
   | `ink-400` / `ink-300` | 3,36:1 / ~2:1 | **nunca em texto**: ícone, placeholder, desabilitado |
-  | `coral-400` `#FFA85A` | 1,85:1 | **nunca em texto**: preenchimento, com `ink-900` por cima |
+  | `coral-400` `#FEA758` | 1,9:1 | **nunca em texto**: preenchimento, com `ink-900` por cima |
 
 - **Foco visível único** (`.foco-marca`): contorno coral de 2px com offset, em todo elemento
   interativo. Antes havia dois modelos concorrentes (`focus:ring` nos campos, `focus-visible:
@@ -320,7 +335,7 @@ O que sustenta esse reconhecimento, em ordem de peso:
 1. o **fundo creme rabiscado** (a assinatura mais forte do catálogo);
 2. o **logo real**, extraído do próprio PDF;
 3. a **tipografia manuscrita nos títulos** — a voz da marca, agora sem carregar o texto corrido;
-4. o **coral `#FFA85A`** preenchendo os elementos de ação;
+4. o **laranja `#FEA758`** preenchendo as superfícies, com `#BC5A00` nas ações;
 5. as **fotos flutuando sem moldura**, inteiras;
 6. a **ordem dos dados da ficha**, idêntica à das páginas do catálogo.
 

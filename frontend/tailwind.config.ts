@@ -5,12 +5,22 @@ import type { Config } from 'tailwindcss';
  * (`referencias/TABELA 0 2025 .pdf`, 96 páginas feitas no Canva).
  * Ver `docs/DESIGN_SYSTEM.md` para a análise completa e o racional de cada decisão.
  *
- * Cores lidas diretamente do PDF: fundo creme #FFFBEF, coral da marca #FFA85A,
- * marrom da assinatura #755A49, verde das descrições #297F02.
+ * Cores lidas diretamente do PDF: fundo creme #FFFBEF, marrom da assinatura #755A49,
+ * verde das descrições #297F02.
  *
- * ⚠️ O coral #FFA85A tem contraste 1.85:1 sobre o creme — no PDF ele carrega 97% do texto,
- * mas isso só funciona em impressão a 24pt. Na web ele é **cor de preenchimento**, nunca de
- * texto corrido. Texto usa `ink` (marrom); marca em texto usa `coral-700`/`coral-800`.
+ * O laranja da marca foi reancorado em **#FEA758** (a referência entregue pela loja). Toda a
+ * escala `coral` foi redesenhada travada na matiz dele (~28.5°), com croma alto: os degraus
+ * escuros deixaram de puxar para o marrom avermelhado e agora são o mesmo laranja, só mais
+ * denso.
+ *
+ * ⚠️ #FEA758 tem 1.9:1 contra o branco e 6.7:1 contra `ink-900`. Por decisão estética da loja,
+ * **todo preenchimento laranja carrega texto branco** — o contraste fica abaixo do mínimo da
+ * WCAG e isso é sabido e aceito. `ink-900` é a saída se a decisão mudar: mesma cor de fundo,
+ * só a cor da fonte.
+ *
+ * Os degraus escuros (`600`–`900`) são **cor de texto sobre o creme**, não fundos: é onde o
+ * laranja precisa ficar denso para ser legível. `600` para título grande, `800` para rótulo
+ * pequeno. Texto corrido continua no `ink`.
  */
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
@@ -25,18 +35,29 @@ const config: Config = {
           200: '#FDF4E0',
           300: '#F7E9CD',
         },
-        /** Coral/pêssego da marca. `400` é o valor exato do PDF. */
+        /**
+         * Laranja da marca. Escala inteira na matiz de `400`, o tom de referência da loja.
+         *
+         * Papéis fixos (não improvisar fora deles):
+         * - `400` **#FEA758** — a identidade, e o **único laranja que preenche**: botão
+         *   principal, círculos de categoria, indicadores, sublinhado do menu ativo, switch
+         *   ligado, contador da sacola. Rótulo sempre em branco (ver o aviso no topo).
+         * - `600` **#E06C09** — título grande em laranja sobre o creme (3.21:1, e título tem
+         *   28px+, onde o mínimo é 3:1).
+         * - `800` **#96480A** — rótulo pequeno em laranja (6.29:1) e botão destrutivo.
+         * - `50`–`300` — véus, anéis, bordas e hover dos preenchimentos.
+         */
         coral: {
-          50: '#FFF7ED',
-          100: '#FFEDD8',
-          200: '#FFDCB8',
-          300: '#FFC48C',
-          400: '#FFA85A',
-          500: '#F58E33',
-          600: '#E0741B',
-          700: '#B95A15',
-          800: '#944818',
-          900: '#783C17',
+          50: '#FFF6EC',
+          100: '#FFE9D3',
+          200: '#FFD4AC',
+          300: '#FFBE84',
+          400: '#FEA758',
+          500: '#F98C2E',
+          600: '#E06C09',
+          700: '#BC5A00',
+          800: '#96480A',
+          900: '#77390A',
         },
         /** Tinta: marrom quente da assinatura do catálogo. Toda leitura acontece aqui. */
         ink: {

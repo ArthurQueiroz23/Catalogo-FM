@@ -22,7 +22,7 @@ export function CartButton() {
       {totalPecas > 0 && (
         <span
           className="absolute right-0 top-0.5 flex h-5 min-w-5 items-center justify-center
-            rounded-pilula bg-coral-400 px-1 text-[11px] font-extrabold tabular-nums text-ink-900
+            rounded-pilula bg-coral-400 px-1 text-[11px] font-extrabold tabular-nums text-white
             ring-2 ring-creme"
         >
           {totalPecas}

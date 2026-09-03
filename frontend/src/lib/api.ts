@@ -1,3 +1,4 @@
+import { limparSessao, obterToken } from '@/lib/auth';
 import type { ApiErrorResponse } from '@/types/api';
 
 /**
@@ -31,8 +32,7 @@ function resolverApiUrl(): string {
 
 const API_URL = resolverApiUrl();
 
-/** Chave usada para persistir o JWT do admin no localStorage — ver src/lib/auth.ts. */
-export const TOKEN_STORAGE_KEY = 'frutodamalha_admin_token';
+const ROTA_LOGIN = '/admin/login';
 
 /**
  * Erro tipado lançado por {@link apiFetch} para respostas não-2xx, carregando o corpo original
@@ -49,6 +49,16 @@ export class ApiError extends Error {
     this.status = status;
     this.body = body;
   }
+
+  /**
+   * Resposta que significa "esta sessão não vale mais": token ausente, expirado ou de um
+   * usuário sem permissão. Como o painel só é usado por administradoras autenticadas, tanto
+   * 401 quanto 403 numa chamada com `auth` querem dizer a mesma coisa na prática — é hora de
+   * entrar de novo, e não "não existem dados".
+   */
+  get sessaoInvalida(): boolean {
+    return this.status === 401 || this.status === 403;
+  }
 }
 
 interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
@@ -57,11 +67,21 @@ interface ApiFetchOptions extends Omit<RequestInit, 'body'> {
   body?: unknown;
 }
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null;
+/**
+ * Sessão recusada pelo backend: descarta o token morto e devolve a administradora ao login.
+ *
+ * Sem isso, o painel continuava aberto com um token vencido e cada tela recebia 401 — o que as
+ * listas exibiam como "nenhum dado cadastrado", enquanto o catálogo público (que não usa token)
+ * seguia mostrando tudo. O `replace` evita que o botão "voltar" traga de volta a tela quebrada.
+ */
+function encerrarSessao(): void {
+  if (typeof window === 'undefined') return;
+
+  limparSessao();
+
+  if (!window.location.pathname.startsWith(ROTA_LOGIN)) {
+    window.location.replace(ROTA_LOGIN);
   }
-  return window.localStorage.getItem(TOKEN_STORAGE_KEY);
 }
 
 /**
@@ -77,7 +97,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     finalHeaders.set('Content-Type', 'application/json');
   }
   if (auth) {
-    const token = getStoredToken();
+    const token = obterToken();
     if (token) {
       finalHeaders.set('Authorization', `Bearer ${token}`);
     }
@@ -97,7 +117,11 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   const data = isJson ? await response.json() : null;
 
   if (!response.ok) {
-    throw new ApiError(response.status, data as ApiErrorResponse | null);
+    const erro = new ApiError(response.status, data as ApiErrorResponse | null);
+    if (auth && erro.sessaoInvalida) {
+      encerrarSessao();
+    }
+    throw erro;
   }
 
   return data as T;

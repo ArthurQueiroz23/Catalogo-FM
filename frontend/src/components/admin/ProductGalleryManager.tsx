@@ -152,7 +152,7 @@ export function ProductGalleryManager({ produtoId, referencia, imagens, videos }
               <Image src={imagem.url} alt="" fill sizes="150px" className="object-contain p-1" />
 
               {imagem.principal && (
-                <span className="absolute bottom-1 left-1 flex items-center gap-1 rounded-pilula bg-coral-400 px-2 py-0.5 text-[10px] font-bold text-ink-900">
+                <span className="absolute bottom-1 left-1 flex items-center gap-1 rounded-pilula bg-coral-400 px-2 py-0.5 text-[10px] font-bold text-white">
                   <Star className="h-3 w-3 fill-current" />
                   Capa
                 </span>
