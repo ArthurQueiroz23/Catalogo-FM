@@ -1,4 +1,4 @@
-import { ArrowRight, Handshake, MessageCircle, Shirt } from 'lucide-react';
+import { ArrowRight, Handshake, MessageCircle, Shirt, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { CategoryCard } from '@/components/category/CategoryCard';
 import { ProductCarousel } from '@/components/product/ProductCarousel';
@@ -49,6 +49,11 @@ const PASSOS = [
     texto: 'Navegue pelo catálogo e defina tamanhos e quantidades de cada peça.',
   },
   {
+    icone: ShoppingBag,
+    titulo: 'Confira sua seleção',
+    texto: 'Revise os itens e adicione observações se precisar.',
+  },
+  {
     icone: MessageCircle,
     titulo: 'Envie pelo WhatsApp',
     texto: 'Sua seleção vira uma mensagem pronta, com referências, quantidades e valores.',
@@ -94,7 +99,12 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <ol className="grid gap-10 md:grid-cols-3 md:gap-8">
+          {/* Quatro etapas não fecham em 3 colunas: `md:grid-cols-3` deixaria a quarta órfã
+              numa linha só dela. A grade passa a dobrar em pares — 2×2 do `sm` ao `lg`, onde a
+              linha única de 4 ainda deixaria cada coluna estreita demais para o texto — e só
+              abre em fila de 4 a partir do `lg`. O `gap-y` continua no `gap-10` da base: são as
+              duas linhas do 2×2 que precisam do respiro, não as colunas. */}
+          <ol className="grid gap-10 sm:grid-cols-2 sm:gap-x-8 lg:grid-cols-4">
             {PASSOS.map((passo, indice) => (
               <li key={passo.titulo} className="flex flex-col items-center text-center">
                 <span className="relative" aria-hidden="true">
